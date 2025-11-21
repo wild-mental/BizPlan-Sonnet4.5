@@ -1,5 +1,5 @@
 ---
-description: Guidelines for managing GitHub issues, milestones, and projects using CLI tools
+description: Guidelines for managing GitHub issues, milestones, projects, and Pull Requests using CLI tools
 globs: tasks/**/*.md, .github/**/*.yml
 alwaysApply: false
 ---
@@ -8,6 +8,7 @@ alwaysApply: false
 ## Context
 - Applies when creating issues from task documents
 - Applies when managing project roadmaps via GitHub CLI
+- **Applies when creating Pull Requests (refer to Rule 200 for content requirements)**
 
 ## Rules
 1. **Issue Creation**:

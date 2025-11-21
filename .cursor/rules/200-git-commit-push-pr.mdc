@@ -1,8 +1,8 @@
 ---
-description: Git commit and push best practices for team collaboration and AI agent safety
+description: Git commit, push, and Pull Request best practices for team collaboration and AI agent safety
 alwaysApply: false
 ---
-# Git Commit and Push Rules
+# Git Commit, Push, and PR Rules
 
 ## Atomic Commits
 - One logical change per commit (single purpose, fully functional)
@@ -36,7 +36,10 @@ alwaysApply: false
 - Pull latest changes before starting: `git pull origin <branch>`
 - Rebase feature branches on main regularly to avoid conflicts
 - Create draft PR immediately after first push: `gh pr create --draft`
-- Use meaningful PR titles and descriptions linking to issues
+- **PR Description must include:**
+  - Summary of changes: **Analyze the full git diff between branches** and summarize the *semantic meaning* of all changes.
+  - Ensure the summary covers all key modifications but remains concise (avoid verbose file listings).
+  - Link to related issues
 - Request reviews before merging; never self-merge without approval
 
 ## Examples
