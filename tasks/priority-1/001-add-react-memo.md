@@ -131,7 +131,7 @@ _To be assigned_
 
 ## 📅 Timeline
 
-- **Start Date**: TBD
-- **Due Date**: TBD
+- **Start Date**: 2025-11-22
+- **Due Date**: 2025-11-23
 - **Completed Date**: -
 
