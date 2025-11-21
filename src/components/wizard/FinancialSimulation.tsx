@@ -1,3 +1,40 @@
+/**
+ * 파일명: FinancialSimulation.tsx
+ * 
+ * 파일 용도:
+ * 재무 시뮬레이션 및 분석 컴포넌트 (마법사 4단계)
+ * - 재무 가정 입력 (고객 수, 객단가, CAC, 고정비 등)
+ * - 핵심 재무 지표 자동 계산 (LTV, LTV/CAC, 손익분기점)
+ * - 시각화 차트 (손익분기점 분석, Unit Economics)
+ * 
+ * 호출 구조:
+ * FinancialSimulation (이 컴포넌트)
+ *   ├─> useFinancialStore - 재무 데이터 및 계산
+ *   │   ├─> input - 사용자 입력 값
+ *   │   ├─> metrics - 계산된 지표 (LTV, 손익분기점 등)
+ *   │   ├─> chartData - 차트용 데이터
+ *   │   └─> updateInput(field, value) - 입력 값 업데이트
+ *   │
+ *   └─> Recharts 라이브러리
+ *       ├─> LineChart - 손익분기점 분석 (매출/비용/이익 추이)
+ *       └─> BarChart - Unit Economics (LTV vs CAC)
+ * 
+ * 데이터 흐름:
+ * 1. 사용자 입력 (고객 수, 객단가 등) → updateInput()
+ * 2. useFinancialStore에서 자동으로 지표 재계산
+ * 3. metrics, chartData 업데이트
+ * 4. UI에 실시간 반영 (지표 카드, 차트)
+ * 
+ * 핵심 지표:
+ * - Revenue: 월 매출 = 고객 수 × 객단가
+ * - LTV: 고객 생애가치 = 객단가 × (1 - 이탈률) / 이탈률
+ * - LTV/CAC: 고객 생애가치 / 고객 획득 비용 (이상적으로 3 이상)
+ * - Break Even Point: 손익분기점 고객 수
+ * 
+ * 사용하는 Store:
+ * - useFinancialStore: 재무 계산 및 데이터 관리
+ */
+
 import React from 'react';
 import { useFinancialStore } from '../../stores/useFinancialStore';
 import { Input, Badge } from '../ui';
@@ -5,20 +42,52 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { formatCurrency, formatNumber } from '../../lib/utils';
 import { AlertCircle, TrendingUp, Target, DollarSign } from 'lucide-react';
 
+/**
+ * FinancialSimulation 컴포넌트
+ * 
+ * 역할:
+ * - 비즈니스 재무 모델 시뮬레이션
+ * - 핵심 재무 지표 계산 및 시각화
+ * - 수익성 경고 및 개선 제안
+ * 
+ * 주요 기능:
+ * 1. 재무 가정 입력 폼 (6개 주요 지표)
+ * 2. 핵심 지표 자동 계산 및 표시
+ * 3. LTV/CAC 비율 기반 수익성 경고
+ * 4. 12개월 손익분기점 분석 차트
+ * 5. Unit Economics 시각화
+ * 
+ * 입력 필드:
+ * - customers: 예상 고객 수
+ * - pricePerCustomer: 객단가
+ * - cac: 고객 획득 비용
+ * - fixedCosts: 고정비
+ * - variableCostRate: 변동비율
+ * - churnRate: 이탈률
+ * 
+ * @returns {JSX.Element} 재무 시뮬레이션 UI
+ */
 export const FinancialSimulation: React.FC = () => {
   const { input, metrics, chartData, updateInput } = useFinancialStore();
 
   React.useEffect(() => {
-    // Initialize if needed
+    // 초기화: metrics가 없으면 빈 객체로 업데이트하여 초기값 계산 트리거
     if (!metrics) {
       updateInput({});
     }
   }, [metrics, updateInput]);
 
+  /**
+   * 입력 필드 변경 핸들러
+   * 
+   * @param {keyof typeof input} field - 변경할 필드명
+   * @param {number} value - 새로운 값
+   */
   const handleInputChange = (field: keyof typeof input, value: number) => {
     updateInput({ [field]: value });
   };
 
+  // LTV/CAC 비율이 3 미만이면 경고 표시 (건강한 비즈니스는 3 이상)
   const ltvCacWarning = metrics && metrics.ltvCacRatio < 3;
 
   return (

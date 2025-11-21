@@ -1,13 +1,44 @@
+/**
+ * 파일명: Button.tsx
+ * 
+ * 파일 용도:
+ * 재사용 가능한 버튼 컴포넌트
+ * - 다양한 스타일 variant 제공 (primary, secondary, outline, ghost, danger)
+ * - 3가지 크기 옵션 (sm, md, lg)
+ * - 로딩 상태 지원
+ * - 표준 HTML 버튼 속성 모두 지원
+ * 
+ * 사용 예시:
+ * <Button variant="primary" size="lg" isLoading={isSubmitting}>
+ *   제출하기
+ * </Button>
+ */
+
 import React from 'react';
 import { cn } from '../../lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** 버튼 스타일 변형 */
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  /** 버튼 크기 */
   size?: 'sm' | 'md' | 'lg';
+  /** 로딩 상태 (스피너 표시 및 비활성화) */
   isLoading?: boolean;
+  /** 버튼 내용 */
   children: React.ReactNode;
 }
 
+/**
+ * Button 컴포넌트
+ * 
+ * 역할:
+ * - 애플리케이션 전체에서 일관된 버튼 UI 제공
+ * - 다양한 상황에 맞는 스타일과 크기 옵션
+ * - 로딩/비활성화 상태 처리
+ * 
+ * @param {ButtonProps} props - 버튼 속성
+ * @returns {JSX.Element} 버튼 엘리먼트
+ */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',

@@ -1,3 +1,24 @@
+/**
+ * 파일명: mockData.ts
+ * 
+ * 파일 용도:
+ * 애플리케이션에서 사용하는 Mock 데이터 및 정적 데이터
+ * - 개발 및 프로토타입 단계에서 사용
+ * - 실제 API 연동 전까지 사용
+ * 
+ * 데이터 목록:
+ * 1. templates: 사업 템플릿 목록 (3개)
+ * 2. wizardSteps: 마법사 5단계 정의 및 질문 목록
+ * 3. pmfQuestions: PMF 진단 질문 10개
+ * 4. mockRisks: PMF 리스크 샘플
+ * 5. mockRecommendations: 개선 제언 샘플
+ * 6. mockBusinessPlan: 생성된 사업계획서 샘플
+ * 
+ * 주의:
+ * - 실제 프로덕션에서는 API로 대체 필요
+ * - 현재는 하드코딩된 데이터 사용
+ */
+
 import {
   Template,
   WizardStep,
@@ -7,7 +28,9 @@ import {
   DraftSection,
 } from './index';
 
-// Templates
+// ============================================
+// Templates - 사업 템플릿 데이터
+// ============================================
 export const templates: Template[] = [
   {
     id: 'pre-startup',

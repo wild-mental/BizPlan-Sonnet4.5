@@ -1,3 +1,36 @@
+/**
+ * 파일명: Layout.tsx
+ * 
+ * 파일 용도:
+ * 마법사 페이지의 공통 레이아웃 컴포넌트
+ * - 헤더, 사이드바, 메인 콘텐츠 영역 제공
+ * - 마법사 진행 상태 표시
+ * - 단계별 네비게이션 UI
+ * 
+ * 호출 구조:
+ * Layout (이 컴포넌트)
+ *   ├─> useWizardStore - 마법사 진행 상태
+ *   │   ├─> currentStep - 현재 단계
+ *   │   ├─> steps - 전체 단계 목록
+ *   │   └─> isStepCompleted() - 단계 완료 여부
+ *   │
+ *   ├─> useProjectStore - 프로젝트 정보
+ *   │   └─> currentProject - 현재 프로젝트
+ *   │
+ *   └─> 자식 컴포넌트
+ *       ├─> SaveIndicator - 저장 상태 표시
+ *       ├─> Progress - 진행률 바
+ *       └─> Outlet - 라우트 콘텐츠 (WizardStep, BusinessPlanViewer)
+ * 
+ * 데이터 흐름:
+ * useWizardStore → 진행률 계산 → Progress 컴포넌트
+ * useWizardStore → 단계 목록 → 사이드바 네비게이션
+ * 
+ * 조건부 렌더링:
+ * - /wizard/* 경로: 전체 레이아웃 (헤더 + 사이드바 + 콘텐츠)
+ * - 기타 경로: Outlet만 렌더링 (레이아웃 없음)
+ */
+
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
@@ -7,6 +40,27 @@ import { Progress } from './ui';
 import { Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+/**
+ * Layout 컴포넌트
+ * 
+ * 역할:
+ * - 마법사 페이지의 공통 레이아웃 제공
+ * - 헤더: 로고, 프로젝트명, 저장 상태
+ * - 사이드바: 단계 목록, 진행률
+ * - 메인: 각 단계의 콘텐츠 (Outlet)
+ * 
+ * 주요 기능:
+ * 1. 진행률 계산 및 표시
+ * 2. 단계별 네비게이션 (완료/진행 중/미완료 표시)
+ * 3. 현재 단계 하이라이트
+ * 4. 자동 저장 상태 표시
+ * 
+ * 조건부 렌더링:
+ * - 마법사 페이지(/wizard/*)일 때만 레이아웃 표시
+ * - 그 외 페이지는 Outlet만 렌더링
+ * 
+ * @returns {JSX.Element} 레이아웃 컴포넌트
+ */
 export const Layout: React.FC = () => {
   const location = useLocation();
   const { currentStep, steps, isStepCompleted } = useWizardStore();
@@ -14,10 +68,12 @@ export const Layout: React.FC = () => {
 
   const isWizardPage = location.pathname.startsWith('/wizard');
 
+  // 마법사 페이지가 아닌 경우 레이아웃 없이 콘텐츠만 렌더링
   if (!isWizardPage) {
     return <Outlet />;
   }
 
+  // 진행률 계산
   const completedSteps = steps.filter((step) => isStepCompleted(step.id)).length;
   const progressPercentage = (completedSteps / steps.length) * 100;
 

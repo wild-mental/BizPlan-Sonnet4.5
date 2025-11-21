@@ -1,15 +1,68 @@
+/**
+ * 파일명: BusinessPlanViewer.tsx
+ * 
+ * 파일 용도:
+ * AI 생성 사업계획서 뷰어 페이지
+ * - 마법사 완료 후 사업계획서를 AI로 생성하고 표시
+ * - 섹션별 재생성 기능
+ * - HWP/PDF 내보내기 기능
+ * 
+ * 호출 구조:
+ * BusinessPlanViewer (이 컴포넌트)
+ *   ├─> handleGenerate() - AI 사업계획서 생성 (시뮬레이션)
+ *   ├─> handleRegenerate(sectionId) - 특정 섹션 재생성
+ *   └─> handleExport(format) - 파일 내보내기 (HWP/PDF)
+ * 
+ * 데이터 흐름:
+ * 1. 초기 상태: 생성 대기 화면
+ * 2. 생성 버튼 클릭 → 로딩 (3초 시뮬레이션)
+ * 3. 생성 완료 → 섹션별 사업계획서 표시
+ * 4. 각 섹션마다 "다시 쓰기" 버튼으로 재생성 가능
+ * 5. HWP/PDF 내보내기 가능
+ * 
+ * Mock Data:
+ * - mockBusinessPlan: 사업계획서 섹션 목록
+ */
+
 import React, { useState } from 'react';
 import { Button, Spinner, Badge } from '../components/ui';
 import { mockBusinessPlan } from '../types/mockData';
 import ReactMarkdown from 'react-markdown';
 import { FileDown, Sparkles, RefreshCw } from 'lucide-react';
 
+/**
+ * BusinessPlanViewer 컴포넌트
+ * 
+ * 역할:
+ * - AI가 생성한 사업계획서를 표시하고 관리
+ * - 섹션별 내용 재생성 기능
+ * - 문서 내보내기 (HWP, PDF)
+ * 
+ * 주요 기능:
+ * 1. AI 사업계획서 생성 (시뮬레이션)
+ * 2. 마크다운 형식의 계획서 렌더링
+ * 3. 섹션별 AI 재생성
+ * 4. HWP/PDF 형식으로 내보내기
+ * 
+ * 상태:
+ * - isGenerating: 생성 중 여부
+ * - isGenerated: 생성 완료 여부
+ * - sections: 사업계획서 섹션 목록
+ * - regeneratingSection: 재생성 중인 섹션 ID
+ * 
+ * @returns {JSX.Element} 사업계획서 뷰어 페이지
+ */
 export const BusinessPlanViewer: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [sections, setSections] = useState(mockBusinessPlan);
   const [regeneratingSection, setRegeneratingSection] = useState<string | null>(null);
 
+  /**
+   * AI 사업계획서 생성 시뮬레이션
+   * - 실제로는 API 호출이 필요
+   * - 현재는 3초 딜레이 후 완료 처리
+   */
   const handleGenerate = () => {
     setIsGenerating(true);
     
@@ -20,6 +73,11 @@ export const BusinessPlanViewer: React.FC = () => {
     }, 3000);
   };
 
+  /**
+   * 특정 섹션 재생성
+   * 
+   * @param {string} sectionId - 재생성할 섹션의 ID
+   */
   const handleRegenerate = (sectionId: string) => {
     setRegeneratingSection(sectionId);
     
@@ -38,6 +96,11 @@ export const BusinessPlanViewer: React.FC = () => {
     }, 2000);
   };
 
+  /**
+   * 사업계획서 파일 내보내기
+   * 
+   * @param {('hwp'|'pdf')} format - 내보낼 파일 형식
+   */
   const handleExport = (format: 'hwp' | 'pdf') => {
     window.alert(`${format.toUpperCase()} 다운로드 준비 완료!\n\n실제 환경에서는 파일이 다운로드됩니다.`);
   };

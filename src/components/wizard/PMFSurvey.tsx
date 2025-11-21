@@ -1,3 +1,43 @@
+/**
+ * 파일명: PMFSurvey.tsx
+ * 
+ * 파일 용도:
+ * Product-Market Fit 진단 설문조사 및 결과 분석 컴포넌트 (마법사 5단계)
+ * - 10개 질문으로 PMF 수준 측정
+ * - 점수 계산 및 등급 판정
+ * - 리스크 분석 및 개선 제언
+ * 
+ * 호출 구조:
+ * PMFSurvey (이 컴포넌트)
+ *   ├─> usePMFStore - PMF 데이터 및 분석
+ *   │   ├─> answers - 사용자 답변 목록
+ *   │   ├─> report - 진단 결과 리포트
+ *   │   ├─> updateAnswer(questionId, value) - 답변 저장
+ *   │   └─> generateReport() - 리포트 생성
+ *   │
+ *   └─> UI 컴포넌트
+ *       ├─> Card - 질문 카드
+ *       ├─> Badge - 등급 표시
+ *       ├─> Progress - 점수 진행률
+ *       └─> Button - 제출 버튼
+ * 
+ * 데이터 흐름:
+ * 1. pmfQuestions 로드 (10개 질문)
+ * 2. 사용자 선택 → updateAnswer(questionId, value)
+ * 3. 모든 질문 답변 완료 → generateReport()
+ * 4. report 생성 (점수, 등급, 리스크, 개선 제언)
+ * 5. 결과 화면 표시
+ * 
+ * 점수 등급:
+ * - 85점 이상: excellent (PMF 달성)
+ * - 70-84점: high (PMF 근접)
+ * - 50-69점: medium (개선 필요)
+ * - 50점 미만: low (재검토 필요)
+ * 
+ * 사용하는 Store:
+ * - usePMFStore: PMF 설문 및 분석 데이터
+ */
+
 import React, { useState } from 'react';
 import { usePMFStore } from '../../stores/usePMFStore';
 import { pmfQuestions } from '../../types/mockData';
@@ -5,19 +45,52 @@ import { Button, Badge, Card, CardHeader, CardTitle, CardContent } from '../ui';
 import { Progress } from '../ui';
 import { CheckCircle2, AlertCircle, TrendingUp, Target } from 'lucide-react';
 
+/**
+ * PMFSurvey 컴포넌트
+ * 
+ * 역할:
+ * - Product-Market Fit 수준 진단
+ * - 비즈니스 강점과 약점 분석
+ * - 개선 방향 제시
+ * 
+ * 주요 기능:
+ * 1. 10개 질문 설문 (4점 척도)
+ * 2. 답변 완료 시 진단 리포트 생성
+ * 3. PMF 점수 및 등급 표시
+ * 4. 핵심 리스크 식별 및 표시
+ * 5. 우선순위별 개선 제언 제공
+ * 
+ * 화면 상태:
+ * - showReport=false: 설문조사 화면
+ * - showReport=true: 진단 결과 화면
+ * 
+ * @returns {JSX.Element} PMF 설문 또는 결과 화면
+ */
 export const PMFSurvey: React.FC = () => {
   const { answers, report, updateAnswer, generateReport } = usePMFStore();
   const [showReport, setShowReport] = useState(false);
 
+  /**
+   * 답변 선택 핸들러
+   * 
+   * @param {string} questionId - 질문 ID
+   * @param {number} value - 선택한 점수 (1-4)
+   */
   const handleAnswerChange = (questionId: string, value: number) => {
     updateAnswer(questionId, value);
   };
 
+  /**
+   * 진단 결과 생성 및 표시
+   * - generateReport()로 점수 계산 및 분석
+   * - 결과 화면으로 전환
+   */
   const handleSubmit = () => {
     generateReport();
     setShowReport(true);
   };
 
+  // 모든 질문에 답변했는지 확인
   const isAllAnswered = answers.length === pmfQuestions.length;
 
   if (showReport && report) {
