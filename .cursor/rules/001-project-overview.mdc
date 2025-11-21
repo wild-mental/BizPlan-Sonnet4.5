@@ -1,40 +1,39 @@
 ---
-description: Project overview template - customize for your specific project
+description: Project overview for AI Co-Pilot for First-time Founders
+globs: ["**/*"]
 alwaysApply: true
 ---
-# PROJECT OVERVIEW: [PROJECT NAME]
+# PROJECT OVERVIEW: AI Co-Pilot for First-time Founders
 
 ## Vision
-[Describe your project's overarching vision and purpose. What problem does it solve? What impact do you want to make?]
+Transform the complex business planning process into a data-driven decision-making journey that reduces failure rates. Act as an intelligent partner to help founders quickly pass funding gates (government grants, loans) and focus on sustainable growth.
 
 ## Core Features
-[List the main features and capabilities of your project]
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
+- **Submission Wizard:** Step-by-step guide for government/bank forms (100% template compatibility).
+- **Financial Auto-Engine:** Generates 3-year P&L and cash flow from key variables.
+- **AI Drafting:** Context-aware writing assistance with Easy/Expert modes.
+- **PMF Diagnostic:** Analyzes product-market fit and risks based on standard frameworks.
+- **Docs Export:** One-click HWP/PDF export fully compliant with submission standards.
 
 ## Target Audience
-[Define who will use this project]
-- Primary users: [Description]
-- Secondary users: [Description]
+- **First-time Founders:** Non-technical, struggling with business logic and jargon.
+- **Small Business Owners:** Need bank loans but lack financial modeling expertise.
+- **Serial Entrepreneurs:** Seek to verify PMF and unit economics before scaling.
 
 ## Project Goals
-[Specific, measurable objectives]
-- Goal 1: [Description]
-- Goal 2: [Description]
-- Goal 3: [Description]
+- **Pass Funding Gates:** Maximize acceptance rates for grants and loans.
+- **Minimize Prep Time:** Drastically reduce time spent on documentation.
+- **Logic Validation:** Detect and fix inconsistencies between narrative and financials.
 
-## Success Metrics
-[How will you measure success?]
-- Metric 1: [Description]
-- Metric 2: [Description]
+## Success Metrics (North Star: TTV)
+- **Time-to-Value (TTV):** < 30 mins to first "submit-ready" draft.
+- **Activation Rate:** > 40% of users complete a draft in first session.
+- **Pass Rate:** > 65% acceptance for submitted proposals.
 
 ## Project Philosophy
-[Your development principles and values]
-- Emphasis on high maintainability and scalable architecture
-- Senior engineering practices and standards
-- Comprehensive documentation
-- [Add your specific principles here]
+- **Failure Avoidance:** Prioritize risk detection over just "generating text".
+- **Logic > Rhetoric:** Ensure financial numbers back up the qualitative claims.
+- **Security First:** Absolute protection of sensitive business ideas and financial data.
 
 ## See also:
 - [002-tech-stack.mdc](002-tech-stack.mdc) for implementation details
