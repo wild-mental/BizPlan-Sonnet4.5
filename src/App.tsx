@@ -8,6 +8,8 @@
  * 
  * 라우팅 구조:
  * / (루트)
+ *   └─> LandingPage: 고객 유입용 랜딩페이지
+ * /app
  *   └─> ProjectCreate: 프로젝트 생성 페이지
  * /wizard/:stepId
  *   └─> Layout > WizardStep: 단계별 마법사 페이지
@@ -23,6 +25,7 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { LandingPage } from './pages/LandingPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
 import { BusinessPlanViewer } from './pages/BusinessPlanViewer';
@@ -41,15 +44,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 메인 페이지: 프로젝트 생성 */}
-        <Route path="/" element={<ProjectCreate />} />
-        
+        {/* 랜딩페이지: 고객 유입 Hook */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* 앱 시작점: 프로젝트 생성 */}
+        <Route path="/app" element={<ProjectCreate />} />
+
         {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
         <Route element={<Layout />}>
           <Route path="/wizard/:stepId" element={<WizardStep />} />
           <Route path="/business-plan" element={<BusinessPlanViewer />} />
         </Route>
-        
+
         {/* 404 처리: 모든 미정의 경로를 루트로 리다이렉트 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -58,3 +64,4 @@ function App() {
 }
 
 export default App;
+
