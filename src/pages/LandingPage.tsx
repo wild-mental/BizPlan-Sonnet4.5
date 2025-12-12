@@ -50,17 +50,349 @@ const testimonials = [
 // SEO 키워드
 const seoKeywords = ['정부사업지원금', '예비창업패키지', '초기창업패키지', 'AI 심사위원회', '멀티에이전트 AI', '사업계획서 자동작성', '1인 소자본 창업', '창업 트렌드'];
 
+// 네비게이션 링크 데이터
+const navLinks = [
+  { label: '문제 해결', href: '#problem-section' },
+  { label: 'AI 심사위원회', href: '#makers-section' },
+  { label: 'M.A.K.E.R.S', href: '#makers-committee' },
+  { label: '맞춤 지원', href: '#business-category' },
+  { label: '요금제', href: '#pricing-section' },
+  { label: '고객 후기', href: '#testimonials-section' },
+];
+
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activePersona, setActivePersona] = useState(0);
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // 스크롤 감지
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleCTAClick = () => navigate('/app');
 
+  const scrollToSection = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
-      {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center justify-center gradient-mesh overflow-hidden">
+      {/* ===== FIXED HEADER NAVIGATION ===== */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
+          : 'bg-transparent'
+          }`}
+      >
+        <nav className="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+          {/* Left - Logo */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow">
+              <Rocket className="w-5 h-5" />
+            </div>
+            <div className="hidden sm:block">
+              <span className="font-bold text-lg">Makers Round</span>
+              <span className="text-white/40 text-sm ml-2 hidden md:inline">by Makers World</span>
+            </div>
+          </button>
+
+          {/* Center - Navigation Links */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link, i) => (
+              <button
+                key={i}
+                onClick={() => scrollToSection(link.href)}
+                className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Right - CTA Button */}
+          <Button
+            onClick={handleCTAClick}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">사업계획서 작성</span>
+            <span className="sm:hidden">시작하기</span>
+          </Button>
+        </nav>
+      </header>
+      {/* ===== PRIMARY HERO SECTION - 정부지원금 ===== */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
+        {/* Dynamic Background Effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-full blur-[120px] animate-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-[100px] animate-float-slow" />
+
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+
+          {/* Radial glow from center */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-purple-500/10 via-transparent to-transparent" />
+        </div>
+
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Trust Badge */}
+            <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-10 animate-fade-in border border-emerald-500/30">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-emerald-400 text-sm font-medium">AI 기반 자동화 시스템</span>
+              </div>
+              <span className="text-white/30">|</span>
+              <span className="text-white/60 text-sm">실시간 분석 가능</span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight animate-fade-in-up">
+              정부지원금 합격 사업계획서,
+              <br />
+              <span className="relative">
+                <span className="text-gradient bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">10분이면 충분합니다</span>
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 8C50 2 100 2 150 6C200 10 250 8 298 4" stroke="url(#underline-gradient)" strokeWidth="3" strokeLinecap="round" />
+                  <defs>
+                    <linearGradient id="underline-gradient" x1="0" y1="0" x2="300" y2="0">
+                      <stop offset="0%" stopColor="#34d399" />
+                      <stop offset="50%" stopColor="#22d3ee" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+            </h1>
+
+            {/* Subheadlines */}
+            <div className="space-y-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <p className="text-xl md:text-2xl text-white/80 flex items-center justify-center gap-3">
+                <Cpu className="w-6 h-6 text-cyan-400" />
+                <span><strong className="text-white">AI Multi-Agent</strong>가 심사위원 관점의 완벽한 초안을 제공합니다.</span>
+              </p>
+              <p className="text-lg md:text-xl text-white/60 flex items-center justify-center gap-2">
+                <BadgeCheck className="w-5 h-5 text-emerald-400" />
+                <span>예비창업패키지 · 초기창업패키지 · 정책자금지원 모두 대응</span>
+              </p>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+              <Button
+                size="lg"
+                onClick={handleCTAClick}
+                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-12 py-6 text-xl font-bold shadow-2xl shadow-emerald-500/25 border-0 group"
+              >
+                지금 바로 시작하기
+                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <button
+                onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="flex items-center gap-2 text-white/60 hover:text-white transition-colors px-6 py-3"
+              >
+                <span>AI 심사위원회 알아보기</span>
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Key Benefits */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.7s' }}>
+              {[
+                { icon: Clock, title: '10분 완성', desc: '답변만 입력하면 AI가 전문 사업계획서 자동 생성', color: 'emerald' },
+                { icon: Target, title: '합격률 극대화', desc: 'M.A.K.E.R.S 6가지 심사기준 사전 검증', color: 'cyan' },
+                { icon: FileText, title: '즉시 다운로드', desc: 'HWP/PDF 형식으로 바로 제출 가능', color: 'blue' },
+              ].map((item, i) => (
+                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift border border-${item.color}-500/20`}>
+                  <div className={`w-12 h-12 rounded-xl bg-${item.color}-500/20 flex items-center justify-center mb-4 mx-auto`}>
+                    <item.icon className={`w-6 h-6 text-${item.color}-400`} />
+                  </div>
+                  <h3 className="text-lg font-bold mb-2">{item.title}</h3>
+                  <p className="text-sm text-white/60">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+              <div className="w-8 h-12 rounded-full border-2 border-white/20 flex items-start justify-center p-2">
+                <div className="w-1.5 h-3 bg-white/40 rounded-full animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
+      <section id="problem-section" className="py-24 relative scroll-mt-20 overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-emerald-950/10 to-slate-950" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
+              <MessageSquare className="w-4 h-4" /> 실제 사용자 리뷰
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Makers Round 서비스 <span className="text-gradient">사용자 리얼 후기</span>
+            </h2>
+            <p className="text-white/60 text-lg">좌우로 드래그하여 더 많은 후기를 확인하세요</p>
+          </div>
+
+          {/* Testimonial Groups */}
+          {[
+            {
+              group: 'Group 1',
+              title: '예비창업패키지 & 정부지원사업 지원자',
+              persona: '김예비 유형',
+              color: 'emerald',
+              reviews: [
+                { name: '이*우', role: '예비창업패키지 준비 / IT 플랫폼', content: '마감 3일 남기고 멘붕이었는데, \'Basic 기능\'으로 10분 만에 HWP 초안 뽑고 소름 돋았습니다. 줄 간격, 폰트 깨짐 없이 공공기관 양식 그대로 나오네요. 덕분에 내용 다듬는 데만 집중해서 마감 1시간 전에 여유 있게 제출했습니다.' },
+                { name: '박*현', role: '청년창업사관학교 지원 / 제조 스타트업', content: '솔직히 처음엔 짜증 났습니다. \'Pro 기능\' 쓰는데 점수가 72점이라며 계속 반려당했거든요. 근데 AI가 지적해 준 \'경쟁사 대비 차별점\'을 고치고 나니 비로소 글이 논리적으로 변하더군요. 결국 합격했습니다. 그 깐깐함이 신의 한 수였어요.' },
+                { name: '최*진', role: '초기창업패키지 / 에듀테크', content: 'Social Value 위원이 \'ESG 및 일자리 창출 효과\'를 구체적인 숫자로 제안해 줘서 놀랐습니다. 교육 사업이라 막연하게만 썼던 가치를 정량화하니 심사위원들이 보는 눈이 달라지는 게 느껴졌습니다.' },
+                { name: '김*수', role: '로컬 크리에이터 지원 / 관광업', content: '시장 분석이 제일 어려웠는데, Marketability 위원이 최신 관광 트렌드 통계를 긁어와서 근거로 넣어주니 신뢰도가 확 올라갔습니다. 혼자 구글링할 땐 안 나오던 자료들이라 너무 유용했습니다.' },
+                { name: '정*영', role: '예비 창업자 / 생활 소비재', content: '컨설팅 업체에 300만 원 부르는 거 보고 포기했다가 메이커스 라운드를 썼습니다. 비용은 1/10도 안 되는데 퀄리티는 훨씬 낫네요. 특히 \'실현 가능성\' 파트에서 구체적인 마일스톤 잡아주는 게 진짜 전문가 같았습니다.' },
+                { name: '오*민', role: 'R&D 과제 기획 / 헬스케어', content: '기술은 자신 있는데 사업계획서로 푸는 게 고역이었습니다. Key Technology 위원이 제 기술 용어를 심사위원이 이해하기 쉬운 비즈니스 언어로 번역해 줘서, 기술성 평가에서 만점을 받았습니다.' },
+                { name: '강*호', role: '재도전성공패키지 / 모빌리티', content: '지난번 탈락 이유를 몰랐는데, 이번에 시뮬레이션 돌려보고 알았습니다. 제가 \'자금 조달 계획\'이 너무 부실했더군요. Economics 위원이 지적해 준 대로 수정해서 이번엔 서류 통과했습니다.' },
+              ]
+            },
+            {
+              group: 'Group 2',
+              title: '기술 검증 & 피벗이 필요한 재창업가',
+              persona: '최민혁 유형',
+              color: 'blue',
+              reviews: [
+                { name: '황*석', role: 'AI 솔루션 개발 / CTO 출신', content: '개발자라 그런지 \'감\'으로 사업하는 걸 싫어합니다. 여기는 6개 에이전트가 각기 다른 관점으로 데이터를 들이대며 팩폭을 날려줍니다. 뼈는 좀 아팠지만, 덕분에 개발 착수 전에 타겟 시장을 B2C에서 B2B로 바꿀 수 있었습니다.' },
+                { name: '윤*재', role: '블록체인 스타트업 / 연쇄창업가', content: '과거엔 팀원들끼리 \'이거 될 거야\'라며 희망 회로만 돌렸는데, Makers Round는 냉정하더군요. \'Ability 위원\'이 팀 내 마케팅 역량 부족을 지적해 줘서, 급하게 그로스 마케터를 영입하는 계기가 됐습니다.' },
+                { name: '서*준', role: '핀테크 / 백엔드 개발자', content: '기술적 우위만 강조하던 제 IR 자료가 쓰레기였다는 걸 깨달았습니다. \'고객이 왜 돈을 내야 하는가\'에 대한 질문을 끊임없이 던지는 피드백 루프 덕분에 진짜 PMF를 고민하게 되었습니다.' },
+                { name: '임*호', role: '하드웨어 스타트업 / 엔지니어', content: '특허만 믿고 있었는데, Key Technology 위원이 \'특허 회피 가능성\'에 대한 리스크를 짚어줬을 때 소름 돋았습니다. 덕분에 방어 논리를 미리 준비해서 투자자 미팅 때 잘 넘어갔습니다.' },
+                { name: '권*우', role: 'SaaS 서비스 / 3년 차 개발', content: '프리미엄 컨설팅 연계해서 SaaS 전문가분께 조언받았습니다. AI가 잡아준 논리 구조 위에 실제 업계의 KPI(Churn rate 등) 관리 노하우가 더해지니 완벽해지더군요.' },
+              ]
+            },
+            {
+              group: 'Group 3',
+              title: '소상공인 & 자영업자',
+              persona: '박사장 유형',
+              color: 'amber',
+              reviews: [
+                { name: '이*숙', role: '카페 운영 5년 차 / 대출 심사용', content: '숫자만 보면 머리가 하얘지는 사람입니다. 은행에서 사업계획서 가져오라길래 막막했는데, 매출이랑 지출 대충 입력하니까 Economics 위원이 알아서 3년 치 추정 손익 계산서를 만들어주네요. 은행 직원이 누가 도와줬냐고 물어봤어요.' },
+                { name: '김*철', role: '요식업 프랜차이즈 준비 / 가맹점주 모집', content: '컴퓨터 잘 못 다루는데 사용법이 카톡만큼 쉬워요. 질문하는 대로 대답만 했더니 그럴싸한 사업 소개서가 뚝딱 나왔습니다. 덕분에 가맹점주 미팅 때 태블릿으로 보여주면서 자신감 있게 설명했습니다.' },
+                { name: '박*미', role: '의류 쇼핑몰 / 정책 자금 신청', content: '소상공인 대출받으려는데 \'경쟁력\' 쓰라는 칸에서 막혔어요. 그냥 \'옷이 예쁘다\'라고 썼는데, AI가 \'트렌드 기반의 큐레이션 역량\'이라고 고급스럽게 바꿔주더라고요.' },
+                { name: '조*환', role: '밀키트 제조 / 판로 개척', content: '식당 장사만 하다가 유통하려니 막막했는데, Marketability 위원이 타겟 고객을 \'30대 맞벌이 부부\'로 좁혀주고 시장 규모까지 잡아줘서 방향 잡기가 훨씬 수월했습니다.' },
+              ]
+            },
+            {
+              group: 'Group 4',
+              title: '투자 유치(IR) 준비 CEO',
+              persona: '한서윤 유형',
+              color: 'purple',
+              reviews: [
+                { name: '장*희', role: '플랫폼 스타트업 / Seed 라운드', content: 'VC들이 항상 묻는 TAM-SAM-SOM 그리는 법을 여기서 제대로 배웠습니다. 예전엔 그냥 큰 숫자만 적었는데, AI가 논리적인 산출 근거를 잡아주니 투자자가 고개를 끄덕이더군요.' },
+                { name: '배*성', role: '바이오 벤처 / Pre-A 준비', content: 'IR Deck 만들 때마다 스토리가 꼬였는데, Makers Round가 잡아준 목차 흐름대로 가니까 기승전결이 딱 떨어집니다. 심사위원들이 \'준비 많이 했네\'라고 하더군요.' },
+                { name: '유*나', role: '푸드테크 / 엑셀러레이팅', content: 'Realization 위원이 지적한 \'초기 진입 장벽\'에 대한 대비책을 미리 세워둔 덕분에, 데모데이 Q&A 시간 때 공격적인 질문을 아주 여유 있게 방어했습니다.' },
+                { name: '송*민', role: '커머스 솔루션 / 팁스(TIPS) 준비', content: '팁스 운영사 미팅 전에 모의고사는 필수입니다. AI가 예상했던 질문이 실제 미팅에서 80% 이상 나왔습니다. 미리 답변을 준비해 가서 당황하지 않았어요.' },
+                { name: '한*석', role: '에듀테크 / 엔젤 투자 유치', content: '혼자 상상했던 \'장밋빛 매출 계획\'을 Economics 위원이 \'현실적인 성장률\'로 조정해 줬습니다. 처음엔 실망했지만, 오히려 그 현실적인 숫자가 투자자들에겐 더 신뢰를 줬습니다.' },
+              ]
+            },
+          ].map((group, groupIndex) => (
+            <div key={groupIndex} className="mb-12">
+              {/* Group Header */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className={`px-3 py-1 rounded-full bg-${group.color}-500/20 text-${group.color}-400 text-xs font-bold`}>
+                  📌 {group.group}
+                </span>
+                <h3 className="text-xl font-bold">{group.title}</h3>
+                <span className="text-white/40 text-sm">({group.persona})</span>
+              </div>
+
+              {/* Draggable Carousel */}
+              <div
+                className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide cursor-grab active:cursor-grabbing scroll-smooth select-none"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+                onMouseDown={(e) => {
+                  const container = e.currentTarget;
+                  container.dataset.isDown = 'true';
+                  container.dataset.startX = String(e.pageX - container.offsetLeft);
+                  container.dataset.scrollLeft = String(container.scrollLeft);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.dataset.isDown = 'false';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.dataset.isDown = 'false';
+                }}
+                onMouseMove={(e) => {
+                  const container = e.currentTarget;
+                  if (container.dataset.isDown !== 'true') return;
+                  e.preventDefault();
+                  const x = e.pageX - container.offsetLeft;
+                  const walk = (x - Number(container.dataset.startX)) * 2;
+                  container.scrollLeft = Number(container.dataset.scrollLeft) - walk;
+                }}
+              >
+                {group.reviews.map((review, reviewIndex) => (
+                  <div
+                    key={reviewIndex}
+                    className={`flex-shrink-0 w-[340px] glass-card rounded-2xl p-6 border border-${group.color}-500/20 hover:border-${group.color}-500/40 transition-all`}
+                  >
+                    {/* Stars */}
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, j) => (
+                        <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+
+                    {/* Content */}
+                    <p className="text-sm text-white/80 leading-relaxed mb-5 line-clamp-5">
+                      "{review.content}"
+                    </p>
+
+                    {/* Author */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+                      <div className={`w-10 h-10 rounded-full bg-${group.color}-500/20 flex items-center justify-center`}>
+                        <User className="w-5 h-5 text-white/60" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{review.name}</div>
+                        <div className="text-xs text-white/50">{review.role}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {/* Scroll hint */}
+          <div className="flex justify-center mt-8">
+            <div className="flex items-center gap-2 text-white/40 text-sm">
+              <ChevronRight className="w-4 h-4 animate-pulse" />
+              <span>좌우로 드래그하여 더 많은 후기 보기</span>
+              <ChevronRight className="w-4 h-4 animate-pulse rotate-180" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== M.A.K.E.R.S HERO SECTION ===== */}
+      <section id="makers-section" className="relative min-h-screen flex items-center justify-center gradient-mesh overflow-hidden scroll-mt-20">
         {/* Floating Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-float" />
@@ -127,39 +459,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ===== PROBLEM SECTION ===== */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-6">
-              <AlertTriangle className="w-4 h-4" /> 창업의 현실
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              왜 <span className="text-red-400">42%</span>의 창업이 실패할까요?
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: Brain, title: '범용 AI의 한계', desc: 'ChatGPT 등 범용 LLM의 환각 현상과 비즈니스 도메인 전문성 부족', stat: '환각률 40%+' },
-              { icon: Building2, title: '고비용 컨설팅 장벽', desc: '200~500만원의 컨설팅 비용은 초기 창업자에게 부담', stat: '평균 300만원' },
-              { icon: Target, title: '솔루션의 부재', desc: '단발성 교육만 있고 지속적인 밀착형 가이드가 없음', stat: '피드백 부재' },
-            ].map((p, i) => (
-              <div key={i} className="glass-card rounded-2xl p-6 hover-lift hover-border">
-                <div className="w-14 h-14 rounded-xl bg-red-500/20 flex items-center justify-center mb-4">
-                  <p.icon className="w-7 h-7 text-red-400" />
-                </div>
-                <span className="text-xs font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">{p.stat}</span>
-                <h3 className="text-xl font-bold mt-3 mb-2">{p.title}</h3>
-                <p className="text-white/60">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ===== M.A.K.E.R.S COMMITTEE SECTION ===== */}
-      <section className="py-24 relative overflow-hidden">
+      <section id="makers-committee" className="py-24 relative overflow-hidden scroll-mt-20">
         <div className="absolute inset-0 gradient-radial" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -201,8 +502,108 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* ===== BUSINESS CATEGORY SUPPORT SECTION ===== */}
+      <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-20">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm mb-6">
+              <Briefcase className="w-4 h-4" /> 사업분야 맞춤지원
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              어떤 창업이든, <span className="text-gradient">완벽하게 지원</span>합니다
+            </h2>
+            <p className="text-xl text-white/60 max-w-2xl mx-auto">
+              예비창업자부터 초기창업자까지, 모든 단계에 최적화된 솔루션
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                icon: Globe,
+                title: '온라인 창업',
+                desc: '온라인 쇼핑몰, 디지털 서비스 등 온라인 기반 창업 지원',
+                tags: ['스마트스토어', 'SaaS'],
+                color: 'blue',
+                gradient: 'from-blue-500 to-cyan-500'
+              },
+              {
+                icon: User,
+                title: '1인 소자본 창업',
+                desc: '최소 비용으로 시작하는 1인 창업 최적화 솔루션',
+                tags: ['프리랜서', '크리에이터'],
+                color: 'emerald',
+                gradient: 'from-emerald-500 to-teal-500'
+              },
+              {
+                icon: Building2,
+                title: '프랜차이즈 사업',
+                desc: '프랜차이즈 사업계획서 전문 양식 지원',
+                tags: ['가맹점', '본사'],
+                color: 'amber',
+                gradient: 'from-amber-500 to-orange-500'
+              },
+              {
+                icon: Cpu,
+                title: 'AI 분야 창업',
+                desc: 'AI 스타트업 특화 사업계획서 및 트렌드 분석',
+                tags: ['LLM', 'AI 에이전트'],
+                color: 'purple',
+                gradient: 'from-purple-500 to-pink-500'
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="glass-card rounded-2xl p-6 hover-lift border border-white/10 hover:border-white/20 transition-all group"
+              >
+                {/* Icon with gradient background */}
+                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <item.icon className="w-7 h-7 text-white" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+
+                {/* Description */}
+                <p className="text-white/60 text-sm mb-4 leading-relaxed">{item.desc}</p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {item.tags.map((tag, j) => (
+                    <span
+                      key={j}
+                      className={`text-xs px-3 py-1.5 rounded-full bg-${item.color}-500/10 text-${item.color}-400 border border-${item.color}-500/20`}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="text-center mt-12">
+            <p className="text-white/50 text-sm mb-4">그 외 모든 업종 지원 가능</p>
+            <Button
+              onClick={handleCTAClick}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
+            >
+              내 사업에 맞는 계획서 작성하기
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== PRICING SECTION ===== */}
-      <section className="py-24 relative">
+      <section id="pricing-section" className="py-24 relative scroll-mt-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
@@ -241,8 +642,153 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* ===== STEP-BY-STEP SOLUTION SECTION ===== */}
+      <section id="solution-steps" className="py-24 relative overflow-hidden scroll-mt-20">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm mb-6">
+              <Users className="w-4 h-4" /> 단계별 솔루션
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              혹시 이런 상황이신가요?
+            </h2>
+            <p className="text-xl text-white/60 max-w-2xl mx-auto">
+              Makers World는 다양한 단계의 고민을 해결합니다
+            </p>
+          </div>
+
+          {/* Persona Cards */}
+          {/* Persona Cards - 2x2 Grid */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                tier: '기본',
+                tierDesc: '빠른 초안 작성으로 사업 본질에 집중',
+                name: '김예비',
+                role: '예비창업패키지 지원자',
+                avatar: '👨‍💼',
+                problem: '마감이 일주일 남았는데, 시장 분석과 재무 추정 항목을 어떻게 채워야 할지 막막합니다.',
+                emotion: '불안, 초조, 막막함',
+                goal: '5천만 원 지원금을 위한 전문가 수준 사업계획서 완성',
+                color: 'slate',
+                gradient: 'from-slate-500 to-zinc-600',
+                borderColor: 'border-slate-500/30'
+              },
+              {
+                tier: '플러스',
+                tierDesc: '심사위원회 평가 추천',
+                name: '최민혁',
+                role: '재창업가 (CTO 출신)',
+                avatar: '🧑‍💻',
+                problem: '첫 창업 때 시장 수요 없음으로 실패. 기술력만 믿고 2년간 개발했는데 아무도 원하지 않았습니다.',
+                emotion: '신중함, 분석적',
+                goal: '코드 한 줄 짜기 전, 데이터로 철저히 검증하고 PMF 찾기',
+                color: 'blue',
+                gradient: 'from-blue-500 to-indigo-600',
+                borderColor: 'border-blue-500/30'
+              },
+              {
+                tier: '프로',
+                tierDesc: '사업 위기를 극복할 인사이트 확보',
+                name: '박사장',
+                role: '2년 차 소상공인 (카페)',
+                avatar: '☕',
+                problem: '매출 정체로 3천만 원 대출이 필요한데, 은행에서 상권 분석과 추정 손익이 포함된 사업계획서를 요구합니다.',
+                emotion: '답답함, 숫자 울렁증',
+                goal: '은행 대출 심사 통과하여 운영 자금 확보',
+                color: 'purple',
+                gradient: 'from-purple-500 to-violet-600',
+                borderColor: 'border-purple-500/30'
+              },
+              {
+                tier: '프리미엄',
+                tierDesc: '투자유치를 위한 수준높은 사업 컨설팅',
+                name: '한서윤',
+                role: '투자 유치 준비 CEO',
+                avatar: '👩‍💼',
+                problem: 'IR Deck 초안은 만들었지만, VC가 신뢰할 TAM-SAM-SOM 시장 규모와 근거가 부족합니다.',
+                emotion: '야심 참, 압박감',
+                goal: '5억 원 투자 유치를 위한 방어 가능한 IR Deck 완성',
+                color: 'amber',
+                gradient: 'from-amber-500 to-orange-600',
+                borderColor: 'border-amber-500/30'
+              },
+            ].map((persona, i) => (
+              <div
+                key={i}
+                className={`glass-card rounded-2xl p-6 hover-lift border ${persona.borderColor} transition-all group relative overflow-hidden`}
+              >
+                {/* Tier Badge */}
+                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r ${persona.gradient} text-xs font-bold text-white shadow-lg`}>
+                  {persona.tier}
+                </div>
+
+                {/* Tier Description */}
+                <div className="mb-5">
+                  <span className={`text-xs text-${persona.color}-400 font-medium`}>{persona.tierDesc}</span>
+                </div>
+
+                {/* Avatar & Info */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="text-4xl">{persona.avatar}</div>
+                  <div>
+                    <h3 className="text-lg font-bold">{persona.name}</h3>
+                    <p className="text-sm text-white/60">{persona.role}</p>
+                  </div>
+                </div>
+
+                {/* Problem */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="w-4 h-4 text-red-400" />
+                    <span className="text-xs font-semibold text-red-400">겪고 있는 문제</span>
+                  </div>
+                  <p className="text-sm text-white/80 leading-relaxed">"{persona.problem}"</p>
+                </div>
+
+                {/* Emotion */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-pink-400" />
+                    <span className="text-xs text-white/50">감정: {persona.emotion}</span>
+                  </div>
+                </div>
+
+                {/* Goal */}
+                <div className={`p-4 rounded-xl bg-${persona.color}-500/10 border border-${persona.color}-500/20`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="w-4 h-4 text-emerald-400" />
+                    <span className="text-xs font-semibold text-emerald-400">이루고 싶은 목표</span>
+                  </div>
+                  <p className="text-sm text-white/90 font-medium">{persona.goal}</p>
+                </div>
+
+                {/* CTA */}
+                <button
+                  onClick={handleCTAClick}
+                  className={`w-full mt-5 py-3 rounded-xl bg-gradient-to-r ${persona.gradient} text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2`}
+                >
+                  {persona.tier} 요금제로 시작하기
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom message */}
+          <div className="text-center mt-12">
+            <p className="text-white/50">
+              어떤 요금제가 맞는지 모르겠다면, <button onClick={handleCTAClick} className="text-purple-400 hover:text-purple-300 underline underline-offset-4">무료로 시작</button>해보세요
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-24 relative">
+      <section id="testimonials-section" className="py-24 relative scroll-mt-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">고객 후기</h2>
