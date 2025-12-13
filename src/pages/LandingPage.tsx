@@ -88,12 +88,12 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
       {/* ===== FIXED HEADER NAVIGATION ===== */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
           ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
           : 'bg-transparent'
           }`}
       >
-        <nav className="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <nav className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
           {/* Left - Logo */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -149,6 +149,15 @@ export const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
+            {/* Concept Art Image */}
+            <div className="flex justify-center mb-3 animate-fade-in">
+              <img
+                src="/src/assets/0_MakersRound-logo-transparent.png"
+                alt="Makers Round Concept Art"
+                className="w-[60vw] md:w-[45vw] lg:w-[35vw] max-h-[450px] h-auto object-contain"
+              />
+            </div>
+
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-10 animate-fade-in border border-emerald-500/30">
               <div className="flex items-center gap-1">
@@ -475,6 +484,22 @@ export const LandingPage: React.FC = () => {
             </p>
           </div>
 
+          {/* Promo Video */}
+          <div className="flex justify-center mb-16">
+            <div className="w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-white/10">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto"
+              >
+                <source src="/src/assets/AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4" type="video/mp4" />
+                브라우저가 비디오 태그를 지원하지 않습니다.
+              </video>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {makersCommittee.map((m, i) => (
               <div
@@ -787,26 +812,93 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ===== TESTIMONIALS ===== */}
-      <section id="testimonials-section" className="py-24 relative scroll-mt-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">고객 후기</h2>
+      {/* ===== MAKERS WORLD INTRODUCTION ===== */}
+      <section id="testimonials-section" className="py-24 relative overflow-hidden scroll-mt-20">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-[80px]" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Logo & Title */}
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-8">
+              <img
+                src="/src/assets/2_Makersworld-logo-transparent.png"
+                alt="Makers World Logo"
+                className="w-[60vw] md:w-[40vw] lg:w-[30vw] h-auto object-contain"
+              />
+            </div>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6">
+              <Globe className="w-4 h-4" /> 전방위 창업자 지원 서비스
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              당신의 창업 여정을 함께합니다
+            </h2>
+            <p className="text-xl text-white/60 max-w-3xl mx-auto">
+              Makers World는 창업의 시작부터 성장까지,<br className="hidden md:block" />
+              모든 단계에서 당신의 든든한 파트너가 됩니다.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {testimonials.map((t, i) => (
-              <div key={i} className="glass-card rounded-2xl p-6 hover-lift">
-                <div className="flex gap-1 mb-4">{[...Array(t.rating)].map((_, j) => <Star key={j} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}</div>
-                <p className="text-white/80 mb-6">"{t.content}"</p>
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{t.avatar}</span>
-                  <div>
-                    <div className="font-bold">{t.name}</div>
-                    <div className="text-sm text-white/60">{t.role}</div>
-                  </div>
+
+          {/* Main Video */}
+          <div className="flex justify-center mb-16">
+            <div className="w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/20 border border-white/10">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto"
+              >
+                <source src="/src/assets/1_251204_메이커스월드_소개영상.mp4" type="video/mp4" />
+                브라우저가 비디오 태그를 지원하지 않습니다.
+              </video>
+            </div>
+          </div>
+
+          {/* Core Values */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                icon: Rocket,
+                title: '창업 시작',
+                desc: '아이디어 구체화부터 사업계획서 작성까지, 창업의 첫 걸음을 안내합니다.',
+                color: 'from-blue-500 to-cyan-500',
+              },
+              {
+                icon: Target,
+                title: '자금 확보',
+                desc: '정부지원금, 투자유치, 대출 등 다양한 자금 조달 경로를 지원합니다.',
+                color: 'from-purple-500 to-pink-500',
+              },
+              {
+                icon: TrendingUp,
+                title: '성장 가속',
+                desc: '시장 분석, 마케팅 전략, 사업 확장까지 지속적인 성장을 돕습니다.',
+                color: 'from-emerald-500 to-teal-500',
+              },
+            ].map((item, i) => (
+              <div key={i} className="glass-card rounded-2xl p-8 text-center hover-lift border border-white/10 group">
+                <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <item.icon className="w-8 h-8 text-white" />
                 </div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-white/60 leading-relaxed">{item.desc}</p>
               </div>
             ))}
+          </div>
+
+          {/* Tagline */}
+          <div className="text-center mt-16">
+            <p className="text-2xl md:text-3xl font-bold text-gradient bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              "세상의 모든 Maker를 위한 World"
+            </p>
+            <p className="text-white/50 mt-4">
+              Makers World와 함께라면, 당신의 아이디어가 현실이 됩니다.
+            </p>
           </div>
         </div>
       </section>
