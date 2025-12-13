@@ -52,12 +52,12 @@ import { debounce } from '../lib/utils';
  */
 export const useAutoSave = (data: any, delay: number = 1000) => {
   const { setSaveStatus } = useProjectStore();
-  const previousDataRef = useRef<string>();
+  const previousDataRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     // 현재 데이터를 JSON 문자열로 변환하여 비교
     const currentData = JSON.stringify(data);
-    
+
     // 데이터가 변경되지 않았으면 저장하지 않음
     if (previousDataRef.current === currentData) {
       return;
@@ -70,11 +70,11 @@ export const useAutoSave = (data: any, delay: number = 1000) => {
     setSaveStatus('saving');
 
     // Debounce를 적용한 저장 시뮬레이션
-    const debouncedSave = debounce(() => {
+    const debouncedSave = debounce<() => void>(() => {
       // 저장 시뮬레이션 (실제로는 API 호출)
       setTimeout(() => {
         setSaveStatus('saved');
-        
+
         // 2초 후 idle 상태로 복귀
         setTimeout(() => {
           setSaveStatus('idle');
