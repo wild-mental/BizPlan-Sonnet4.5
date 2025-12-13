@@ -10,8 +10,17 @@ import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
   Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare, Crown,
-  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu, BadgeCheck
+  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu, BadgeCheck,
+  Volume2, VolumeX
 } from 'lucide-react';
+
+// BGM 트랙 목록
+const bgmTracks = [
+  '/assets/bgm1_StepForSuccess_A.mp3',
+  '/assets/bgm2_StepForSuccess_B.mp3',
+  '/assets/bgm3_BizStartPath_A.mp3',
+  '/assets/bgm4_BizStartPath_B.mp3',
+];
 
 // M.A.K.E.R.S 위원회 데이터
 const makersCommittee = [
@@ -225,6 +234,85 @@ export const LandingPage: React.FC = () => {
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // BGM 상태 관리
+  const [isBgmPlaying, setIsBgmPlaying] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // BGM 초기화
+  useEffect(() => {
+    // Audio 객체 생성
+    const audio = new Audio();
+    audio.volume = 0.3;
+    audio.preload = 'auto';
+    audioRef.current = audio;
+
+    // 트랙 종료 시 다음 트랙으로 자동 전환
+    const handleTrackEnd = () => {
+      setCurrentTrackIndex((prev) => {
+        const nextIndex = (prev + 1) % bgmTracks.length;
+        return nextIndex;
+      });
+    };
+
+    audio.addEventListener('ended', handleTrackEnd);
+
+    // 컨포넌트 언마운트 시 정리
+    return () => {
+      audio.pause();
+      audio.removeEventListener('ended', handleTrackEnd);
+      audioRef.current = null;
+    };
+  }, []);
+
+  // 트랙 변경 시 새 트랙 로드 및 재생 (재생 중일 때만)
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !isBgmPlaying) return;
+
+    // 새 트랙 로드 및 재생
+    audio.src = bgmTracks[currentTrackIndex];
+    audio.load();
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.warn('BGM 재생 실패:', error.message);
+      });
+    }
+  }, [currentTrackIndex, isBgmPlaying]);
+
+  // BGM 토글 함수
+  const toggleBgm = () => {
+    const audio = audioRef.current;
+    if (!audio) {
+      console.warn('Audio 객체가 초기화되지 않았습니다.');
+      return;
+    }
+
+    if (isBgmPlaying) {
+      // 재생 중이면 일시정지
+      audio.pause();
+      setIsBgmPlaying(false);
+    } else {
+      // 재생 시작
+      audio.src = bgmTracks[currentTrackIndex];
+      audio.load();
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsBgmPlaying(true);
+          })
+          .catch((error) => {
+            console.warn('BGM 재생 실패:', error.message);
+            // 사용자 상호작용 필요 시 상태 변경하지 않음
+          });
+      }
+    }
+  };
+
   // 스크롤 감지
   React.useEffect(() => {
     const handleScroll = () => {
@@ -280,15 +368,40 @@ export const LandingPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Right - CTA Button */}
-          <Button
-            onClick={handleCTAClick}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">사업계획서 작성</span>
-            <span className="sm:hidden">시작하기</span>
-          </Button>
+          {/* Right - BGM Toggle + CTA Button */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* BGM Toggle Button */}
+            <button
+              onClick={toggleBgm}
+              className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${isBgmPlaying
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30'
+                : 'bg-white/10 hover:bg-white/20'
+                }`}
+              title={isBgmPlaying ? 'BGM 끄기' : 'BGM 켜기'}
+            >
+              {isBgmPlaying ? (
+                <Volume2 className="w-5 h-5 text-white" />
+              ) : (
+                <VolumeX className="w-5 h-5 text-white/70" />
+              )}
+              {isBgmPlaying && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+              )}
+            </button>
+
+            {/* CTA Button */}
+            <Button
+              onClick={handleCTAClick}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">사업계획서 작성</span>
+              <span className="sm:hidden">시작하기</span>
+            </Button>
+          </div>
         </nav>
       </header>
       {/* ===== PRIMARY HERO SECTION - 정부지원금 ===== */}
