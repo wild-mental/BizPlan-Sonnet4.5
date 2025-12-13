@@ -311,7 +311,7 @@ export const LandingPage: React.FC = () => {
             {/* Concept Art Image */}
             <div className="flex justify-center mb-3 animate-fade-in">
               <img
-                src="/src/assets/0_MakersRound-logo-transparent.png"
+                src="/assets/0_MakersRound-logo-transparent.png"
                 alt="Makers Round Concept Art"
                 className="w-[60vw] md:w-[45vw] lg:w-[35vw] max-h-[450px] h-auto object-contain"
               />
@@ -606,7 +606,7 @@ export const LandingPage: React.FC = () => {
                   playsInline
                   className="w-full h-auto"
                 >
-                  <source src="/src/assets/AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4" type="video/mp4" />
+                  <source src="/assets/AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4" type="video/mp4" />
                   브라우저가 비디오 태그를 지원하지 않습니다.
                 </video>
               </div>
@@ -970,7 +970,7 @@ export const LandingPage: React.FC = () => {
             {/* Left Column - Logo */}
             <div className="flex flex-col items-center justify-center">
               <img
-                src="/src/assets/2_Makersworld-logo-neon.png"
+                src="/assets/2_Makersworld-logo-neon.png"
                 alt="Makers World Logo"
                 className="h-48 md:h-64 lg:h-72 w-auto object-contain"
               />
@@ -986,7 +986,7 @@ export const LandingPage: React.FC = () => {
                   playsInline
                   className="w-full h-auto"
                 >
-                  <source src="/src/assets/1_251204_메이커스월드_소개영상.mp4" type="video/mp4" />
+                  <source src="/assets/1_251204_메이커스월드_소개영상.mp4" type="video/mp4" />
                   브라우저가 비디오 태그를 지원하지 않습니다.
                 </video>
               </div>
