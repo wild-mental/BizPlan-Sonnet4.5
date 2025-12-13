@@ -10,8 +10,17 @@ import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
   Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare, Crown,
-  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu, BadgeCheck
+  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu, BadgeCheck,
+  Volume2, VolumeX
 } from 'lucide-react';
+
+// BGM 트랙 목록
+const bgmTracks = [
+  '/assets/bgm1_StepForSuccess_A.mp3',
+  '/assets/bgm2_StepForSuccess_B.mp3',
+  '/assets/bgm3_BizStartPath_A.mp3',
+  '/assets/bgm4_BizStartPath_B.mp3',
+];
 
 // M.A.K.E.R.S 위원회 데이터
 const makersCommittee = [
@@ -225,6 +234,165 @@ export const LandingPage: React.FC = () => {
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // AI 심사위원단 Flip 상태
+  const [isMakersFlipped, setIsMakersFlipped] = useState(false);
+  const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
+
+  // AI 심사위원 상세 데이터
+  const makersDetailData = [
+    {
+      letter: 'M',
+      name: 'Marketability',
+      korean: '시장성 전문 AI',
+      color: 'from-purple-500 to-violet-600',
+      trainingData: '2.3M+',
+      trainingDesc: '시장 분석 보고서, 산업 리서치, VC 투자 데이터',
+      accuracy: '96.2%',
+      benchmarks: ['TAM/SAM/SOM 산출', '경쟁사 분석', '타깃 고객 세분화'],
+      specialFeature: '최신 프론티어 AI 3종 전이학습',
+      validationScore: '92.8',
+      description: '국내외 120만 건의 시장 리서치 데이터로 학습된 AI가 실시간으로 시장 규모, 성장률, 경쟁 구도를 분석합니다. 정부지원사업 심사위원 출신 전문가 30여 명의 피드백으로 미세 튜닝되었습니다.'
+    },
+    {
+      letter: 'A',
+      name: 'Ability',
+      korean: '수행능력 전문 AI',
+      color: 'from-blue-500 to-indigo-600',
+      trainingData: '1.8M+',
+      trainingDesc: '창업 팀 분석, HR 데이터, 성공 사례 연구',
+      accuracy: '94.7%',
+      benchmarks: ['팀 역량 평가', '실행 가능성 분석', '인프라 보유 판단'],
+      specialFeature: '연쇄창업자 성공 패턴 학습',
+      validationScore: '91.3',
+      description: '실리콘밸리 스타트업 5만 개사의 팀 구성과 성공/실패 데이터를 학습. 창업자의 백그라운드, 팀 구성, 역할 분담을 분석하여 실행 가능성을 점수화합니다.'
+    },
+    {
+      letter: 'K',
+      name: 'Key Technology',
+      korean: '핵심기술 전문 AI',
+      color: 'from-cyan-500 to-teal-600',
+      trainingData: '3.1M+',
+      trainingDesc: '특허 데이터, 기술 논문, R&D 보고서',
+      accuracy: '97.1%',
+      benchmarks: ['기술 혁신성 평가', '특허 회피 분석', 'IP 보호 전략'],
+      specialFeature: 'KIPRIS 연동 실시간 특허 검색',
+      validationScore: '94.6',
+      description: '국내외 특허 300만 건 및 기술 논문 데이터로 학습. 기술의 혁신성, 진입장벽, 지식재산권 보호 가능성을 종합 평가합니다.'
+    },
+    {
+      letter: 'E',
+      name: 'Economics',
+      korean: '경제성 전문 AI',
+      color: 'from-emerald-500 to-green-600',
+      trainingData: '2.7M+',
+      trainingDesc: '재무제표, 투자 라운드, 손익 분석 데이터',
+      accuracy: '95.8%',
+      benchmarks: ['Unit Economics 검증', 'BEP 분석', 'LTV/CAC 최적화'],
+      specialFeature: '업종별 벤치마크 내장',
+      validationScore: '93.2',
+      description: '국내 스타트업 재무데이터 10만 건 및 상장사 재무제표로 학습. 현실적인 매출 추정, 손익분기점 분석, 자금 조달 계획을 점검합니다.'
+    },
+    {
+      letter: 'R',
+      name: 'Realization',
+      korean: '실현가능성 전문 AI',
+      color: 'from-orange-500 to-amber-600',
+      trainingData: '1.5M+',
+      trainingDesc: '프로젝트 마일스톤, 리스크 관리 사례',
+      accuracy: '93.4%',
+      benchmarks: ['실행 계획 검증', '리스크 요인 분석', '마일스톤 현실성'],
+      specialFeature: 'OKR/KPI 기반 목표 설정 지원',
+      validationScore: '90.7',
+      description: '실제 스타트업 실행 데이터와 프로젝트 관리 사례로 학습. 추진 일정의 현실성, 리스크 관리 방안, 단계별 실행 계획을 평가합니다.'
+    },
+    {
+      letter: 'S',
+      name: 'Social Value',
+      korean: '사회적가치 전문 AI',
+      color: 'from-pink-500 to-rose-600',
+      trainingData: '1.2M+',
+      trainingDesc: 'ESG 보고서, 사회적기업 사례, 정부 정책',
+      accuracy: '92.9%',
+      benchmarks: ['일자리 창출 효과', '지역 균형 발전', 'ESG 적합성'],
+      specialFeature: '정부 정책 방향 실시간 반영',
+      validationScore: '89.5',
+      description: 'ESG 평가, 사회적기업 성공 사례, 정부 정책 문서로 학습. 일자리 창출, 지역사회 기여, 환경 영향 등 사회적 가치를 종합 평가합니다.'
+    }
+  ];
+
+  // BGM 상태 관리
+  const [isBgmPlaying, setIsBgmPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const trackIndexRef = useRef(0);
+
+  // BGM 초기화
+  useEffect(() => {
+    // Audio 객체 생성
+    const audio = new Audio(bgmTracks[0]);
+    audio.volume = 0.3;
+    audioRef.current = audio;
+
+    // 트랙 종료 시 다음 트랙으로 자동 전환
+    const handleTrackEnd = () => {
+      trackIndexRef.current = (trackIndexRef.current + 1) % bgmTracks.length;
+      audio.src = bgmTracks[trackIndexRef.current];
+      audio.play().catch(() => { });
+    };
+
+    audio.addEventListener('ended', handleTrackEnd);
+
+    // 리스너 제거 함수
+    const removeAllListeners = () => {
+      document.removeEventListener('click', handleFirstInteraction, true);
+      document.removeEventListener('touchstart', handleFirstInteraction, true);
+      document.removeEventListener('keydown', handleFirstInteraction, true);
+    };
+
+    // 첫 사용자 상호작용 시 재생 시작
+    const handleFirstInteraction = () => {
+      if (audioRef.current && !isBgmPlaying) {
+        audioRef.current.play()
+          .then(() => {
+            setIsBgmPlaying(true);
+            removeAllListeners();
+          })
+          .catch((e) => {
+            console.log('BGM 재생 대기 중...', e.message);
+          });
+      }
+    };
+
+    // capture: true로 이벤트 캡처 단계에서 리스닝
+    document.addEventListener('click', handleFirstInteraction, true);
+    document.addEventListener('touchstart', handleFirstInteraction, true);
+    document.addEventListener('keydown', handleFirstInteraction, true);
+
+    // 컨포넌트 언마운트 시 정리
+    return () => {
+      audio.pause();
+      audio.removeEventListener('ended', handleTrackEnd);
+      removeAllListeners();
+      audioRef.current = null;
+    };
+  }, []);
+
+  // BGM 토글 함수
+  const toggleBgm = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isBgmPlaying) {
+      audio.pause();
+      setIsBgmPlaying(false);
+    } else {
+      audio.play()
+        .then(() => {
+          setIsBgmPlaying(true);
+        })
+        .catch(() => { });
+    }
+  };
+
   // 스크롤 감지
   React.useEffect(() => {
     const handleScroll = () => {
@@ -261,9 +429,9 @@ export const LandingPage: React.FC = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow">
               <Rocket className="w-5 h-5" />
             </div>
-            <div className="hidden sm:block">
-              <span className="font-bold text-lg">Makers Round</span>
-              <span className="text-white/40 text-sm ml-2 hidden md:inline">by Makers World</span>
+            <div className="hidden sm:flex flex-col">
+              <span className="font-bold text-lg leading-tight">Makers Round</span>
+              <span className="text-white/40 text-xs hidden md:block">by Makers World</span>
             </div>
           </button>
 
@@ -280,15 +448,54 @@ export const LandingPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Right - CTA Button */}
-          <Button
-            onClick={handleCTAClick}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">사업계획서 작성</span>
-            <span className="sm:hidden">시작하기</span>
-          </Button>
+          {/* Right - BGM Toggle + CTA Button */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* BGM Toggle Switch */}
+            <button
+              onClick={toggleBgm}
+              className="relative flex items-center gap-2 group"
+              title={isBgmPlaying ? 'BGM 끄기' : 'BGM 켜기'}
+            >
+              {/* Label */}
+              <span className={`text-xs font-medium transition-colors hidden sm:block ${isBgmPlaying ? 'text-emerald-400' : 'text-white/50'}`}>
+                BGM
+              </span>
+
+              {/* Toggle Track */}
+              <div className={`relative w-14 h-7 rounded-full transition-all duration-300 ${isBgmPlaying
+                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30'
+                : 'bg-white/10 hover:bg-white/15'
+                }`}>
+                {/* Toggle Knob */}
+                <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-300 ${isBgmPlaying ? 'left-8' : 'left-1'
+                  }`}>
+                  {isBgmPlaying ? (
+                    <Volume2 className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <VolumeX className="w-3 h-3 text-slate-400" />
+                  )}
+                </div>
+
+                {/* Playing Indicator */}
+                {isBgmPlaying && (
+                  <div className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* CTA Button */}
+            <Button
+              onClick={handleCTAClick}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">사업계획서 작성</span>
+              <span className="sm:hidden">시작하기</span>
+            </Button>
+          </div>
         </nav>
       </header>
       {/* ===== PRIMARY HERO SECTION - 정부지원금 ===== */}
@@ -321,10 +528,10 @@ export const LandingPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-10 animate-fade-in border border-emerald-500/30">
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-emerald-400 text-sm font-medium">AI 기반 자동화 시스템</span>
+                <span className="text-emerald-400 text-sm font-medium">검증된 최고의 성능과 전문성</span>
               </div>
               <span className="text-white/30">|</span>
-              <span className="text-white/60 text-sm">실시간 분석 가능</span>
+              <span className="text-white/60 text-sm">MAKERS AI 심사위원단</span>
             </div>
 
             {/* Main Headline */}
@@ -505,7 +712,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 ===== */}
+      {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 (Flip 기능) ===== */}
       <section id="makers-section" className="py-24 relative overflow-hidden scroll-mt-16">
         {/* Background Effects */}
         <div className="absolute inset-0 gradient-mesh" />
@@ -515,133 +722,275 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          {/* Section Title */}
-          <div className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm mb-6">
-              <Crown className="w-4 h-4" /> 핵심 차별점
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-gradient">M.A.K.E.R.S</span> AI 심사위원단
-            </h2>
-            {/* Korean Terms Tagline */}
-            <div className="flex flex-wrap justify-center gap-2 mb-4">
-              {['시장성', '실현가능성', '핵심기술', '수익성', '사업화', '사회적가치'].map((term, i) => (
-                <span key={i} className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-white font-medium text-sm">
-                  {term}
+          {/* ===== FRONT SIDE ===== */}
+          {!isMakersFlipped && (
+            <div className="animate-fade-in">
+              {/* Section Title */}
+              <div className="text-center mb-16">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm mb-6">
+                  <Crown className="w-4 h-4" /> 핵심 차별점
                 </span>
-              ))}
-            </div>
-            <p className="text-xl text-white/60 max-w-2xl mx-auto">
-              정부지원사업 평가의 6가지 핵심 영역을 전담하는 AI 심사위원단
-            </p>
-          </div>
-
-          {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
-            {/* Left Column - AI 심사위원단 Hero Content */}
-            <div className="flex flex-col justify-center">
-              {/* Brand Badge */}
-              <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-8 w-fit">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                  <Rocket className="w-4 h-4" />
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                  <span className="text-gradient">M.A.K.E.R.S</span> AI 심사위원단
+                </h2>
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
+                  {['시장성', '실현가능성', '핵심기술', '수익성', '사업화', '사회적가치'].map((term, i) => (
+                    <span key={i} className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-white font-medium text-sm">
+                      {term}
+                    </span>
+                  ))}
                 </div>
-                <span className="font-semibold">Makers Round</span>
-                <span className="text-white/40">|</span>
-                <span className="text-white/60 text-sm">by Makers World</span>
+                <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                  정부지원사업 평가의 6가지 핵심 영역을 전담하는 AI 심사위원단
+                </p>
               </div>
 
-              {/* Headline */}
-              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                정부지원금 합격률을<br />
-                <span className="text-gradient">6명의 AI 심사위원</span>이<br />
-                높여드립니다
-              </h3>
-
-              {/* M.A.K.E.R.S Preview */}
-              <div className="flex gap-2 mb-6">
-                {makersCommittee.map((m, i) => (
-                  <div key={i} className={`w-10 h-10 rounded-xl bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg`}>
-                    {m.letter}
+              {/* Two Column Layout */}
+              <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+                {/* Left Column */}
+                <div className="flex flex-col justify-center">
+                  <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-8 w-fit">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                      <Rocket className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">Makers Round</span>
+                    <span className="text-white/40">|</span>
+                    <span className="text-white/60 text-sm">by Makers World</span>
                   </div>
-                ))}
-              </div>
 
-              <p className="text-lg text-white/70 mb-8">
-                <strong className="text-white">M.A.K.E.R.S AI 심사위원단</strong>이<br />
-                사업계획서의 6가지 핵심 영역을 사전 심사합니다
-              </p>
+                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                    정부지원금 합격률을<br />
+                    <span className="text-gradient">6명의 AI 심사위원</span>이<br />
+                    높여드립니다
+                  </h3>
 
-              {/* CTA */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button size="lg" onClick={handleCTAClick} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-8 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
-                  무료로 AI 심사 받아보기
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { value: '3,500+', label: '사업계획서 심사' },
-                  { value: '94.7%', label: '사용자 만족도' },
-                  { value: '6명', label: 'AI 심사위원' },
-                  { value: '10분', label: '평균 소요시간' },
-                ].map((s, i) => (
-                  <div key={i} className="text-center glass rounded-xl p-3">
-                    <div className="text-xl md:text-2xl font-bold text-gradient">{s.value}</div>
-                    <div className="text-xs text-white/60">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Column - Promo Video + M.A.K.E.R.S Committee Cards */}
-            <div className="flex flex-col gap-6">
-              {/* Promo Video - Top of Right Column */}
-              <div className="rounded-2xl overflow-hidden shadow-xl shadow-purple-500/20 border border-white/10">
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-auto"
-                >
-                  <source src="/assets/AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4" type="video/mp4" />
-                  브라우저가 비디오 태그를 지원하지 않습니다.
-                </video>
-              </div>
-
-              {/* M.A.K.E.R.S Committee Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {makersCommittee.map((m, i) => (
-                  <div
-                    key={i}
-                    className={`glass-card rounded-xl p-4 hover-lift cursor-pointer transition-all ${hoveredMaker === i ? 'border-2 ' + m.borderColor + ' glow-purple' : 'border border-white/10'}`}
-                    onMouseEnter={() => setHoveredMaker(i)}
-                    onMouseLeave={() => setHoveredMaker(null)}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg flex-shrink-0`}>
+                  <div className="flex gap-2 mb-6">
+                    {makersCommittee.map((m, i) => (
+                      <div key={i} className={`w-10 h-10 rounded-xl bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg`}>
                         {m.letter}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold truncate">{m.name}</h4>
-                        <p className="text-white/60 text-xs">{m.korean}</p>
+                    ))}
+                  </div>
+
+                  <p className="text-lg text-white/70 mb-8">
+                    <strong className="text-white">M.A.K.E.R.S AI 심사위원단</strong>이<br />
+                    사업계획서의 6가지 핵심 영역을 사전 심사합니다
+                  </p>
+
+                  {/* CTA Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <Button size="lg" onClick={handleCTAClick} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
+                      무료로 AI 심사 받아보기
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                    <Button
+                      size="lg"
+                      onClick={() => { setIsMakersFlipped(true); setMakersGalleryIndex(0); }}
+                      className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-4 text-lg font-semibold"
+                    >
+                      최고의 전문성 확인하기
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { value: '3,500+', label: '사업계획서 심사' },
+                      { value: '94.7%', label: '사용자 만족도' },
+                      { value: '6명', label: 'AI 심사위원' },
+                      { value: '10분', label: '평균 소요시간' },
+                    ].map((s, i) => (
+                      <div key={i} className="text-center glass rounded-xl p-3">
+                        <div className="text-xl md:text-2xl font-bold text-gradient">{s.value}</div>
+                        <div className="text-xs text-white/60">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="flex flex-col gap-6">
+                  <div className="rounded-2xl overflow-hidden shadow-xl shadow-purple-500/20 border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full h-auto">
+                      <source src="/assets/AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {makersCommittee.map((m, i) => (
+                      <div
+                        key={i}
+                        className={`glass-card rounded-xl p-4 hover-lift cursor-pointer transition-all ${hoveredMaker === i ? 'border-2 ' + m.borderColor + ' glow-purple' : 'border border-white/10'}`}
+                        onMouseEnter={() => setHoveredMaker(i)}
+                        onMouseLeave={() => setHoveredMaker(null)}
+                        onClick={() => { setMakersGalleryIndex(i); setIsMakersFlipped(true); }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg flex-shrink-0`}>
+                            {m.letter}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold truncate">{m.name}</h4>
+                            <p className="text-white/60 text-xs">{m.korean}</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-white/70 line-clamp-2">{m.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== BACK SIDE (Gallery) ===== */}
+          {isMakersFlipped && (
+            <div className="animate-fade-in">
+              {/* Back Header */}
+              <div className="text-center mb-8">
+                <button
+                  onClick={() => setIsMakersFlipped(false)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm mb-6 transition-all"
+                >
+                  <ArrowRight className="w-4 h-4 rotate-180" /> 돌아가기
+                </button>
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">
+                  AI 심사위원 <span className="text-gradient">전문성 상세</span>
+                </h2>
+                <p className="text-white/60">6명의 AI 심사위원이 어떻게 학습되고 검증되었는지 확인하세요</p>
+              </div>
+
+              {/* Gallery Navigation Icons */}
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12 max-w-4xl mx-auto">
+                {makersDetailData.map((agent, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setMakersGalleryIndex(i)}
+                    className={`relative group transition-all duration-100 ${makersGalleryIndex === i ? 'scale-110 z-10' : 'scale-100 hover:scale-110 opacity-60 hover:opacity-100'}`}
+                  >
+                    {/* Icon Background */}
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-100 overflow-hidden
+                        ${makersGalleryIndex === i
+                        ? `bg-gradient-to-br ${agent.color} ring-2 ring-white/50 ring-offset-2 ring-offset-slate-900 shadow-xl`
+                        : 'bg-white/10 border border-white/10'
+                      }`}
+                    >
+                      {/* Letter (Hide on Inactive Hover) */}
+                      <span className={`transition-opacity duration-100 ${makersGalleryIndex !== i ? 'group-hover:opacity-0' : ''}`}>
+                        {agent.letter}
+                      </span>
+
+                      {/* Hover Label (Shown in Center when Inactive & Hovered) */}
+                      {makersGalleryIndex !== i && (
+                        <div className="absolute inset-0 flex items-center justify-center p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100 bg-black/40 backdrop-blur-md">
+                          <span className="text-[10px] font-bold text-white leading-tight break-keep text-center">
+                            {agent.name}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Active Label (Shown Below when Active) */}
+                    <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-max text-center transition-all duration-100
+                        ${makersGalleryIndex === i ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+                    >
+                      <div className="text-xs font-bold text-white/90 px-2 py-1 rounded-md bg-black/40 backdrop-blur-sm border border-white/10">
+                        {agent.name}
                       </div>
                     </div>
-                    <p className="text-xs text-white/70 line-clamp-2">{m.description}</p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Detail Card */}
+              <div className="max-w-4xl mx-auto">
+                {makersDetailData.map((agent, i) => (
+                  <div
+                    key={i}
+                    className={`glass-card rounded-3xl p-8 border border-white/10 ${makersGalleryIndex === i ? 'block' : 'hidden'}`}
+                  >
+                    {/* Agent Header */}
+                    <div className="flex items-center gap-6 mb-8">
+                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${agent.color} flex items-center justify-center font-bold text-4xl shadow-2xl`}>
+                        {agent.letter}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold mb-1">{agent.name}</h3>
+                        <p className="text-white/60 text-lg">{agent.korean}</p>
+                      </div>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                      <div className="glass rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-gradient mb-1">{agent.trainingData}</div>
+                        <div className="text-xs text-white/60">학습 데이터</div>
+                      </div>
+                      <div className="glass rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-emerald-400 mb-1">{agent.accuracy}</div>
+                        <div className="text-xs text-white/60">정확도</div>
+                      </div>
+                      <div className="glass rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-cyan-400 mb-1">{agent.validationScore}</div>
+                        <div className="text-xs text-white/60">검증 점수</div>
+                      </div>
+                      <div className="glass rounded-xl p-4 text-center">
+                        <div className="text-lg font-bold text-amber-400 mb-1">✨</div>
+                        <div className="text-xs text-white/60">{agent.specialFeature}</div>
+                      </div>
+                    </div>
+
+                    {/* Training Description */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-semibold text-purple-400 mb-2">학습 데이터 출처</h4>
+                      <p className="text-white/70">{agent.trainingDesc}</p>
+                    </div>
+
+                    {/* Benchmarks */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-semibold text-blue-400 mb-3">평가 기능</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {agent.benchmarks.map((b, j) => (
+                          <span key={j} className="px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm">
+                            ✓ {b}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-white/80 leading-relaxed">{agent.description}</p>
+                    </div>
                   </div>
                 ))}
               </div>
+
+              {/* Gallery Navigation Arrows */}
+              <div className="flex justify-center gap-4 mt-8">
+                <button
+                  onClick={() => setMakersGalleryIndex((prev) => (prev - 1 + 6) % 6)}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+                >
+                  <ChevronRight className="w-6 h-6 rotate-180" />
+                </button>
+                <button
+                  onClick={() => setMakersGalleryIndex((prev) => (prev + 1) % 6)}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
       {/* ===== BUSINESS CATEGORY SUPPORT SECTION ===== */}
-      <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-20">
+      <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-20" >
         {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" >
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
         </div>
@@ -724,6 +1073,117 @@ export const LandingPage: React.FC = () => {
             ))}
           </div>
 
+          {/* Domain Consulting Support */}
+          <div className="mt-16 max-w-6xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-purple-400 text-sm font-medium mb-4">
+                ✨ 프리미엄 전문 컨설팅
+              </span>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3">사업 도메인별 전문가 컨설팅</h3>
+              <p className="text-white/60 text-base max-w-2xl mx-auto">
+                각 분야 10년 이상 경력의 검증된 전문가들이 여러분의 사업을 함께 설계합니다
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              {[
+                {
+                  name: 'SaaS 온라인 서비스',
+                  color: 'blue',
+                  icon: '💻',
+                  teamSize: '8명',
+                  expertise: 'AWS·Azure 아키텍트, 프로덕트 매니저 출신',
+                  achievements: 'B2B SaaS 스타트업 누적 30개사 지원, 총 ARR 200억 원 달성'
+                },
+                {
+                  name: '온오프라인 교육사업',
+                  color: 'emerald',
+                  icon: '📚',
+                  teamSize: '6명',
+                  expertise: '에듀테크·학원사업·기업교육 전문가 그룹',
+                  achievements: '교육 스타트업 50개사 투자 유치 지원, 총 300억 원 펀딩 성공'
+                },
+                {
+                  name: '글로벌 유통사업',
+                  color: 'cyan',
+                  icon: '🌏',
+                  teamSize: '10명',
+                  expertise: 'KOTRA 출신, 해외 바이어 네트워크 보유',
+                  achievements: '아마존·쿠팡 셀러 150개사 육성, 연간 해외 매출 500억 원 지원'
+                },
+                {
+                  name: '레저 관광업',
+                  color: 'amber',
+                  icon: '✈️',
+                  teamSize: '5명',
+                  expertise: '관광학 박사·호텔리어·여행사 CEO 출신',
+                  achievements: '지역관광 활성화 프로젝트 50건, 정부지원금 합격률 87%'
+                },
+                {
+                  name: '뷰티 코스메틱',
+                  color: 'pink',
+                  icon: '💄',
+                  teamSize: '7명',
+                  expertise: '대기업 뷰티 브랜드 디렉터·MD 출신 그룹',
+                  achievements: '인디 뷰티 브랜드 40개 런칭, 올리브영·시코르 입점 성공률 90%'
+                },
+                {
+                  name: 'SNS 콘텐츠 수익화',
+                  color: 'purple',
+                  icon: '📱',
+                  teamSize: '9명',
+                  expertise: '100만 구독자 크리에이터·MCN 대표 출신',
+                  achievements: '크리에이터 200명 육성, 누적 콘텐츠 수익 100억 원 돌파'
+                },
+                {
+                  name: '멀티 채널 마케팅',
+                  color: 'orange',
+                  icon: '📊',
+                  teamSize: '12명',
+                  expertise: 'Google·Meta·네이버 공인 파트너 집단',
+                  achievements: '퍼포먼스 마케팅 ROAS 평균 520% 달성, D2C 브랜드 100개사 성장 지원'
+                },
+                {
+                  name: 'IT Infra 보안 & AI 안전',
+                  color: 'slate',
+                  icon: '🔐',
+                  teamSize: '11명',
+                  expertise: 'ISMS·ISO27001 심사원, AI 윤리 인증 전문가',
+                  achievements: '정보보안 인증 취득 80건, AI 서비스 안전성 평가 50건 수행'
+                },
+              ].map((domain, i) => (
+                <div
+                  key={i}
+                  className={`glass-card rounded-2xl p-6 border border-${domain.color}-500/20 hover:border-${domain.color}-500/40 transition-all hover-lift group`}
+                >
+                  {/* Domain Badge */}
+                  <div className={`inline-flex items-center px-4 py-1.5 rounded-full bg-${domain.color}-500/20 text-${domain.color}-400 text-sm font-bold mb-4`}>
+                    {domain.name}
+                  </div>
+
+                  {/* Team Info */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br from-${domain.color}-400 to-${domain.color}-600 flex items-center justify-center text-3xl`}>
+                      {domain.icon}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white text-base flex items-center gap-2">
+                        전문 컨설턴트
+                        <span className={`text-${domain.color}-400`}>{domain.teamSize}</span>
+                      </div>
+                      <div className={`text-${domain.color}-400/80 text-sm`}>{domain.expertise}</div>
+                    </div>
+                  </div>
+
+                  {/* Achievements */}
+                  <p className="text-white/70 text-sm leading-relaxed">
+                    📈 {domain.achievements}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Bottom CTA */}
           <div className="text-center mt-12">
             <p className="text-white/50 text-sm mb-4">그 외 모든 업종 지원 가능</p>
@@ -739,7 +1199,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing-section" className="py-24 relative scroll-mt-20">
+      <section id="pricing-section" className="py-24 relative scroll-mt-20" >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
@@ -779,7 +1239,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== STEP-BY-STEP SOLUTION SECTION ===== */}
-      <section id="solution-steps" className="py-24 relative overflow-hidden scroll-mt-20">
+      <section id="solution-steps" className="py-24 relative overflow-hidden scroll-mt-20" >
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950" />
 
@@ -924,7 +1384,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== MAKERS WORLD INTRODUCTION ===== */}
-      <section id="testimonials-section" className="py-24 relative overflow-hidden scroll-mt-20">
+      <section id="testimonials-section" className="py-24 relative overflow-hidden scroll-mt-20" >
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -1006,7 +1466,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== SEO KEYWORDS ===== */}
-      <section className="py-16">
+      <section className="py-16" >
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
             {seoKeywords.map((k, i) => (
@@ -1017,7 +1477,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== FINAL CTA ===== */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden" >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-blue-900/50 to-slate-900" />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -1035,10 +1495,10 @@ export const LandingPage: React.FC = () => {
             <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-400" />즉시 다운로드</span>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* ===== FOOTER ===== */}
-      < footer className="py-12 border-t border-white/10" >
+      <footer className="py-12 border-t border-white/10" >
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
@@ -1048,7 +1508,7 @@ export const LandingPage: React.FC = () => {
           </div>
           <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
         </div>
-      </footer >
-    </div >
+      </footer>
+    </div>
   );
 };
