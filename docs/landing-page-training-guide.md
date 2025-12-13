@@ -305,7 +305,7 @@ npm run dev -- --port 5174
 // 컴포넌트 외부에 정의
 const navLinks = [
   { label: '문제 해결', href: '#problem-section' },
-  { label: 'AI 심사위원회', href: '#makers-section' },
+  { label: 'AI 심사위원단', href: '#makers-section' },
   { label: 'M.A.K.E.R.S', href: '#makers-committee' },
   { label: '맞춤 지원', href: '#business-category' },
   { label: '요금제', href: '#pricing-section' },
@@ -470,7 +470,7 @@ const scrollToSection = (href: string) => {
 ```tsx
 const navLinks = [
   { label: '문제 해결', href: '#problem-section' },     // 순서 변경
-  { label: 'AI 심사위원회', href: '#makers-section' },  // 순서 변경
+  { label: 'AI 심사위원단', href: '#makers-section' },  // 순서 변경
   // ...
 ];
 ```

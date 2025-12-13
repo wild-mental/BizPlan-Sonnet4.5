@@ -284,3 +284,37 @@
 }
 
 /* Social Value - Pink */
+
+/* ===== CAROUSEL AUTO-SLIDE ===== */
+@keyframes scroll-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 60s linear infinite;
+}
+
+.animate-scroll-right {
+  animation: scroll-right 60s linear infinite;
+}
+
+.carousel-container:hover .animate-scroll-left,
+.carousel-container:hover .animate-scroll-right {
+  animation-play-state: paused;
+}

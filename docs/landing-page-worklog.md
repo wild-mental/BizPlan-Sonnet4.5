@@ -27,7 +27,7 @@
 **추가 기능**:
 - 에메랄드/시안 그라데이션 색상 차별화
 - 3가지 핵심 혜택 카드 (10분 완성, 합격률 극대화, 즉시 다운로드)
-- "AI 심사위원회 알아보기" 스크롤 버튼
+- "AI 심사위원단 알아보기" 스크롤 버튼
 - 스크롤 유도 인디케이터
 
 ---
@@ -49,9 +49,9 @@
 
 ---
 
-### 3️⃣ 문제 해결 섹션 ↔ AI 심사위원회 섹션 순서 변경 (18:21)
+### 3️⃣ 문제 해결 섹션 ↔ AI 심사위원단 섹션 순서 변경 (18:21)
 
-**요청**: 문제 해결 섹션을 AI 심사위원회 섹션 앞으로 이동
+**요청**: 문제 해결 섹션을 AI 심사위원단 섹션 앞으로 이동
 
 **변경 내용**:
 - 섹션 순서 재배치: Primary Hero → 문제 해결 → M.A.K.E.R.S Hero
@@ -168,7 +168,7 @@
 | 1 | Fixed Header Navigation | - | - |
 | 2 | Primary Hero (10분) | - | - |
 | 3 | 실제 사용자 리뷰 | `#problem-section` | 문제 해결 |
-| 4 | M.A.K.E.R.S Hero | `#makers-section` | AI 심사위원회 |
+| 4 | M.A.K.E.R.S Hero | `#makers-section` | AI 심사위원단 |
 | 5 | M.A.K.E.R.S Committee | `#makers-committee` | M.A.K.E.R.S |
 | 6 | 사업분야 맞춤지원 | `#business-category` | 맞춤 지원 |
 | 7 | 요금제 | `#pricing-section` | 요금제 |
@@ -197,7 +197,7 @@
 ```tsx
 const navLinks = [
   { label: '문제 해결', href: '#problem-section' },
-  { label: 'AI 심사위원회', href: '#makers-section' },
+  { label: 'AI 심사위원단', href: '#makers-section' },
   { label: 'M.A.K.E.R.S', href: '#makers-committee' },
   { label: '맞춤 지원', href: '#business-category' },
   { label: '요금제', href: '#pricing-section' },
