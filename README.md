@@ -254,6 +254,29 @@ MIT License
 
 ---
 
+## 📋 TODO
+
+향후 랜딩페이지 개선 과제:
+
+- [ ] **M.A.K.E.R.S AI 심사위원단 에이전트별 상세 페이지**
+  - 각 에이전트(M, A, K, E, R, S)별 고도화된 전문성 소개
+  - 평가 기준, 심사 방법론, 기대 효과 상세 설명
+
+- [ ] **맞춤지원 섹션 강화**
+  - 사업 도메인 영역별 지원 내용 확대
+  - 분야별 성공 사례 및 특화 기능 소개
+
+- [ ] **팀 소개 섹션 추가**
+  - Human 컨설팅으로 확장 가능한 전문가 팀 소개
+  - AI + Human 협업의 강력한 임팩트 부여
+  - 신뢰도 및 전문성 어필
+
+- [ ] **코드 정리 (LandingPage.tsx)**
+  - 사용되지 않는 import 제거: `Sparkles`, `CheckCircle2`, `Award`, `LineChart`, `Shield`, `Lightbulb`, `Scale`
+  - 사용되지 않는 변수 제거: `personas`, `testimonials`, `activePersona`, `setActivePersona`
+
+---
+
 **Made with ❤️ by Makers World**
 
 *Last Updated: 2025-12-13*
