@@ -968,11 +968,11 @@ export const LandingPage: React.FC = () => {
           {/* Two Column Layout */}
           <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto items-center mb-12">
             {/* Left Column - Logo */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center justify-center">
               <img
-                src="/src/assets/2_Makersworld-logo-transparent.png"
+                src="/src/assets/2_Makersworld-logo-neon.png"
                 alt="Makers World Logo"
-                className="w-full max-w-md h-auto object-contain"
+                className="h-48 md:h-64 lg:h-72 w-auto object-contain"
               />
             </div>
 
