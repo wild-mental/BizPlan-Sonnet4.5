@@ -1,176 +1,252 @@
-# Makers World - AI 기반 비즈니스 빌딩 솔루션
+# Makers Round - M.A.K.E.R.S AI 심사위원단
 
-**초보 창업자 생존율 제고를 위한 AI Multi-Agent 사업계획서 자동화 플랫폼**
+**스타트업 자금유치 라운드를 돕는 AI 심사위원단 솔루션** by Makers World
 
-## 🎯 랜딩페이지
+> 정부지원금 합격 사업계획서, 10분이면 충분합니다.
+> AI Multi-Agent가 심사위원 관점의 완벽한 초안을 제공합니다.
 
-고객 전환율 극대화를 위한 **C+A 하이브리드 전략** (결과 지향형 + 불안 해소형) 랜딩페이지가 포함되어 있습니다.
+---
 
-### 랜딩페이지 섹션 구성
+## 🎯 랜딩페이지 구성
 
-| 섹션 | 목적 | 핵심 메시지 |
-|------|------|------------|
-| **Hero** | 첫인상 3초 | "정부지원금 합격 사업계획서, 10분이면 충분합니다" |
-| **Problem** | 공감 유도 | "창업의 42%가 실패하는 이유" |
-| **Solution** | 3대 기능 | 자동화, 시장분석, AI 컨설턴트 |
-| **Personas** | 타겟 맞춤 | 5가지 고객 유형별 솔루션 |
-| **Value Prop** | 핵심 가치 | 정부 양식 호환, PMF 진단 |
-| **Before/After** | 효율성 비교 | 2주→10분, 500만원→무료 |
-| **SEO Keywords** | 검색 최적화 | 예비창업패키지, 정부지원금 등 |
-| **Final CTA** | 전환 유도 | 긴급성 + 무료 강조 |
+울트라 프리미엄 디자인의 **C+A 하이브리드 전략** 랜딩페이지
 
-### 타겟 페르소나
+### 페이지 섹션 순서
 
-1. **김예비** - 예비창업패키지 지원자 (Core Target)
-2. **최민혁** - 재창업가 / CTO 출신
-3. **박사장** - 소상공인 (은행 대출)
-4. **한서윤** - 시드투자 유치 준비 CEO
-5. **이지은** - 대학생 창업동아리 리더
+| # | 섹션 | ID | 설명 |
+|---|------|-----|------|
+| 1 | **Fixed Header** | - | 로고, 네비게이션 링크, CTA 버튼 |
+| 2 | **Primary Hero** | - | 컨셉아트 + "10분이면 충분합니다" 메인 헤드라인 |
+| 3 | **실제 사용자 리뷰** | `#problem-section` | 4개 그룹별 자동 스크롤 캐러셀 (21개 후기) |
+| 4 | **AI 심사위원단 + M.A.K.E.R.S** | `#makers-section` | 통합 섹션 (좌우 2컬럼 레이아웃) |
+| 5 | **사업분야 맞춤지원** | `#business-category` | 온라인/1인/프랜차이즈/AI 창업 지원 |
+| 6 | **요금제** | `#pricing-section` | 4단계 요금제 카드 |
+| 7 | **단계별 솔루션** | `#solution-steps` | 4개 페르소나별 문제/목표 매칭 |
+| 8 | **기업 소개 (Makers World)** | `#testimonials-section` | 3단계 창업 여정 + 로고/영상 + 태그라인 |
+| 9 | **SEO 키워드** | - | 해시태그 키워드 배열 |
+| 10 | **Final CTA** | - | 무료 시작 유도 |
+| 11 | **Footer** | - | 저작권 정보 |
 
-### 라우팅 구조
+---
+
+## 🧭 네비게이션 바
+
+| 위치 | 구성 요소 |
+|------|----------|
+| **왼쪽** | Makers Round 로고 (클릭 시 최상단 이동) |
+| **중앙** | 6개 섹션 링크 |
+| **오른쪽** | "사업계획서 작성" CTA 버튼 |
+
+### 네비게이션 링크 순서
+
+| 순서 | 탭 이름 | 연결 섹션 |
+|------|--------|-----------|
+| 1 | 고객 후기 | `#problem-section` |
+| 2 | AI 심사위원단 | `#makers-section` |
+| 3 | 맞춤 지원 | `#business-category` |
+| 4 | 요금제 | `#pricing-section` |
+| 5 | 단계별 솔루션 | `#solution-steps` |
+| 6 | 기업 소개 | `#testimonials-section` |
+
+### 특징
+- 전체 뷰포트 너비 보장 (`w-full`)
+- 스크롤 시 글래스모피즘 배경 + 블러 효과 적용
+- 스무스 스크롤링 지원
+- 반응형 디자인 (lg 이상에서 네비 링크 표시)
+
+---
+
+## 🖼️ 미디어 리소스
+
+### 이미지
+| 파일 | 용도 | 위치 |
+|------|------|------|
+| `0_MakersRound-logo-transparent.png` | Primary Hero 컨셉아트 | 히어로 섹션 상단 |
+| `2_Makersworld-logo-transparent.png` | Makers World 로고 | 기업 소개 섹션 |
+| `favicon_makersround.png` | 파비콘 | 브라우저 탭 |
+
+### 영상
+| 파일 | 용도 | 위치 |
+|------|------|------|
+| `AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4` | 프로모 영상 | AI 심사위원단 섹션 우측 |
+| `1_251204_메이커스월드_소개영상.mp4` | 서비스 소개 | 기업 소개 섹션 우측 |
+
+---
+
+## 🎪 M.A.K.E.R.S AI 심사위원단
+
+정부지원사업 평가의 6가지 핵심 영역을 전담하는 AI 심사위원단
+
+### 6가지 평가 영역
+
+| 위원 | 영역 | 한국어 | 평가 항목 |
+|------|------|--------|----------|
+| **M** | Marketability | 시장성 | 시장 규모, 고객 수요, 경쟁 상황, 타깃 시장 분석 |
+| **A** | Ability | 실현가능성 | 팀 구성, 창업자 역량, 실행 가능성, 인프라 |
+| **K** | Key Technology | 핵심기술 | 기술 혁신성, 차별화, 지식재산권, 기술 보호 |
+| **E** | Economics | 수익성 | 매출/손익 계획, 자금 조달, 투자 회수, 재무 건전성 |
+| **R** | Realization | 사업화 | 사업 추진 일정, 단계별 실행 계획, 리스크 관리 |
+| **S** | Social Value | 사회적가치 | 일자리 창출, 지역 균형, ESG, 정부 정책 방향 |
+
+### 통합 섹션 레이아웃 (좌우 2컬럼)
+
+| 좌측 컬럼 | 우측 컬럼 |
+|----------|----------|
+| Makers Round 브랜드 배지 | 프로모 비디오 |
+| 헤드라인 ("6명의 AI 심사위원이") | M.A.K.E.R.S 6개 카드 (2x3) |
+| M.A.K.E.R.S 아이콘 프리뷰 | |
+| CTA 버튼 + 통계 4개 | |
+
+---
+
+## 📢 실제 사용자 리얼 후기
+
+4개 그룹으로 분류된 21개 실제 리뷰
+
+| 그룹 | 대상 | 색상 | 후기 수 | 스크롤 방향 |
+|------|------|------|---------|------------|
+| Group 1 | 예비창업패키지 & 정부지원사업 지원자 | 에메랄드 | 7개 | ← 왼쪽 |
+| Group 2 | 기술 검증 & 피벗이 필요한 재창업가 | 블루 | 5개 | → 오른쪽 |
+| Group 3 | 소상공인 & 자영업자 | 앰버 | 4개 | ← 왼쪽 |
+| Group 4 | 투자 유치(IR) 준비 CEO | 퍼플 | 5개 | → 오른쪽 |
+
+### 캐러셀 특징 (JavaScript 기반)
+- **자동 스크롤**: `requestAnimationFrame` 기반 부드러운 스크롤
+- **호버 정지**: 마우스 호버 시 즉시 일시정지
+- **양방향 드래그**: 좌/우 드래그로 위치 조절
+- **무한 루프**: 경계 도달 시 자동 리셋
+- **비주얼 분리자**: 4배 복제된 카드 세트 경계에 구분선 표시
+- **카드 크기**: 612px 너비, 본문 text-lg
+- **텍스트 선택 방지**: `select-none`
+
+---
+
+## 🌐 기업 소개 (Makers World)
+
+"세상의 모든 Maker를 위한 World" - 전방위 창업자 지원 서비스
+
+### 섹션 구성
+
+1. **상단 타이틀 영역**
+   - 전방위 창업자 지원 서비스 배지
+   - "당신의 창업 여정을 함께합니다" 타이틀
+   - 3단계 창업 여정 카드 (창업 시작 / 자금 확보 / 성장 가속)
+   - 서브타이틀
+
+2. **좌우 2컬럼 레이아웃**
+   - 좌측: Makers World 로고
+   - 우측: 소개 영상
+
+3. **하단 태그라인 (전체 너비)**
+   - "세상의 모든 Maker를 위한 World"
+   - "Makers World와 함께라면, 당신의 아이디어가 현실이 됩니다."
+
+### 3단계 창업 여정
+
+| 아이콘 | 단계 | 설명 |
+|--------|------|------|
+| 🚀 | **창업 시작** | 아이디어 구체화부터 사업계획서 작성까지 |
+| 🎯 | **자금 확보** | 정부지원금, 투자유치, 대출 등 다양한 경로 |
+| 📈 | **성장 가속** | 시장 분석, 마케팅 전략, 사업 확장까지 |
+
+---
+
+## 💼 사업분야 맞춤지원
+
+| 분야 | 대상 | 키워드 |
+|------|------|--------|
+| **온라인 창업** | 온라인 쇼핑몰, 디지털 서비스 | #스마트스토어, #SaaS |
+| **1인 소자본 창업** | 최소 비용 1인 창업 | #프리랜서, #크리에이터 |
+| **프랜차이즈 사업** | 프랜차이즈 전문 양식 | #가맹점, #본사 |
+| **AI 분야 창업** | AI 스타트업 특화 | #LLM, #AI에이전트 |
+
+---
+
+## 💰 요금제
+
+| 플랜 | 가격 | 핵심 기능 |
+|------|------|----------|
+| **기본** | 무료 | 사업계획서 자동 생성, HWP/PDF 다운로드 |
+| **플러스** | ₩29,000/월 | M.A.K.E.R.S AI 평가, 6개 영역 점수 리포트 |
+| **프로** | ₩79,000/월 | 80점 미달 재작성 루프, 파트별 고도화 피드백 |
+| **프리미엄** | ₩199,000/월 | 전문가 1:1 컨설팅, 우선 지원 |
+
+---
+
+## 👥 단계별 솔루션 (페르소나)
+
+| 요금제 | 페르소나 | 역할 | 목표 |
+|--------|----------|------|------|
+| **기본** | 김예비 | 예비창업패키지 지원자 | 5천만원 지원금 확보 |
+| **플러스** | 최민혁 | 재창업가 (CTO) | PMF 데이터 검증 |
+| **프로** | 박사장 | 소상공인 (카페) | 3천만원 대출 확보 |
+| **프리미엄** | 한서윤 | 투자유치 준비 CEO | 5억원 투자유치 |
+
+---
+
+## 🗺 라우팅
 
 | 경로 | 페이지 | 설명 |
 |------|--------|------|
-| `/` | LandingPage | 고객 유입 Hook |
-| `/app` | ProjectCreate | 프로젝트 생성 |
-| `/wizard/:stepId` | WizardStep | 단계별 입력 |
+| `/` | LandingPage | 랜딩페이지 (메인) |
+| `/app` | ProjectCreate | 사업계획서 작성 시작 |
+| `/wizard/:stepId` | WizardStep | 단계별 마법사 |
 | `/business-plan` | BusinessPlanViewer | 사업계획서 뷰어 |
 
-📋 [랜딩페이지 체크리스트](./docs/landing-page-checklist.md)
-
-## 🚀 핵심 기능
-
-### 1. 사업계획서 작성 자동화
-- 정부지원사업 합격 사업계획서 **10분 완성**
-- HWP 포맷팅 자동화, 심사위원 관점 초안 제공
-- 예비창업패키지 / 초기창업패키지 / 은행대출 템플릿
-
-### 2. Data-Driven 시장 분석
-- TAM/SAM/SOM 시장 규모 자동 산출
-- 경쟁사 현황, 트렌드 데이터 실시간 분석
-- 리포트 자동 생성
-
-### 3. AI 비즈니스 컨설턴트 (Virtual Mentor)
-- 수천 건 컨설팅 데이터 학습 특화 에이전트
-- BM 진단 및 피보팅 전략 제시
-- PMF 진단 리포트 + MVP 사업화 로드맵
+---
 
 ## 🛠 기술 스택
 
-- **Framework:** React 18 + Vite
+- **Framework:** React 19 + Vite 7
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **State Management:** Zustand (with persist middleware)
-- **Routing:** React Router DOM v6
-- **Forms:** React Hook Form + Zod
-- **Charts:** Recharts
-- **Markdown:** React Markdown
+- **Styling:** Tailwind CSS + Custom Glassmorphism
+- **State:** Zustand
+- **Routing:** React Router DOM v7
 - **Icons:** Lucide React
-- **Utils:** clsx, tailwind-merge
+- **Charts:** Recharts
 
-## 📦 설치 및 실행
+---
+
+## 📦 실행
 
 ```bash
 # 의존성 설치
 npm install
 
-# 개발 서버 실행
-npm run dev
+# 개발 서버 실행 (포트 5175)
+npm run dev -- --port 5175
 
 # 빌드
 npm run build
 
-# 빌드된 결과 미리보기
+# 프리뷰
 npm run preview
 ```
+
+---
 
 ## 📁 프로젝트 구조
 
 ```
 src/
-├── components/
-│   ├── ui/                    # 공통 UI 컴포넌트
-│   │   ├── Button.tsx
-│   │   ├── Card.tsx
-│   │   ├── Input.tsx
-│   │   ├── Textarea.tsx
-│   │   ├── Badge.tsx
-│   │   ├── Progress.tsx
-│   │   └── Spinner.tsx
-│   ├── wizard/                # Wizard 전용 컴포넌트
-│   │   ├── QuestionForm.tsx
-│   │   ├── FinancialSimulation.tsx
-│   │   └── PMFSurvey.tsx
-│   ├── Layout.tsx            # 메인 레이아웃
-│   └── SaveIndicator.tsx     # 저장 상태 표시
+├── assets/                 # 이미지, 영상 리소스
+├── components/ui/          # 공통 UI 컴포넌트
 ├── pages/
-│   ├── ProjectCreate.tsx     # 프로젝트 생성 페이지
-│   ├── WizardStep.tsx        # Wizard 단계별 페이지
-│   └── BusinessPlanViewer.tsx # 사업계획서 뷰어
-├── stores/
-│   ├── useProjectStore.ts    # 프로젝트 상태 관리
-│   ├── useWizardStore.ts     # Wizard 상태 관리
-│   ├── useFinancialStore.ts  # 재무 상태 관리
-│   └── usePMFStore.ts        # PMF 진단 상태 관리
-├── hooks/
-│   ├── useAutoSave.ts        # Auto-save 커스텀 훅
-│   └── useFinancialCalc.ts   # 재무 계산 커스텀 훅
-├── types/
-│   ├── index.ts              # 타입 정의
-│   └── mockData.ts           # Mock 데이터
-├── lib/
-│   └── utils.ts              # 유틸리티 함수
-├── App.tsx                   # 라우팅 설정
-├── main.tsx                  # 앱 진입점
-└── index.css                 # 전역 스타일
+│   ├── LandingPage.tsx     # 메인 랜딩페이지
+│   └── ...
+├── stores/                 # Zustand 스토어
+├── App.tsx                 # 라우팅 설정
+├── index.css               # 글로벌 스타일 + 애니메이션
+└── main.tsx                # 엔트리포인트
+
+docs/
+├── landing-page-checklist.md        # 랜딩페이지 체크리스트
+├── landing-page-worklog.md          # 랜딩페이지 작업 히스토리
+├── landing-page-training-guide.md   # 개발자용 코드 교육안
+└── landing-page-ai-agent-guide.md   # AI 에이전트 활용 교육안
 ```
 
-## 🎨 디자인 시스템
-
-- **Color Palette:**
-  - Primary: Blue (#3b82f6 계열)
-  - Gray: Neutral tones
-  - Success: Green
-  - Warning: Yellow
-  - Danger: Red
-
-- **Typography:** Inter 폰트 패밀리
-
-- **Components:** Consistent design language with hover states, transitions, and focus states
-
-## 📊 데이터 흐름
-
-1. **입력 데이터:** 사용자가 Wizard에서 각 질문에 답변
-2. **자동 저장:** Zustand store에 실시간 저장 (LocalStorage persist)
-3. **계산 로직:** 재무 데이터는 입력 시 자동으로 메트릭 계산
-4. **AI 생성:** Mock 데이터 기반으로 사업계획서 생성 시뮬레이션
-5. **내보내기:** 생성된 계획서를 HWP/PDF로 내보내기 (시뮬레이션)
-
-## 🔑 핵심 UX 특징
-
-1. **직관적인 네비게이션:** 좌측 사이드바에서 현재 진행 상황 확인
-2. **실시간 피드백:** 입력 즉시 자동 저장 및 검증
-3. **시각적 피드백:** 진행률 바, 완료 체크마크, 색상 코딩
-4. **부드러운 전환:** 페이지 전환 및 상태 변화 시 애니메이션
-5. **반응형 디자인:** 다양한 화면 크기 지원
-
-## 📝 주요 흐름
-
-1. **시작:** 프로젝트 이름 입력 및 템플릿 선택
-2. **입력:** 5단계 Wizard에서 각 질문에 답변
-3. **재무 분석:** 실시간 차트로 재무 건전성 확인
-4. **PMF 진단:** 설문 완료 후 진단 리포트 확인
-5. **생성:** AI 사업계획서 자동 생성
-6. **내보내기:** HWP/PDF 형식으로 다운로드
-
-## 🚧 향후 개선 사항
-
-- 실제 AI API 연동 (OpenAI, Anthropic 등)
-- 백엔드 연동 (사용자 인증, 프로젝트 관리)
-- 협업 기능 (팀원 초대, 댓글 등)
-- 버전 히스토리 및 비교
-- 템플릿 커스터마이징
-- 다국어 지원
+---
 
 ## 📄 라이선스
 
@@ -178,4 +254,6 @@ MIT License
 
 ---
 
-**Made with ❤️ for early-stage entrepreneurs**
+**Made with ❤️ by Makers World**
+
+*Last Updated: 2025-12-13*
