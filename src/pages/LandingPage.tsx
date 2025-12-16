@@ -478,8 +478,23 @@ export const LandingPage: React.FC = () => {
       </header>
       {/* ===== PRIMARY HERO SECTION - 정부지원금 ===== */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
+        {/* Hero Background Video - Full Viewport Width */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/assets/MakersRoundHeroVideo.mp4" type="video/mp4" />
+          </video>
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
+        </div>
+
         {/* Dynamic Background Effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
           {/* Animated gradient orbs */}
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-full blur-[120px] animate-float" />
           <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-[100px] animate-float-slow" />
@@ -493,15 +508,6 @@ export const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            {/* Concept Art Image */}
-            <div className="flex justify-center mb-3 animate-fade-in">
-              <img
-                src="/assets/0_MakersRound-logo-transparent.png"
-                alt="Makers Round Concept Art"
-                className="w-[60vw] md:w-[45vw] lg:w-[35vw] max-h-[450px] h-auto object-contain"
-              />
-            </div>
-
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-10 animate-fade-in border border-emerald-500/30">
               <div className="flex items-center gap-1">
