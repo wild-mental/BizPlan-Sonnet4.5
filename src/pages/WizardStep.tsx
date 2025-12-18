@@ -2,10 +2,11 @@
  * 파일명: WizardStep.tsx
  * 
  * 파일 용도:
- * 마법사 단계별 페이지 컨테이너
+ * 마법사 단계별 페이지 컨테이너 (PSST 프레임워크 기반 6단계)
  * - URL 파라미터로 현재 단계 결정
- * - 단계에 맞는 컴포넌트 렌더링 (QuestionForm, FinancialSimulation, PMFSurvey)
+ * - 단계에 맞는 컴포넌트 렌더링 (QuestionForm, FinancialSimulation)
  * - 단계 간 이동 및 진행 상태 관리
+ * - 마지막 단계에서 AI 사업계획서 생성 (백엔드 API 호출)
  * 
  * 호출 구조:
  * WizardStep (이 컴포넌트)
@@ -15,30 +16,46 @@
  *   │   ├─> goToNextStep() - 다음 단계로 이동
  *   │   └─> goToPreviousStep() - 이전 단계로 이동
  *   │
+ *   ├─> useBusinessPlanStore - 생성된 사업계획서 저장
+ *   │
+ *   ├─> businessPlanApi - 백엔드 API 호출
+ *   │
  *   └─> 단계별 컴포넌트 렌더링
- *       ├─> QuestionForm (1-3단계) - 질문 폼
- *       ├─> FinancialSimulation (4단계) - 재무 시뮬레이션
- *       └─> PMFSurvey (5단계) - PMF 설문
+ *       ├─> QuestionForm (1-5단계) - 질문 폼 (PSST)
+ *       └─> FinancialSimulation (6단계) - 재무 시뮬레이션 + AI 생성
+ * 
+ * PSST 프레임워크:
+ * 1. 문제 인식 (Problem)
+ * 2. 시장 분석
+ * 3. 실현 방안 (Solution)
+ * 4. 사업화 전략 (Scale-up)
+ * 5. 팀 역량 (Team)
+ * 6. 재무 계획 → AI 사업계획서 생성 (백엔드 API 호출)
  * 
  * 데이터 흐름:
  * URL (/wizard/:stepId) → stepId 추출 → 해당 단계 렌더링
  * ↓
  * 사용자 입력 → 각 단계 컴포넌트 → useWizardStore 업데이트
  * ↓
- * 완료 시 → navigate('/business-plan')
+ * 완료 시 → 백엔드 API 호출 → 응답 저장 → navigate('/business-plan')
  * 
  * 사용하는 Store:
  * - useWizardStore: 마법사 진행 상태 및 단계별 데이터
+ * - useBusinessPlanStore: 생성된 사업계획서 데이터
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
-import { Button } from '../components/ui';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
+import { Button, Spinner } from '../components/ui';
+import { ChevronLeft, ChevronRight, Sparkles, AlertCircle } from 'lucide-react';
 import { QuestionForm } from '../components/wizard/QuestionForm';
 import { FinancialSimulation } from '../components/wizard/FinancialSimulation';
-import { PMFSurvey } from '../components/wizard/PMFSurvey';
+import { 
+  generateBusinessPlan, 
+  buildBusinessPlanRequest 
+} from '../services/businessPlanApi';
 
 /**
  * WizardStep 컴포넌트
@@ -60,20 +77,28 @@ import { PMFSurvey } from '../components/wizard/PMFSurvey';
 export const WizardStep: React.FC = () => {
   const { stepId } = useParams<{ stepId: string }>();
   const navigate = useNavigate();
-  const { currentStep, setCurrentStep, steps, isStepCompleted, goToNextStep, goToPreviousStep } = useWizardStore();
+  const { currentStep, setCurrentStep, steps, isStepCompleted, markStepVisited, goToNextStep, goToPreviousStep, getAllDataWithDefaults } = useWizardStore();
+  const { setGeneratedPlan, setLoading, setError, isLoading, error } = useBusinessPlanStore();
+  
+  // AI 사업계획서 생성 중 상태 (로컬 상태 + Store 상태 병행)
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const stepNumber = parseInt(stepId || '1', 10);
   const step = steps.find((s) => s.id === stepNumber);
 
   /**
    * URL 파라미터와 Store 상태 동기화
-   * - URL이 변경되면 Store의 currentStep도 업데이트
+   * [개발/디버깅 모드] 모든 단계 진입 시 방문 기록 저장 (완료 체크 표시)
    */
   useEffect(() => {
     if (stepNumber !== currentStep) {
       setCurrentStep(stepNumber);
     }
-  }, [stepNumber, currentStep, setCurrentStep]);
+    
+    // [개발/디버깅 모드] 모든 단계 진입 시 방문 기록 (체크 표시를 위해)
+    markStepVisited(stepNumber);
+  }, [stepNumber, currentStep, setCurrentStep, markStepVisited]);
 
   if (!step) {
     return (
@@ -87,18 +112,66 @@ export const WizardStep: React.FC = () => {
   }
 
   /**
-   * 다음 단계로 이동
+   * 다음 단계로 이동 또는 AI 사업계획서 생성
    * 
    * 처리 순서:
    * 1. 마지막 단계가 아니면 → 다음 단계 번호로 이동
-   * 2. 마지막 단계이면 → 사업계획서 페이지로 이동
+   * 2. 마지막 단계이면 → 백엔드 API 호출하여 AI 사업계획서 생성
    */
   const handleNext = () => {
     if (stepNumber < steps.length) {
       goToNextStep();
       navigate(`/wizard/${stepNumber + 1}`);
     } else {
-      // Navigate to business plan viewer
+      // 마지막 단계: AI 사업계획서 생성 (백엔드 API 호출)
+      handleGenerateBusinessPlan();
+    }
+  };
+
+  /**
+   * AI 사업계획서 생성 및 결과 페이지 이동
+   * - 백엔드 API (POST /api/v1/business-plan/generate) 호출
+   * - 생성 완료 후 결과 페이지로 이동
+   */
+  const handleGenerateBusinessPlan = async () => {
+    setIsGenerating(true);
+    setGenerationError(null);
+    setLoading(true);
+    
+    // Wizard 데이터 수집 (빈 값은 placeholder로 대체)
+    const wizardData = getAllDataWithDefaults();
+    console.log('=== AI 사업계획서 생성 요청 준비 ===');
+    console.log('Wizard 데이터:', JSON.stringify(wizardData, null, 2));
+    
+    // API 요청 데이터 구성
+    const requestData = buildBusinessPlanRequest(wizardData);
+    
+    try {
+      // 백엔드 API 호출
+      const response = await generateBusinessPlan(requestData);
+      
+      if (response.success && response.data) {
+        // 성공: 생성된 사업계획서 저장 및 결과 페이지로 이동
+        console.log('=== AI 사업계획서 생성 성공 ===');
+        setGeneratedPlan(response.data);
+        setIsGenerating(false);
+        navigate('/business-plan');
+      } else {
+        // 실패: 에러 메시지 저장 후 결과 페이지로 이동 (예제 문서 표시)
+        const errorMessage = response.error?.message || '사업계획서 생성에 실패했습니다.';
+        console.error('=== AI 사업계획서 생성 실패 ===', response.error);
+        setError(errorMessage);
+        setIsGenerating(false);
+        // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
+        navigate('/business-plan');
+      }
+    } catch (err) {
+      // 예외 발생: 에러 메시지 저장 후 결과 페이지로 이동
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+      console.error('=== AI 사업계획서 생성 중 예외 발생 ===', err);
+      setError(errorMessage);
+      setIsGenerating(false);
+      // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
       navigate('/business-plan');
     }
   };
@@ -115,7 +188,68 @@ export const WizardStep: React.FC = () => {
   };
 
   const isCompleted = isStepCompleted(stepNumber);
-  const canProceed = stepNumber === steps.length || isCompleted || stepNumber === 4 || stepNumber === 5;
+  // [개발/디버깅 모드] 단계 완료 여부와 관계없이 항상 다음 버튼 활성화
+  const canProceed = true;
+  const isLastStep = stepNumber === steps.length;
+
+  // AI 생성 중 로딩 오버레이
+  if (isGenerating) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center py-16">
+          <Spinner size="lg" className="mb-6" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            AI가 사업계획서를 작성 중입니다...
+          </h2>
+          <p className="text-gray-600">
+            백엔드 서버에 요청을 전송하고 응답을 기다리는 중입니다.
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            입력하신 정보를 분석하여 최적의 사업계획서를 작성하고 있습니다.
+          </p>
+          <div className="mt-8 max-w-md mx-auto">
+            <div className="bg-gray-100 rounded-full h-2 overflow-hidden">
+              <div className="h-full bg-primary-600 rounded-full animate-pulse" style={{ width: '66%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 에러 발생 시 에러 UI
+  if (generationError) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center py-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            사업계획서 생성에 실패했습니다
+          </h2>
+          <p className="text-gray-600 mb-2">
+            {generationError}
+          </p>
+          <p className="text-sm text-gray-500 mb-8">
+            백엔드 서버(localhost:8080)가 실행 중인지 확인해주세요.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setGenerationError(null)}
+            >
+              돌아가기
+            </Button>
+            <Button onClick={handleGenerateBusinessPlan}>
+              <Sparkles className="w-4 h-4 mr-1" />
+              다시 시도
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -135,10 +269,8 @@ export const WizardStep: React.FC = () => {
 
       {/* Step Content */}
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 mb-6">
-        {stepNumber === 4 ? (
+        {stepNumber === 6 ? (
           <FinancialSimulation />
-        ) : stepNumber === 5 ? (
-          <PMFSurvey />
         ) : (
           <QuestionForm questions={step.questions} stepId={stepNumber} />
         )}
@@ -159,17 +291,26 @@ export const WizardStep: React.FC = () => {
           onClick={handleNext}
           disabled={!canProceed}
         >
-          {stepNumber === steps.length ? '사업계획서 생성' : '다음'}
-          {stepNumber < steps.length && <ChevronRight className="w-4 h-4 ml-1" />}
+          {isLastStep ? (
+            <>
+              <Sparkles className="w-4 h-4 mr-1" />
+              AI 사업계획서 생성
+            </>
+          ) : (
+            <>
+              다음
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </>
+          )}
         </Button>
       </div>
 
-      {/* Help Text */}
-      {!isCompleted && stepNumber !== 4 && stepNumber !== 5 && (
+      {/* Help Text - 개발/디버깅 모드에서는 숨김 */}
+      {/* {!isCompleted && stepNumber !== 6 && (
         <div className="mt-4 text-center text-sm text-gray-500">
           필수 항목(*)을 모두 입력하면 다음 단계로 진행할 수 있습니다.
         </div>
-      )}
+      )} */}
     </div>
   );
 };
