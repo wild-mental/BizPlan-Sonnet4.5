@@ -13,7 +13,7 @@ export default defineConfig({
         secure: false,
         // 디버깅용 로그
         configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq, req) => {
+          proxy.on('proxyReq', (_proxyReq, req) => {
             console.log(`[Proxy] ${req.method} ${req.url} -> http://localhost:8080${req.url}`);
           });
           proxy.on('proxyRes', (proxyRes, req) => {
