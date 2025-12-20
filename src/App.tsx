@@ -26,6 +26,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LandingPage } from './pages/LandingPage';
+import { SignupPage } from './pages/SignupPage';
+import { TeamPage } from './pages/TeamPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
 import { BusinessPlanViewer } from './pages/BusinessPlanViewer';
@@ -46,6 +48,12 @@ function App() {
       <Routes>
         {/* 랜딩페이지: 고객 유입 Hook */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* 회원가입: 요금제 선택 후 가입 */}
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/* 팀 소개 페이지 */}
+        <Route path="/team" element={<TeamPage />} />
 
         {/* 앱 시작점: 프로젝트 생성 */}
         <Route path="/app" element={<ProjectCreate />} />

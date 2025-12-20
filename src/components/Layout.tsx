@@ -85,7 +85,7 @@ export const Layout: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link to="/" className="text-xl font-bold text-primary-600">
-                StartupPlan
+                MakersRound
               </Link>
               {currentProject && (
                 <>

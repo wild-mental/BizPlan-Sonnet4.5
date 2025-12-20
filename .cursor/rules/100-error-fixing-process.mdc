@@ -17,3 +17,7 @@ alwaysApply: false
 - Cleanly modify code, preserving intent.
 ## Step 7: Propose Follow-up Improvements
 - Suggest tests, logging, refactors if needed.
+
+> **Reference:**  
+For frequently occurring errors and their causes/solutions, refer to the [110-common-error-patterns.mdc](110-common-error-patterns.mdc) document.  
+This document summarizes common real-world error scenarios and offers quick resolutions to help improve developer productivity.

@@ -217,3 +217,48 @@ export interface BusinessPlan {
 
 /** 저장 상태 */
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+// ============================================
+// Pricing Plan Types - 요금제 관련
+// ============================================
+
+/** 요금제 타입 */
+export type PricingPlanType = '기본' | '플러스' | '프로' | '프리미엄';
+
+/** 요금제 정보 */
+export interface PricingPlan {
+  /** 요금제 이름 */
+  name: PricingPlanType;
+  /** 가격 (문자열 - 무료 또는 숫자) */
+  price: string;
+  /** 결제 주기 (월 등) */
+  period: string;
+  /** 포함된 기능 목록 */
+  features: string[];
+  /** CTA 버튼 텍스트 */
+  cta: string;
+  /** 인기 요금제 여부 */
+  popular: boolean;
+}
+
+// ============================================
+// Auth Types - 인증 관련
+// ============================================
+
+/** 사용자 정보 */
+export interface User {
+  /** 사용자 ID */
+  id: string;
+  /** 이메일 */
+  email: string;
+  /** 이름 */
+  name: string;
+  /** 가입한 요금제 */
+  plan: PricingPlanType;
+  /** 소셜 로그인 제공자 */
+  socialProvider?: 'google' | 'kakao' | 'naver';
+  /** 마케팅 수신 동의 여부 */
+  marketingConsent: boolean;
+  /** 가입 시간 (ISO 문자열) */
+  createdAt: string;
+}

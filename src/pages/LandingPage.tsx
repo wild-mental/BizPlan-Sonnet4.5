@@ -341,37 +341,10 @@ export const LandingPage: React.FC = () => {
 
     audio.addEventListener('ended', handleTrackEnd);
 
-    // 리스너 제거 함수
-    const removeAllListeners = () => {
-      document.removeEventListener('click', handleFirstInteraction, true);
-      document.removeEventListener('touchstart', handleFirstInteraction, true);
-      document.removeEventListener('keydown', handleFirstInteraction, true);
-    };
-
-    // 첫 사용자 상호작용 시 재생 시작
-    const handleFirstInteraction = () => {
-      if (audioRef.current && !isBgmPlaying) {
-        audioRef.current.play()
-          .then(() => {
-            setIsBgmPlaying(true);
-            removeAllListeners();
-          })
-          .catch((e) => {
-            console.log('BGM 재생 대기 중...', e.message);
-          });
-      }
-    };
-
-    // capture: true로 이벤트 캡처 단계에서 리스닝
-    document.addEventListener('click', handleFirstInteraction, true);
-    document.addEventListener('touchstart', handleFirstInteraction, true);
-    document.addEventListener('keydown', handleFirstInteraction, true);
-
     // 컨포넌트 언마운트 시 정리
     return () => {
       audio.pause();
       audio.removeEventListener('ended', handleTrackEnd);
-      removeAllListeners();
       audioRef.current = null;
     };
   }, []);
@@ -403,6 +376,11 @@ export const LandingPage: React.FC = () => {
   }, []);
 
   const handleCTAClick = () => navigate('/app');
+
+  // 요금제 선택 시 회원가입 페이지로 이동
+  const handlePlanSelect = (planName: string) => {
+    navigate(`/signup?plan=${encodeURIComponent(planName)}`);
+  };
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -572,7 +550,7 @@ export const LandingPage: React.FC = () => {
                 onClick={handleCTAClick}
                 className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-12 py-6 text-xl font-bold shadow-2xl shadow-emerald-500/25 border-0 group"
               >
-                지금 바로 시작하기
+                지금 바로 작성하기
                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               <button
@@ -862,7 +840,7 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* Gallery Navigation Icons */}
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12 max-w-4xl mx-auto">
+              <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 mb-12 max-w-5xl mx-auto">
                 {makersDetailData.map((agent, i) => (
                   <button
                     key={i}
@@ -901,6 +879,16 @@ export const LandingPage: React.FC = () => {
                     </div>
                   </button>
                 ))}
+                
+                {/* CTA Button */}
+                <Button
+                  size="lg"
+                  onClick={handleCTAClick}
+                  className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-6 py-3 text-sm font-bold shadow-lg shadow-emerald-500/25 border-0 ml-4"
+                >
+                  무료로 AI 심사 받아보기
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </div>
 
               {/* Detail Card */}
@@ -1229,7 +1217,7 @@ export const LandingPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <Button onClick={handleCTAClick} className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}>
+                <Button onClick={() => handlePlanSelect(plan.name)} className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}>
                   {plan.cta}
                 </Button>
               </div>
@@ -1364,7 +1352,7 @@ export const LandingPage: React.FC = () => {
 
                 {/* CTA */}
                 <button
-                  onClick={handleCTAClick}
+                  onClick={() => handlePlanSelect(persona.tier)}
                   className={`w-full mt-5 py-3 rounded-xl bg-gradient-to-r ${persona.gradient} text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2`}
                 >
                   {persona.tier} 요금제로 시작하기
@@ -1377,7 +1365,7 @@ export const LandingPage: React.FC = () => {
           {/* Bottom message */}
           <div className="text-center mt-12">
             <p className="text-white/50">
-              어떤 요금제가 맞는지 모르겠다면, <button onClick={handleCTAClick} className="text-purple-400 hover:text-purple-300 underline underline-offset-4">무료로 시작</button>해보세요
+              어떤 요금제가 맞는지 모르겠다면, <button onClick={() => handlePlanSelect('기본')} className="text-purple-400 hover:text-purple-300 underline underline-offset-4">무료로 시작</button>해보세요
             </p>
           </div>
         </div>
@@ -1458,9 +1446,18 @@ export const LandingPage: React.FC = () => {
             <p className="text-3xl md:text-4xl font-bold text-gradient bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
               "세상의 모든 Maker를 위한 World"
             </p>
-            <p className="text-lg text-white/60">
+            <p className="text-lg text-white/60 mb-6">
               Makers World와 함께라면, 당신의 아이디어가 현실이 됩니다.
             </p>
+            {/* Team Intro Button */}
+            <Button
+              onClick={() => navigate('/team')}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              팀 소개 보기
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
