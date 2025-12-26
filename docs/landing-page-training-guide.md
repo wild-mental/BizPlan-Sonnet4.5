@@ -224,7 +224,7 @@ npm run dev -- --port 5174
 <div className="space-y-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
   <p className="text-xl md:text-2xl text-white/80 flex items-center justify-center gap-3">
     <Cpu className="w-6 h-6 text-cyan-400" />
-    <span><strong className="text-white">AI Multi-Agent</strong>가 심사위원 관점의 완벽한 초안을 제공합니다.</span>
+    <span><strong className="text-white">AI Multi-Agent</strong>가 심사위원 관점의 완벽한 컨설팅을 제공합니다.</span>
   </p>
   <p className="text-lg md:text-xl text-white/60 flex items-center justify-center gap-2">
     <BadgeCheck className="w-5 h-5 text-emerald-400" />
