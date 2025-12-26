@@ -331,9 +331,246 @@ const pricingPlans = [
 
 ---
 
-## 🎯 Phase 2: 사전 등록 관리 기능
+## 🎯 Phase 2: 사전 등록 관리 기능 (백엔드 연동 필수)
 
-### 2.1 사전 등록 데이터 스토어
+> ⚠️ **중요:** 이 Phase는 백엔드 API와 즉시 연동하여 구현합니다.
+> localStorage 임시 저장 없이 실제 서버에 데이터를 저장합니다.
+
+### 2.1 백엔드 API 엔드포인트 설계
+
+**우선순위:** 🔴 Critical
+**예상 소요:** 3-4시간
+
+**AI 에이전트 프롬프트:**
+
+```markdown
+## Context
+사전 등록 기능을 위한 백엔드 API를 Spring Boot로 구현해야 합니다.
+프론트엔드에서 즉시 연동할 수 있도록 RESTful API를 설계합니다.
+
+## Task
+사전 등록 관련 백엔드 API 엔드포인트를 구현해주세요.
+
+## API Endpoints
+
+### POST /api/v1/pre-registrations
+사전 등록 신청
+
+**Request Body:**
+```json
+{
+  "name": "홍길동",
+  "email": "hong@example.com",
+  "phone": "010-1234-5678",
+  "selectedPlan": "pro",
+  "businessCategory": "SaaS",
+  "agreeTerms": true,
+  "agreeMarketing": false
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "uuid-string",
+  "discountCode": "MR2026-A1B2C3",
+  "discountRate": 30,
+  "selectedPlan": "pro",
+  "originalPrice": 799000,
+  "discountedPrice": 559300,
+  "registeredAt": "2025-12-26T14:30:00+09:00",
+  "status": "confirmed"
+}
+```
+
+### GET /api/v1/pre-registrations/check-email?email={email}
+이메일 중복 체크
+
+**Response:**
+```json
+{
+  "exists": true,
+  "discountCode": "MR2026-A1B2C3" // 이미 등록된 경우
+}
+```
+
+### GET /api/v1/pre-registrations/{id}
+등록 정보 조회
+
+### GET /api/v1/promotions/current
+현재 프로모션 정보 조회
+
+**Response:**
+```json
+{
+  "isActive": true,
+  "currentPhase": "A",
+  "discountRate": 30,
+  "phaseAEnd": "2025-12-31T23:59:59+09:00",
+  "phaseBEnd": "2026-01-05T23:59:59+09:00",
+  "prices": {
+    "plus": { "original": 399000, "discounted": 279300 },
+    "pro": { "original": 799000, "discounted": 559300 },
+    "premium": { "original": 1499000, "discounted": 1049300 }
+  }
+}
+```
+
+## Database Schema (MySQL)
+
+```sql
+CREATE TABLE pre_registrations (
+  id VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone VARCHAR(20) NOT NULL,
+  selected_plan ENUM('plus', 'pro', 'premium') NOT NULL,
+  business_category VARCHAR(50),
+  agree_terms BOOLEAN NOT NULL DEFAULT TRUE,
+  agree_marketing BOOLEAN NOT NULL DEFAULT FALSE,
+  discount_code VARCHAR(20) NOT NULL UNIQUE,
+  discount_rate INT NOT NULL,
+  registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('pending', 'confirmed', 'cancelled', 'converted') DEFAULT 'confirmed',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_email (email),
+  INDEX idx_discount_code (discount_code),
+  INDEX idx_status (status)
+);
+```
+
+## Technical Constraints
+- Spring Boot 3.x + JPA
+- 할인 코드 생성: UUID 기반 6자리 영숫자
+- 이메일 발송: 비동기 처리 (@Async)
+- 할인율 자동 계산: 서버 시간 기준
+```
+
+---
+
+### 2.2 프론트엔드 API 연동 레이어
+
+**우선순위:** 🔴 Critical
+**예상 소요:** 2-3시간
+
+**AI 에이전트 프롬프트:**
+
+```markdown
+## Context
+백엔드 API와 연동하기 위한 프론트엔드 API 레이어를 구현합니다.
+Zustand 스토어는 서버 상태 캐싱 및 UI 상태 관리 용도로 사용합니다.
+
+## Task
+사전 등록 API 연동을 위한 서비스 레이어와 Zustand 스토어를 구현해주세요.
+
+## Requirements
+
+### API 서비스 (src/services/preRegistrationApi.ts)
+```typescript
+import axios from 'axios';
+
+const API_BASE = '/api/v1';
+
+export interface PreRegistrationRequest {
+  name: string;
+  email: string;
+  phone: string;
+  selectedPlan: 'plus' | 'pro' | 'premium';
+  businessCategory?: string;
+  agreeTerms: boolean;
+  agreeMarketing: boolean;
+}
+
+export interface PreRegistrationResponse {
+  id: string;
+  discountCode: string;
+  discountRate: number;
+  selectedPlan: string;
+  originalPrice: number;
+  discountedPrice: number;
+  registeredAt: string;
+  status: string;
+}
+
+export interface PromotionInfo {
+  isActive: boolean;
+  currentPhase: 'A' | 'B' | 'ENDED';
+  discountRate: number;
+  phaseAEnd: string;
+  phaseBEnd: string;
+  prices: Record<string, { original: number; discounted: number }>;
+}
+
+export const preRegistrationApi = {
+  // 사전 등록 신청
+  submit: async (data: PreRegistrationRequest): Promise<PreRegistrationResponse> => {
+    const response = await axios.post(`${API_BASE}/pre-registrations`, data);
+    return response.data;
+  },
+
+  // 이메일 중복 체크
+  checkEmail: async (email: string): Promise<{ exists: boolean; discountCode?: string }> => {
+    const response = await axios.get(`${API_BASE}/pre-registrations/check-email`, {
+      params: { email }
+    });
+    return response.data;
+  },
+
+  // 현재 프로모션 정보
+  getPromotionInfo: async (): Promise<PromotionInfo> => {
+    const response = await axios.get(`${API_BASE}/promotions/current`);
+    return response.data;
+  },
+
+  // 등록 정보 조회
+  getById: async (id: string): Promise<PreRegistrationResponse> => {
+    const response = await axios.get(`${API_BASE}/pre-registrations/${id}`);
+    return response.data;
+  }
+};
+```
+
+### Zustand 스토어 (src/stores/usePreRegistrationStore.ts)
+```typescript
+interface PreRegistrationStore {
+  // UI 상태
+  isModalOpen: boolean;
+  selectedPlan: string | null;
+  isSubmitting: boolean;
+  error: string | null;
+  
+  // 서버 응답 캐시
+  lastRegistration: PreRegistrationResponse | null;
+  promotionInfo: PromotionInfo | null;
+  
+  // Actions
+  openModal: (plan?: string) => void;
+  closeModal: () => void;
+  submitRegistration: (data: PreRegistrationRequest) => Promise<PreRegistrationResponse>;
+  checkEmailExists: (email: string) => Promise<boolean>;
+  fetchPromotionInfo: () => Promise<void>;
+  clearError: () => void;
+}
+```
+
+### 에러 핸들링
+- 네트워크 에러: 재시도 안내 토스트
+- 중복 이메일: 기존 할인 코드 안내
+- 서버 에러: 고객센터 문의 안내
+- 프로모션 종료: 종료 안내 + 정식 오픈 알림 신청 유도
+
+## Technical Constraints
+- axios 인스턴스 생성 (src/lib/axios.ts)
+- 요청/응답 인터셉터 설정
+- 에러 바운더리 연동
+- 로딩 상태 관리
+```
+
+---
+
+### 2.3 사전 등록 데이터 스토어 (서버 연동)
 
 **우선순위:** 🟡 High
 **예상 소요:** 2-3시간
@@ -342,57 +579,142 @@ const pricingPlans = [
 
 ```markdown
 ## Context
-사전 등록자 정보를 관리하기 위한 Zustand 스토어가 필요합니다.
-실제 백엔드 연동 전까지는 localStorage에 임시 저장합니다.
+백엔드 API와 연동하는 Zustand 스토어를 구현합니다.
+모든 데이터는 서버에서 관리되며, 스토어는 UI 상태와 서버 응답 캐싱 용도입니다.
 
 ## Task
-사전 등록 데이터를 관리하는 Zustand 스토어를 구현해주세요.
+사전 등록 API를 호출하고 상태를 관리하는 Zustand 스토어를 구현해주세요.
 
 ## Requirements
 
-### 스토어 구조
+### 스토어 구현
 ```typescript
-interface PreRegistration {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  selectedPlan: 'plus' | 'pro' | 'premium';
-  businessCategory?: string;
-  agreeTerms: boolean;
-  agreeMarketing: boolean;
-  registeredAt: string; // ISO datetime
-  status: 'pending' | 'confirmed' | 'cancelled';
-  discountCode?: string; // 자동 생성된 할인 코드
-}
+import { create } from 'zustand';
+import { preRegistrationApi, PreRegistrationRequest, PreRegistrationResponse, PromotionInfo } from '../services/preRegistrationApi';
 
 interface PreRegistrationStore {
-  registrations: PreRegistration[];
+  // UI 상태
   isModalOpen: boolean;
-  selectedPlan: string | null;
+  selectedPlan: 'plus' | 'pro' | 'premium' | null;
+  isSubmitting: boolean;
+  isCheckingEmail: boolean;
+  error: string | null;
   
-  // Actions
-  openModal: (plan?: string) => void;
+  // 서버 응답 캐시
+  lastRegistration: PreRegistrationResponse | null;
+  promotionInfo: PromotionInfo | null;
+  emailCheckResult: { exists: boolean; discountCode?: string } | null;
+  
+  // Modal Actions
+  openModal: (plan?: 'plus' | 'pro' | 'premium') => void;
   closeModal: () => void;
-  addRegistration: (data: Omit<PreRegistration, 'id' | 'registeredAt' | 'status' | 'discountCode'>) => Promise<PreRegistration>;
-  getRegistrationByEmail: (email: string) => PreRegistration | undefined;
-  updateRegistrationStatus: (id: string, status: PreRegistration['status']) => void;
+  
+  // API Actions
+  submitRegistration: (data: PreRegistrationRequest) => Promise<PreRegistrationResponse>;
+  checkEmailExists: (email: string) => Promise<{ exists: boolean; discountCode?: string }>;
+  fetchPromotionInfo: () => Promise<PromotionInfo>;
+  
+  // Utility Actions
+  clearError: () => void;
+  clearLastRegistration: () => void;
+  reset: () => void;
 }
+
+export const usePreRegistrationStore = create<PreRegistrationStore>((set, get) => ({
+  // Initial state
+  isModalOpen: false,
+  selectedPlan: null,
+  isSubmitting: false,
+  isCheckingEmail: false,
+  error: null,
+  lastRegistration: null,
+  promotionInfo: null,
+  emailCheckResult: null,
+
+  openModal: (plan) => set({ isModalOpen: true, selectedPlan: plan || null, error: null }),
+  closeModal: () => set({ isModalOpen: false, error: null }),
+
+  submitRegistration: async (data) => {
+    set({ isSubmitting: true, error: null });
+    try {
+      const response = await preRegistrationApi.submit(data);
+      set({ lastRegistration: response, isSubmitting: false, isModalOpen: false });
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || '등록 중 오류가 발생했습니다.';
+      set({ error: message, isSubmitting: false });
+      throw error;
+    }
+  },
+
+  checkEmailExists: async (email) => {
+    set({ isCheckingEmail: true });
+    try {
+      const result = await preRegistrationApi.checkEmail(email);
+      set({ emailCheckResult: result, isCheckingEmail: false });
+      return result;
+    } catch (error) {
+      set({ isCheckingEmail: false });
+      return { exists: false };
+    }
+  },
+
+  fetchPromotionInfo: async () => {
+    try {
+      const info = await preRegistrationApi.getPromotionInfo();
+      set({ promotionInfo: info });
+      return info;
+    } catch (error) {
+      console.error('Failed to fetch promotion info:', error);
+      throw error;
+    }
+  },
+
+  clearError: () => set({ error: null }),
+  clearLastRegistration: () => set({ lastRegistration: null }),
+  reset: () => set({
+    isModalOpen: false,
+    selectedPlan: null,
+    isSubmitting: false,
+    error: null,
+    lastRegistration: null,
+    emailCheckResult: null,
+  }),
+}));
 ```
 
-### 기능 요구사항
-1. **persist 미들웨어:** localStorage 연동
-2. **할인 코드 생성:** `MR2026-{랜덤6자리}` 형식
-3. **중복 이메일 체크:** 이미 등록된 이메일이면 에러
-4. **통계 계산:**
-   - 총 등록자 수
-   - 요금제별 등록자 수
-   - 마케팅 동의율
+### 사용 예시
+```tsx
+// 컴포넌트에서 사용
+const { 
+  isModalOpen, 
+  openModal, 
+  submitRegistration, 
+  isSubmitting,
+  promotionInfo 
+} = usePreRegistrationStore();
+
+// 프로모션 정보 로드 (앱 초기화 시)
+useEffect(() => {
+  usePreRegistrationStore.getState().fetchPromotionInfo();
+}, []);
+
+// 폼 제출
+const handleSubmit = async (data: PreRegistrationRequest) => {
+  try {
+    const result = await submitRegistration(data);
+    // 성공 화면으로 이동
+  } catch (error) {
+    // 에러 처리 (스토어에서 자동 처리됨)
+  }
+};
+```
 
 ## Technical Constraints
 - src/stores/usePreRegistrationStore.ts 파일 생성
-- 기존 useAuthStore.ts 패턴 참조
-- immer 미들웨어 사용 권장
+- 에러 메시지 한글화
+- 네트워크 에러 시 재시도 로직 (선택)
+- React Query 연동 고려 (선택)
 ```
 
 ---
