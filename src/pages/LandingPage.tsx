@@ -16,10 +16,10 @@ import {
 
 // BGM 트랙 목록
 const bgmTracks = [
-  '/assets/bgm1_StepForSuccess_A.mp3',
-  '/assets/bgm2_StepForSuccess_B.mp3',
-  '/assets/bgm3_BizStartPath_A.mp3',
-  '/assets/bgm4_BizStartPath_B.mp3',
+  '/assets/soundtrack/bgm1_StepForSuccess_A.mp3',
+  '/assets/soundtrack/bgm2_StepForSuccess_B.mp3',
+  '/assets/soundtrack/bgm3_BizStartPath_A.mp3',
+  '/assets/soundtrack/bgm4_BizStartPath_B.mp3',
 ];
 
 // M.A.K.E.R.S 위원회 데이터
@@ -34,10 +34,10 @@ const makersCommittee = [
 
 // 요금제 데이터
 const pricingPlans = [
-  { name: '기본', price: '무료', period: '', features: ['사업계획서 자동 생성', 'HWP/PDF 다운로드', '기본 템플릿 3종'], cta: '무료 시작', popular: false },
-  { name: '플러스', price: '29,000', period: '월', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트', '개선 피드백 제공'], cta: '플러스 시작', popular: false },
-  { name: '프로', price: '79,000', period: '월', features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '무제한 수정'], cta: '프로 시작', popular: true },
-  { name: '프리미엄', price: '199,000', period: '월', features: ['프로 기능 전체', '도메인 특화 전문가 매칭', '1:1 원격 컨설팅', '우선 지원'], cta: '프리미엄 시작', popular: false },
+  { name: '기본', price: '무료', period: '', features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], cta: '무료 데모', popular: false },
+  { name: '플러스', price: '399,000', period: '2026 상반기 시즌', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트', '개선 피드백 제공'], cta: '플러스 시작', popular: false },
+  { name: '프로', price: '799,000', period: '2026 상반기 시즌', features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '무제한 수정'], cta: '프로 시작', popular: true },
+  { name: '프리미엄', price: '1,499,000', period: '2026 상반기 시즌', features: ['프로 기능 전체', '도메인 특화 전문가 매칭', '1:1 원격 컨설팅', '우선 지원'], cta: '프리미엄 시작', popular: false },
 ];
 
 // 페르소나 데이터
@@ -256,6 +256,7 @@ export const LandingPage: React.FC = () => {
       name: 'Marketability',
       korean: '시장성 전문 AI',
       color: 'from-purple-500 to-violet-600',
+      image: '/assets/juror-single/j1_market_tr.png',
       trainingData: '2.3M+',
       trainingDesc: '시장 분석 보고서, 산업 리서치, VC 투자 데이터',
       accuracy: '96.2%',
@@ -269,6 +270,7 @@ export const LandingPage: React.FC = () => {
       name: 'Ability',
       korean: '수행능력 전문 AI',
       color: 'from-blue-500 to-indigo-600',
+      image: '/assets/juror-single/j2_ability_tr.png',
       trainingData: '1.8M+',
       trainingDesc: '창업 팀 분석, HR 데이터, 성공 사례 연구',
       accuracy: '94.7%',
@@ -282,6 +284,7 @@ export const LandingPage: React.FC = () => {
       name: 'Key Technology',
       korean: '핵심기술 전문 AI',
       color: 'from-cyan-500 to-teal-600',
+      image: '/assets/juror-single/j3_keytech_tr.png',
       trainingData: '3.1M+',
       trainingDesc: '특허 데이터, 기술 논문, R&D 보고서',
       accuracy: '97.1%',
@@ -295,6 +298,7 @@ export const LandingPage: React.FC = () => {
       name: 'Economics',
       korean: '경제성 전문 AI',
       color: 'from-emerald-500 to-green-600',
+      image: '/assets/juror-single/j4_economy_tr.png',
       trainingData: '2.7M+',
       trainingDesc: '재무제표, 투자 라운드, 손익 분석 데이터',
       accuracy: '95.8%',
@@ -308,6 +312,7 @@ export const LandingPage: React.FC = () => {
       name: 'Realization',
       korean: '실현가능성 전문 AI',
       color: 'from-orange-500 to-amber-600',
+      image: '/assets/juror-single/j5_realization_tr.png',
       trainingData: '1.5M+',
       trainingDesc: '프로젝트 마일스톤, 리스크 관리 사례',
       accuracy: '93.4%',
@@ -321,6 +326,7 @@ export const LandingPage: React.FC = () => {
       name: 'Social Value',
       korean: '사회적가치 전문 AI',
       color: 'from-pink-500 to-rose-600',
+      image: '/assets/juror-single/j6_social_tr.png',
       trainingData: '1.2M+',
       trainingDesc: 'ESG 보고서, 사회적기업 사례, 정부 정책',
       accuracy: '92.9%',
@@ -940,48 +946,49 @@ export const LandingPage: React.FC = () => {
                     className={`glass-card rounded-3xl p-8 border border-white/10 ${makersGalleryIndex === i ? 'block' : 'hidden'}`}
                   >
                     {/* Agent Header */}
-                    <div className="flex items-center gap-6 mb-8">
-                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${agent.color} flex items-center justify-center font-bold text-4xl shadow-2xl`}>
-                        {agent.letter}
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold mb-1">{agent.name}</h3>
-                        <p className="text-white/60 text-lg">{agent.korean}</p>
-                      </div>
-                    </div>
-
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                      <div className="glass rounded-xl p-4 text-center">
-                        <div className="text-3xl font-bold text-gradient mb-1">{agent.trainingData}</div>
-                        <div className="text-xs text-white/60">학습 데이터</div>
-                      </div>
-                      <div className="glass rounded-xl p-4 text-center">
-                        <div className="text-3xl font-bold text-emerald-400 mb-1">{agent.accuracy}</div>
-                        <div className="text-xs text-white/60">정확도</div>
-                      </div>
-                      <div className="glass rounded-xl p-4 text-center">
-                        <div className="text-3xl font-bold text-cyan-400 mb-1">{agent.validationScore}</div>
-                        <div className="text-xs text-white/60">검증 점수</div>
-                      </div>
-                      <div className="glass rounded-xl p-4 text-center">
-                        <div className="text-lg font-bold text-amber-400 mb-1">✨</div>
-                        <div className="text-xs text-white/60">{agent.specialFeature}</div>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-6">
+                      <img 
+                        src={agent.image} 
+                        alt={`${agent.name} AI`} 
+                        className="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl flex-shrink-0"
+                      />
+                      <div className="text-center md:text-left">
+                        <h3 className="text-2xl md:text-3xl font-bold mb-1">{agent.name} Agent</h3>
+                        <p className="text-white/60 text-lg mb-4">{agent.korean} 심사위원</p>
+                        {/* Stats Grid - Inline with header on desktop */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="glass rounded-xl p-3 text-center">
+                            <div className="text-xl font-bold text-gradient mb-0.5">{agent.trainingData}</div>
+                            <div className="text-xs text-white/60">학습 데이터</div>
+                          </div>
+                          <div className="glass rounded-xl p-3 text-center">
+                            <div className="text-xl font-bold text-emerald-400 mb-0.5">{agent.accuracy}</div>
+                            <div className="text-xs text-white/60">정확도</div>
+                          </div>
+                          <div className="glass rounded-xl p-3 text-center">
+                            <div className="text-xl font-bold text-cyan-400 mb-0.5">{agent.validationScore}</div>
+                            <div className="text-xs text-white/60">검증 점수</div>
+                          </div>
+                          <div className="glass rounded-xl p-3 text-center">
+                            <div className="text-sm font-bold text-amber-400 mb-0.5">✨</div>
+                            <div className="text-xs text-white/60 line-clamp-2">{agent.specialFeature}</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Training Description */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                       <h4 className="text-sm font-semibold text-purple-400 mb-2">학습 데이터 출처</h4>
-                      <p className="text-white/70">{agent.trainingDesc}</p>
+                      <p className="text-white/70 text-sm">{agent.trainingDesc}</p>
                     </div>
 
                     {/* Benchmarks */}
-                    <div className="mb-6">
-                      <h4 className="text-sm font-semibold text-blue-400 mb-3">평가 기능</h4>
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-blue-400 mb-2">평가 기능</h4>
                       <div className="flex flex-wrap gap-2">
                         {agent.benchmarks.map((b, j) => (
-                          <span key={j} className="px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm">
+                          <span key={j} className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs">
                             ✓ {b}
                           </span>
                         ))}
@@ -989,8 +996,8 @@ export const LandingPage: React.FC = () => {
                     </div>
 
                     {/* Description */}
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <p className="text-white/80 leading-relaxed">{agent.description}</p>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-white/80 text-sm leading-relaxed">{agent.description}</p>
                     </div>
                   </div>
                 ))}
@@ -1247,8 +1254,8 @@ export const LandingPage: React.FC = () => {
                 )}
                 <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</span>
-                  {plan.period && <span className="text-white/60">/{plan.period}</span>}
+                  <div className="text-4xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</div>
+                  {plan.period && <div className="text-sm text-white/60 mt-1">{plan.period}</div>}
                 </div>
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((f, j) => (
@@ -1365,21 +1372,15 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Problem */}
+                {/* Problem & Emotion */}
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="w-4 h-4 text-red-400" />
                     <span className="text-xs font-semibold text-red-400">겪고 있는 문제</span>
+                    <span className="text-xs text-white/40">|</span>
+                    <span className="text-xs text-pink-400/80">{persona.emotion}</span>
                   </div>
                   <p className="text-sm text-white/80 leading-relaxed">"{persona.problem}"</p>
-                </div>
-
-                {/* Emotion */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-pink-400" />
-                    <span className="text-xs text-white/50">감정: {persona.emotion}</span>
-                  </div>
                 </div>
 
                 {/* Goal */}
@@ -1428,7 +1429,7 @@ export const LandingPage: React.FC = () => {
               <Globe className="w-4 h-4" /> 전방위 창업자 지원 서비스
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-8">
-              당신의 창업 여정을 함께합니다
+              Makers World가<br/>당신의 사업 여정을 함께합니다
             </h2>
 
             {/* 3단계 창업 여정 with descriptions */}
@@ -1492,7 +1493,7 @@ export const LandingPage: React.FC = () => {
             </p>
             {/* Team Intro Button */}
             <Button
-              onClick={() => navigate('/team')}
+              onClick={() => { navigate('/team'); window.scrollTo(0, 0); }}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
             >
               <Users className="w-5 h-5 mr-2" />
