@@ -328,3 +328,50 @@
   perspective: 2000px;
   perspective-origin: center center;
 }
+
+/* ===== TEXT FLIP ANIMATION ===== */
+@keyframes text-flip-in {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes text-flip-out {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+}
+
+.text-flip-container {
+  perspective: 1000px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: baseline;
+}
+
+.text-flip-item {
+  display: inline-block;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  white-space: nowrap;
+}
+
+.text-flip-in {
+  animation: text-flip-in 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.text-flip-out {
+  animation: text-flip-out 0.35s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}

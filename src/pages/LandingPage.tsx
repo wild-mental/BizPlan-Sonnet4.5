@@ -9,8 +9,8 @@ import { Button } from '../components/ui';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
-  Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare, Crown,
-  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu, BadgeCheck,
+  Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare,
+  TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu,
   Volume2, VolumeX
 } from 'lucide-react';
 
@@ -228,6 +228,13 @@ const AutoScrollCarousel: React.FC<AutoScrollCarouselProps> = ({ reviews, color,
   );
 };
 
+// 히어로 섹션 플리핑 텍스트 데이터
+const heroFlipTexts = [
+  { text: '예비창업패키지 합격', color: 'text-emerald-400' },
+  { text: '초기창업패키지 합격', color: 'text-cyan-400' },
+  { text: '정책자금지원 합격', color: 'text-blue-400' },
+];
+
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activePersona, setActivePersona] = useState(0);
@@ -237,6 +244,10 @@ export const LandingPage: React.FC = () => {
   // AI 심사위원단 Flip 상태
   const [isMakersFlipped, setIsMakersFlipped] = useState(false);
   const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
+
+  // 히어로 섹션 텍스트 플리핑 상태
+  const [heroFlipIndex, setHeroFlipIndex] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   // AI 심사위원 상세 데이터
   const makersDetailData = [
@@ -375,6 +386,21 @@ export const LandingPage: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 히어로 섹션 텍스트 플리핑 애니메이션
+  useEffect(() => {
+    const flipInterval = setInterval(() => {
+      setIsFlipping(true);
+      
+      // 페이드 아웃 후 인덱스 변경
+      setTimeout(() => {
+        setHeroFlipIndex((prev) => (prev + 1) % heroFlipTexts.length);
+        setIsFlipping(false);
+      }, 400);
+    }, 3000);
+
+    return () => clearInterval(flipInterval);
+  }, []);
+
   const handleCTAClick = () => navigate('/app');
 
   // 요금제 선택 시 회원가입 페이지로 이동
@@ -490,7 +516,7 @@ export const LandingPage: React.FC = () => {
             <source src="/assets/MakersRoundHeroVideo.mp4" type="video/mp4" />
           </video>
           {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950" />
         </div>
 
         {/* Dynamic Background Effects */}
@@ -508,46 +534,35 @@ export const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-10 animate-fade-in border border-emerald-500/30">
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-emerald-400 text-sm font-medium">검증된 최고의 성능과 전문성</span>
-              </div>
-              <span className="text-white/30">|</span>
-              <span className="text-white/60 text-sm">MAKERS AI 심사위원단</span>
-            </div>
-
             {/* Main Headline */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight animate-fade-in-up">
-              정부지원금 합격 사업계획서,
+              <span className="text-flip-container">
+                <span 
+                  key={heroFlipIndex}
+                  className={`text-flip-item ${heroFlipTexts[heroFlipIndex].color} ${isFlipping ? 'text-flip-out' : 'text-flip-in'}`}
+                >
+                  {heroFlipTexts[heroFlipIndex].text}
+                </span>
+              </span>
               <br />
-              <span className="relative">
-                <span className="text-gradient bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">10분이면 충분합니다</span>
+              <span>사업계획서,</span>
+              <br />
+              <span className="text-gradient bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">최고의 </span>
+              <span className="relative inline-block">
+                <span className="text-gradient bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">AI 심사위원단</span>
                 <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2 8C50 2 100 2 150 6C200 10 250 8 298 4" stroke="url(#underline-gradient)" strokeWidth="3" strokeLinecap="round" />
                   <defs>
                     <linearGradient id="underline-gradient" x1="0" y1="0" x2="300" y2="0">
-                      <stop offset="0%" stopColor="#34d399" />
-                      <stop offset="50%" stopColor="#22d3ee" />
-                      <stop offset="100%" stopColor="#3b82f6" />
+                      <stop offset="0%" stopColor="#22d3ee" />
+                      <stop offset="50%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#a855f7" />
                     </linearGradient>
                   </defs>
                 </svg>
               </span>
+              <span className="text-gradient bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent">과 함께</span>
             </h1>
-
-            {/* Subheadlines */}
-            <div className="space-y-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <p className="text-xl md:text-2xl text-white/80 flex items-center justify-center gap-3">
-                <Cpu className="w-6 h-6 text-cyan-400" />
-                <span><strong className="text-white">AI Multi-Agent</strong>가 심사위원 관점의 완벽한 초안을 제공합니다.</span>
-              </p>
-              <p className="text-lg md:text-xl text-white/60 flex items-center justify-center gap-2">
-                <BadgeCheck className="w-5 h-5 text-emerald-400" />
-                <span>예비창업패키지 · 초기창업패키지 · 정책자금지원 모두 대응</span>
-              </p>
-            </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
@@ -559,23 +574,40 @@ export const LandingPage: React.FC = () => {
                 지금 바로 작성하기
                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <button
+              <Button
+                size="lg"
                 onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 text-white/60 hover:text-white transition-colors px-6 py-3"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-12 py-6 text-xl font-bold shadow-2xl shadow-purple-500/25 border-0 group"
               >
-                <span>AI 심사위원단 알아보기</span>
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                지금 바로 심사받기
+                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-white/10 hover:bg-white/20 border border-white/20 px-12 py-6 text-xl font-bold shadow-2xl shadow-white/5 group"
+              >
+                심사 영역 알아보기
+                <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+
+            {/* Subheadlines */}
+            <div className="space-y-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <p className="text-xl md:text-2xl text-white/80 flex items-center justify-center gap-3">
+                <Cpu className="w-6 h-6 text-cyan-400" />
+                <span>여섯가지 핵심 심사 영역별 <strong className="text-white">AI Multi-Agent</strong>가<br/>심사위원 관점의 완벽한 컨설팅을 제공합니다.</span>
+              </p>
             </div>
 
             {/* Key Benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.7s' }}>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.7s' }}>
               {[
-                { icon: Clock, title: '10분 완성', desc: '답변만 입력하면 AI가 전문 사업계획서 자동 생성', color: 'emerald' },
+                { icon: Clock, title: '쉽고 빠른 작성', desc: '영역별 답변으로 사업계획서 자동 생성', color: 'emerald' },
                 { icon: Target, title: '합격률 극대화', desc: 'M.A.K.E.R.S 6가지 심사기준 사전 검증', color: 'cyan' },
-                { icon: FileText, title: '즉시 다운로드', desc: 'HWP/PDF 형식으로 바로 제출 가능', color: 'blue' },
+                { icon: FileText, title: '즉시 다운로드', desc: '바로 제출 가능한 HWP/PDF 양식', color: 'blue' },
               ].map((item, i) => (
-                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift border border-${item.color}-500/20`}>
+                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift border border-${item.color}-500/20 flex-1 w-full sm:w-auto`}>
                   <div className={`w-12 h-12 rounded-xl bg-${item.color}-500/20 flex items-center justify-center mb-4 mx-auto`}>
                     <item.icon className={`w-6 h-6 text-${item.color}-400`} />
                   </div>
@@ -711,16 +743,29 @@ export const LandingPage: React.FC = () => {
             <div className="animate-fade-in">
               {/* Section Title */}
               <div className="text-center mb-16">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm mb-6">
-                  <Crown className="w-4 h-4" /> 핵심 차별점
-                </span>
+                <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <Rocket className="w-4 h-4" />
+                  </div>
+                  <span className="font-semibold">Makers Round</span>
+                  <span className="text-white/40">|</span>
+                  <span className="text-white/60 text-sm">by Makers World</span>
+                </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-4">
                   <span className="text-gradient">M.A.K.E.R.S</span> AI 심사위원단
                 </h2>
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {['시장성', '실현가능성', '핵심기술', '수익성', '사업화', '사회적가치'].map((term, i) => (
-                    <span key={i} className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-white font-medium text-sm">
-                      {term}
+                  {[
+                    { letter: 'M', korean: '시장성', color: 'purple' },
+                    { letter: 'A', korean: '수행능력', color: 'blue' },
+                    { letter: 'K', korean: '핵심기술', color: 'cyan' },
+                    { letter: 'E', korean: '경제성', color: 'emerald' },
+                    { letter: 'R', korean: '실현가능성', color: 'orange' },
+                    { letter: 'S', korean: '사회적가치', color: 'pink' },
+                  ].map((item, i) => (
+                    <span key={i} className={`px-3 py-1 rounded-full bg-${item.color}-500/20 border border-${item.color}-500/30 text-white font-medium text-sm flex items-center gap-1.5`}>
+                      <span className={`w-5 h-5 rounded bg-${item.color}-500/40 flex items-center justify-center text-xs font-bold`}>{item.letter}</span>
+                      {item.korean}
                     </span>
                   ))}
                 </div>
@@ -733,15 +778,6 @@ export const LandingPage: React.FC = () => {
               <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
                 {/* Left Column */}
                 <div className="flex flex-col justify-center">
-                  <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-8 w-fit">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                      <Rocket className="w-4 h-4" />
-                    </div>
-                    <span className="font-semibold">Makers Round</span>
-                    <span className="text-white/40">|</span>
-                    <span className="text-white/60 text-sm">by Makers World</span>
-                  </div>
-
                   <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                     정부지원금 합격률을<br />
                     <span className="text-gradient">6명의 AI 심사위원</span>이<br />
@@ -778,11 +814,10 @@ export const LandingPage: React.FC = () => {
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     {[
                       { value: '3,500+', label: '사업계획서 심사' },
                       { value: '94.7%', label: '사용자 만족도' },
-                      { value: '6명', label: 'AI 심사위원' },
                       { value: '10분', label: '평균 소요시간' },
                     ].map((s, i) => (
                       <div key={i} className="text-center glass rounded-xl p-3">
@@ -842,7 +877,7 @@ export const LandingPage: React.FC = () => {
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">
                   AI 심사위원 <span className="text-gradient">전문성 상세</span>
                 </h2>
-                <p className="text-white/60">6명의 AI 심사위원이 어떻게 학습되고 검증되었는지 확인하세요</p>
+                <p className="text-white/60">6가지 핵심 평가영역에 대한 AI 심사위원단의 전문성을 확인하세요</p>
               </div>
 
               {/* Gallery Navigation Icons */}
