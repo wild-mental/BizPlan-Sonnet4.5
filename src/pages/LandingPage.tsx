@@ -1450,7 +1450,7 @@ export const LandingPage: React.FC = () => {
                         {/* Phase A 추가 절약 표시 */}
                         {promoStatus.isPhaseA && planPricing.extraSavingsVsPhaseB > 0 && (
                           <div className="text-xs text-orange-300 mt-1">
-                            공고 전보다 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)} 더 절약!
+                            연말 특가 추가 혜택 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)}
                           </div>
                         )}
                       </>
