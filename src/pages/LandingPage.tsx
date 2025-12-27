@@ -42,11 +42,11 @@ const pricingPlans = [
   { 
     name: '기본', 
     planKey: null as null, // 무료 요금제는 할인 미적용
-    price: '무료', 
+    price: '무료 데모', 
     originalPrice: 0,
     period: '', 
     features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], 
-    cta: '무료 데모', 
+    cta: '무료 데모 바로가기', 
     popular: false 
   },
   { 
@@ -1427,8 +1427,8 @@ export const LandingPage: React.FC = () => {
                   
                   {/* 가격 영역 */}
                   <div className="mb-6">
-                    {plan.price === '무료' ? (
-                      <div className="text-4xl font-bold">무료</div>
+                    {plan.planKey === null ? (
+                      <div className="text-3xl font-bold text-white/50">₩0 <span className="text-lg">(무료 데모)</span></div>
                     ) : hasDiscount && planPricing ? (
                       <>
                         {/* 정가 (취소선) */}
