@@ -5,4 +5,5 @@ export { Textarea } from './Textarea';
 export { Badge } from './Badge';
 export { Progress } from './Progress';
 export { Spinner } from './Spinner';
+export { PromotionBanner } from './PromotionBanner';
 

@@ -5,14 +5,19 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui';
+import { Button, PromotionBanner } from '../components/ui';
+import PreRegistrationModal from '../components/PreRegistrationModal';
+import PreRegistrationSuccess from '../components/PreRegistrationSuccess';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
   Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare,
   TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu,
-  Volume2, VolumeX
+  Volume2, VolumeX, Flame
 } from 'lucide-react';
+import { getPlanPricing, getPromotionStatus, formatPrice } from '../utils/pricing';
+import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
+import type { PlanType } from '../utils/pricing';
 
 // BGM 트랙 목록
 const bgmTracks = [
@@ -32,12 +37,48 @@ const makersCommittee = [
   { letter: 'S', name: 'Social Value', korean: '사회적가치', icon: Heart, color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-500/20', borderColor: 'border-pink-500/30', description: '일자리 창출, 지역 균형, ESG, 정부 정책 방향' },
 ];
 
-// 요금제 데이터
+// 요금제 데이터 (할인가 정보 포함)
 const pricingPlans = [
-  { name: '기본', price: '무료', period: '', features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], cta: '무료 데모', popular: false },
-  { name: '플러스', price: '399,000', period: '2026 상반기 시즌', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트', '개선 피드백 제공'], cta: '플러스 시작', popular: false },
-  { name: '프로', price: '799,000', period: '2026 상반기 시즌', features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '무제한 수정'], cta: '프로 시작', popular: true },
-  { name: '프리미엄', price: '1,499,000', period: '2026 상반기 시즌', features: ['프로 기능 전체', '도메인 특화 전문가 매칭', '1:1 원격 컨설팅', '우선 지원'], cta: '프리미엄 시작', popular: false },
+  { 
+    name: '기본', 
+    planKey: null as null, // 무료 요금제는 할인 미적용
+    price: '무료', 
+    originalPrice: 0,
+    period: '', 
+    features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], 
+    cta: '무료 데모', 
+    popular: false 
+  },
+  { 
+    name: '플러스', 
+    planKey: 'plus' as const,
+    price: '399,000', 
+    originalPrice: 399000,
+    period: '2026 상반기 시즌', 
+    features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트', '개선 피드백 제공'], 
+    cta: '플러스 시작', 
+    popular: false 
+  },
+  { 
+    name: '프로', 
+    planKey: 'pro' as const,
+    price: '799,000', 
+    originalPrice: 799000,
+    period: '2026 상반기 시즌', 
+    features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '무제한 수정'], 
+    cta: '프로 시작', 
+    popular: true 
+  },
+  { 
+    name: '프리미엄', 
+    planKey: 'premium' as const,
+    price: '1,499,000', 
+    originalPrice: 1499000,
+    period: '2026 상반기 시즌', 
+    features: ['프로 기능 전체', '도메인 특화 전문가 매칭', '1:1 원격 컨설팅', '우선 지원'], 
+    cta: '프리미엄 시작', 
+    popular: false 
+  },
 ];
 
 // 페르소나 데이터
@@ -241,6 +282,9 @@ export const LandingPage: React.FC = () => {
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // 사전 등록 스토어
+  const { openModal: openPreRegistrationModal, lastRegistration } = usePreRegistrationStore();
+
   // AI 심사위원단 Flip 상태
   const [isMakersFlipped, setIsMakersFlipped] = useState(false);
   const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
@@ -409,8 +453,25 @@ export const LandingPage: React.FC = () => {
 
   const handleCTAClick = () => navigate('/app');
 
-  // 요금제 선택 시 회원가입 페이지로 이동
+  // 요금제 선택 시 프로모션 활성화 여부에 따라 모달 또는 회원가입 페이지로 이동
   const handlePlanSelect = (planName: string) => {
+    const promoStatus = getPromotionStatus();
+    
+    // 프로모션 활성화 중이고 유료 요금제인 경우 사전 등록 모달 오픈
+    if (promoStatus.isActive && planName !== '기본') {
+      const planKeyMap: Record<string, 'plus' | 'pro' | 'premium'> = {
+        '플러스': 'plus',
+        '프로': 'pro',
+        '프리미엄': 'premium',
+      };
+      const planKey = planKeyMap[planName];
+      if (planKey) {
+        openPreRegistrationModal(planKey);
+        return;
+      }
+    }
+    
+    // 기본 요금제 또는 프로모션 종료 시 회원가입 페이지로 이동
     navigate(`/signup?plan=${encodeURIComponent(planName)}`);
   };
 
@@ -423,6 +484,9 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+      {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
+      <PromotionBanner onRegisterClick={() => openPreRegistrationModal('pro')} />
+      
       {/* ===== FIXED HEADER NAVIGATION ===== */}
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
@@ -1245,31 +1309,104 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {pricingPlans.map((plan, i) => (
-              <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
-                    가장 인기
+            {pricingPlans.map((plan, i) => {
+              // 할인 정보 계산 (무료 요금제 제외)
+              const promoStatus = getPromotionStatus();
+              const planPricing = plan.planKey ? getPlanPricing(plan.planKey) : null;
+              const hasDiscount = planPricing && planPricing.isDiscounted;
+              
+              return (
+                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
+                  {/* 할인 배지 (유료 요금제만) */}
+                  {hasDiscount && (
+                    <div className={`absolute -top-3 -right-3 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 animate-pulse ${
+                      promoStatus.isPhaseA 
+                        ? 'bg-gradient-to-r from-rose-500 to-orange-500' 
+                        : 'bg-gradient-to-r from-emerald-500 to-cyan-500'
+                    }`}>
+                      {promoStatus.isPhaseA ? <Flame className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
+                      {promoStatus.discountRate}% OFF
+                    </div>
+                  )}
+                  
+                  {/* 인기 배지 */}
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
+                      가장 인기
+                    </div>
+                  )}
+                  
+                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                  
+                  {/* 가격 영역 */}
+                  <div className="mb-6">
+                    {plan.price === '무료' ? (
+                      <div className="text-4xl font-bold">무료</div>
+                    ) : hasDiscount && planPricing ? (
+                      <>
+                        {/* 정가 (취소선) */}
+                        <div className="text-lg text-white/40 line-through">
+                          ₩{formatPrice(planPricing.originalPrice)}
+                        </div>
+                        {/* 할인가 */}
+                        <div className={`text-3xl font-bold ${
+                          promoStatus.isPhaseA ? 'text-rose-400' : 'text-emerald-400'
+                        }`}>
+                          ₩{formatPrice(planPricing.currentPrice)}
+                        </div>
+                        {/* 절약 금액 */}
+                        <div className={`text-sm font-medium mt-1 ${
+                          promoStatus.isPhaseA ? 'text-rose-300' : 'text-emerald-300'
+                        }`}>
+                          ₩{formatPrice(planPricing.savings)} 절약!
+                        </div>
+                        {/* Phase A 추가 절약 표시 */}
+                        {promoStatus.isPhaseA && planPricing.extraSavingsVsPhaseB > 0 && (
+                          <div className="text-xs text-orange-300 mt-1">
+                            공고 전보다 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)} 더 절약!
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-4xl font-bold">₩{plan.price}</div>
+                    )}
+                    {plan.period && <div className="text-sm text-white/60 mt-2">{plan.period}</div>}
                   </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <div className="text-4xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</div>
-                  {plan.period && <div className="text-sm text-white/60 mt-1">{plan.period}</div>}
+                  
+                  <ul className="space-y-3 mb-6">
+                    {plan.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm text-white/80">
+                        <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {/* CTA 버튼 */}
+                  <Button 
+                    onClick={() => handlePlanSelect(plan.name)} 
+                    className={`w-full ${
+                      hasDiscount && promoStatus.isPhaseA
+                        ? 'bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400'
+                        : plan.popular 
+                          ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
+                          : 'bg-white/10 hover:bg-white/20'
+                    }`}
+                  >
+                    {hasDiscount && promoStatus.isPhaseA ? (
+                      <>
+                        <Flame className="w-4 h-4 mr-1" />
+                        연말연시 특가 등록
+                      </>
+                    ) : hasDiscount ? (
+                      '사전 등록하기'
+                    ) : (
+                      plan.cta
+                    )}
+                  </Button>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-white/80">
-                      <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button onClick={() => handlePlanSelect(plan.name)} className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}>
-                  {plan.cta}
-                </Button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1548,6 +1685,12 @@ export const LandingPage: React.FC = () => {
           <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
         </div>
       </footer>
+
+      {/* ===== 사전 등록 모달 ===== */}
+      <PreRegistrationModal />
+
+      {/* ===== 사전 등록 완료 화면 ===== */}
+      {lastRegistration && <PreRegistrationSuccess />}
     </div>
   );
 };
