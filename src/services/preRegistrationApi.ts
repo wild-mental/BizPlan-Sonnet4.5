@@ -3,7 +3,7 @@
  * Pre-registration API service layer
  */
 
-import axios from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 const API_BASE = '/api/v1';
 
@@ -57,28 +57,28 @@ const apiClient = axios.create({
 
 // 요청 인터셉터
 apiClient.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     // 개발 환경 로깅
     if (import.meta.env.DEV) {
       console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config.data);
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
 // 응답 인터셉터
 apiClient.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     // 개발 환경 로깅
     if (import.meta.env.DEV) {
       console.log(`[API Response] ${response.config.url}`, response.data);
     }
     return response;
   },
-  (error) => {
+  (error: AxiosError) => {
     // 에러 로깅
     if (import.meta.env.DEV) {
       console.error(`[API Error] ${error.config?.url}`, error.response?.data || error.message);

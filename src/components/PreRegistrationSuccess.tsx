@@ -3,8 +3,8 @@
  * Pre-registration success screen with discount code and sharing
  */
 
-import React, { useState, useEffect } from 'react';
-import { Check, Copy, CheckCircle2, Share2, X, Flame, Sparkles } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Check, Copy, CheckCircle2, Share2, X } from 'lucide-react';
 import { Button } from './ui';
 import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
 import { formatPrice } from '../utils/pricing';
@@ -22,10 +22,21 @@ export const PreRegistrationSuccess: React.FC<PreRegistrationSuccessProps> = ({ 
   // 프로모션 Phase
   const phase = getCurrentPromotionPhase();
   const isPhaseA = phase === 'A';
-  const PhaseIcon = isPhaseA ? Flame : Sparkles;
   const gradientClass = isPhaseA
     ? 'from-rose-500 to-orange-500'
     : 'from-emerald-500 to-cyan-500';
+
+  // 컨페티 위치 미리 계산 (렌더 중 Math.random 호출 방지)
+  const confettiItems = useMemo(() => {
+    return [...Array(20)].map((_, i) => ({
+      id: i,
+      backgroundColor: ['#F97316', '#10B981', '#8B5CF6', '#EC4899', '#3B82F6'][i % 5],
+      left: `${(i * 17 + 5) % 100}%`,
+      top: `${(i * 23 + 10) % 100}%`,
+      animationDelay: `${(i * 0.1) % 2}s`,
+      animationDuration: `${1 + (i % 3) * 0.3}s`,
+    }));
+  }, []);
 
   // 할인 코드 복사
   const handleCopyCode = async () => {
@@ -124,16 +135,16 @@ export const PreRegistrationSuccess: React.FC<PreRegistrationSuccessProps> = ({ 
 
           {/* 컨페티 효과 */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(20)].map((_, i) => (
+            {confettiItems.map((item) => (
               <div
-                key={i}
+                key={item.id}
                 className="absolute w-2 h-2 rounded-full animate-bounce"
                 style={{
-                  backgroundColor: ['#F97316', '#10B981', '#8B5CF6', '#EC4899', '#3B82F6'][i % 5],
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${1 + Math.random()}s`,
+                  backgroundColor: item.backgroundColor,
+                  left: item.left,
+                  top: item.top,
+                  animationDelay: item.animationDelay,
+                  animationDuration: item.animationDuration,
                 }}
               />
             ))}
@@ -225,7 +236,7 @@ export const PreRegistrationSuccess: React.FC<PreRegistrationSuccessProps> = ({ 
             <div className="relative">
               <Button
                 onClick={() => {
-                  if (navigator.share) {
+                  if ('share' in navigator && typeof navigator.share === 'function') {
                     handleShare('native');
                   } else {
                     setShowShareOptions(!showShareOptions);

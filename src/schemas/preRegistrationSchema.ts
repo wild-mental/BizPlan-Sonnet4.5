@@ -46,7 +46,7 @@ export const preRegistrationSchema = z.object({
 
   // 선택 요금제
   selectedPlan: z.enum(planTypes, {
-    errorMap: () => ({ message: '요금제를 선택해주세요.' }),
+    message: '요금제를 선택해주세요.',
   }),
 
   // 사업 분야 (선택)
@@ -60,7 +60,7 @@ export const preRegistrationSchema = z.object({
     }),
 
   // 마케팅 정보 수신 동의 (선택)
-  agreeMarketing: z.boolean().optional().default(false),
+  agreeMarketing: z.boolean(),
 });
 
 // 타입 추론
