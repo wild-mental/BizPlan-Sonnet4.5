@@ -1307,12 +1307,93 @@ export const LandingPage: React.FC = () => {
       {/* ===== PRICING SECTION ===== */}
       <section id="pricing-section" className="py-24 relative scroll-mt-20" >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
               <Zap className="w-4 h-4" /> 요금제
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">합리적인 가격, 압도적인 가치</h2>
           </div>
+
+          {/* 프로모션 기간 타임테이블 */}
+          {getPromotionStatus().isActive && (
+            <div className="max-w-4xl mx-auto mb-12">
+              <div className="glass-card rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-bold text-center mb-6 flex items-center justify-center gap-2">
+                  <Clock className="w-5 h-5 text-emerald-400" />
+                  사전 등록 프로모션 일정
+                </h3>
+                
+                {/* 타임라인 */}
+                <div className="relative">
+                  {/* 배경 라인 */}
+                  <div className="absolute top-6 left-0 right-0 h-1 bg-white/10 rounded-full" />
+                  
+                  {/* 진행 상태 표시 */}
+                  <div className={`absolute top-6 left-0 h-1 rounded-full transition-all duration-500 ${
+                    getPromotionStatus().isPhaseA 
+                      ? 'w-1/2 bg-gradient-to-r from-rose-500 to-orange-500' 
+                      : 'w-full bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                  }`} />
+                  
+                  {/* 기간 표시 */}
+                  <div className="relative flex justify-between">
+                    {/* Phase A: 연말연시 특별 */}
+                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseA ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                        getPromotionStatus().isPhaseA 
+                          ? 'bg-gradient-to-r from-rose-500 to-orange-500 shadow-lg shadow-rose-500/30' 
+                          : 'bg-white/20'
+                      }`}>
+                        <Flame className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="font-bold text-white mb-1">🔥 연말연시 특별</div>
+                      <div className={`text-2xl font-bold mb-1 ${getPromotionStatus().isPhaseA ? 'text-rose-400' : 'text-white/50'}`}>
+                        30% 할인
+                      </div>
+                      <div className="text-sm text-white/60">12/28 ~ 1/3</div>
+                      {getPromotionStatus().isPhaseA && (
+                        <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-rose-500/20 rounded-full text-xs text-rose-300 font-medium">
+                          <span className="w-2 h-2 bg-rose-400 rounded-full animate-pulse" />
+                          진행 중
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Phase B: 공고 전 얼리버드 */}
+                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                        getPromotionStatus().isPhaseB 
+                          ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30' 
+                          : 'bg-white/20'
+                      }`}>
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="font-bold text-white mb-1">✨ 공고 전 얼리버드</div>
+                      <div className={`text-2xl font-bold mb-1 ${getPromotionStatus().isPhaseB ? 'text-emerald-400' : 'text-white/50'}`}>
+                        10% 할인
+                      </div>
+                      <div className="text-sm text-white/60">1/4 ~ 접수 시작일</div>
+                      {getPromotionStatus().isPhaseB && (
+                        <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/20 rounded-full text-xs text-emerald-300 font-medium">
+                          <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                          진행 중
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 안내 메시지 */}
+                <div className="mt-6 text-center text-sm text-white/50">
+                  {getPromotionStatus().isPhaseA ? (
+                    <span>연말연시 기간에 등록하면 <strong className="text-rose-300">추가 20% 절약</strong> 혜택!</span>
+                  ) : (
+                    <span>정부지원사업 접수 시작일 전까지 사전 등록 시 할인 적용</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {pricingPlans.map((plan, i) => {
