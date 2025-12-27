@@ -45,7 +45,7 @@ const pricingPlans = [
     price: '무료 데모', 
     originalPrice: 0,
     period: '', 
-    features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], 
+    features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험 (2026년 양식 통합공고 후 제공)'], 
     cta: '무료 데모 바로가기', 
     popular: false 
   },
