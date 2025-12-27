@@ -21,9 +21,10 @@ const HIDE_DURATION_MS = 24 * 60 * 60 * 1000; // 24시간
 
 interface PromotionBannerProps {
   onRegisterClick?: () => void;
+  onVisibilityChange?: (isVisible: boolean) => void;
 }
 
-export const PromotionBanner: React.FC<PromotionBannerProps> = ({ onRegisterClick }) => {
+export const PromotionBanner: React.FC<PromotionBannerProps> = ({ onRegisterClick, onVisibilityChange }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   
@@ -39,6 +40,7 @@ export const PromotionBanner: React.FC<PromotionBannerProps> = ({ onRegisterClic
   useEffect(() => {
     if (!isPromotionActive()) {
       setIsVisible(false);
+      onVisibilityChange?.(false);
       return;
     }
 
@@ -47,18 +49,21 @@ export const PromotionBanner: React.FC<PromotionBannerProps> = ({ onRegisterClic
       const hiddenUntilTime = parseInt(hiddenUntil, 10);
       if (Date.now() < hiddenUntilTime) {
         setIsVisible(false);
+        onVisibilityChange?.(false);
         return;
       }
     }
     
     setIsVisible(true);
-  }, []);
+    onVisibilityChange?.(true);
+  }, [onVisibilityChange]);
 
   // 배너 닫기 핸들러 (24시간 숨김)
   const handleClose = () => {
     const hideUntil = Date.now() + HIDE_DURATION_MS;
     localStorage.setItem(BANNER_HIDDEN_KEY, hideUntil.toString());
     setIsVisible(false);
+    onVisibilityChange?.(false);
   };
 
   // 등록하기 클릭 핸들러

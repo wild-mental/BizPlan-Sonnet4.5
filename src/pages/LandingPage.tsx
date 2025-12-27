@@ -281,6 +281,7 @@ export const LandingPage: React.FC = () => {
   const [activePersona, setActivePersona] = useState(0);
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
 
   // 사전 등록 스토어
   const { openModal: openPreRegistrationModal, lastRegistration } = usePreRegistrationStore();
@@ -485,11 +486,16 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
       {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
-      <PromotionBanner onRegisterClick={() => openPreRegistrationModal('pro')} />
+      <PromotionBanner 
+        onRegisterClick={() => openPreRegistrationModal('pro')} 
+        onVisibilityChange={setIsBannerVisible}
+      />
       
       {/* ===== FIXED HEADER NAVIGATION ===== */}
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
+        className={`fixed left-0 w-full z-50 transition-all duration-300 ${
+          isBannerVisible ? 'top-12 sm:top-10' : 'top-0'
+        } ${isScrolled
           ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
           : 'bg-transparent'
           }`}
