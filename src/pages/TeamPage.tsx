@@ -468,10 +468,6 @@ export const TeamPage: React.FC = () => {
             <PricingCards showTimetable={true} showDemoButtons={true} />
           </div>
 
-          {/* Bottom Note */}
-          <p className="text-center text-white/50 text-sm">
-            모든 요금제는 7일 무료 체험 후 결제됩니다. 언제든지 해지 가능합니다.
-          </p>
         </div>
       </section>
 
