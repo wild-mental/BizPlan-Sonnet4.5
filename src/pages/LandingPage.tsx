@@ -1408,7 +1408,7 @@ export const LandingPage: React.FC = () => {
               const hasDiscount = planPricing && planPricing.isDiscounted;
               
               return (
-                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
+                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative flex flex-col ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
                   {/* 할인 배지 (유료 요금제만) */}
                   {hasDiscount && (
                     <div className={`absolute -top-3 -right-3 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 animate-pulse ${
@@ -1465,7 +1465,7 @@ export const LandingPage: React.FC = () => {
                     {plan.period && <div className="text-sm text-white/60 mt-2">{plan.period}</div>}
                   </div>
                   
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-3 mb-6 flex-1">
                     {plan.features.map((f, j) => {
                       const isObject = typeof f === 'object' && f !== null;
                       const text = isObject ? f.text : f;
