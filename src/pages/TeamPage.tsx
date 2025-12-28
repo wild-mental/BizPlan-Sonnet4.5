@@ -260,10 +260,11 @@ export const TeamPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <div className="glass-card rounded-3xl p-8 md:p-12 border border-amber-500/20">
-              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+              {/* Top Section: Image + Basic Info */}
+              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-8">
                 {/* Profile Image */}
                 <div className="flex-shrink-0">
-                  <div className="w-52 h-52 md:w-72 md:h-72 rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
+                  <div className="w-72 h-72 md:w-[400px] md:h-[400px] rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
                     <img 
                       src={ceoProfile.image} 
                       alt={ceoProfile.name}
@@ -279,7 +280,7 @@ export const TeamPage: React.FC = () => {
                   <p className="text-white/60 text-sm mb-4 whitespace-pre-line">{ceoProfile.sub}</p>
 
                   {/* Career */}
-                  <div className="mb-4">
+                  <div>
                     <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
                     <ul className="space-y-2">
                       {ceoProfile.career.map((item, i) => {
@@ -298,25 +299,26 @@ export const TeamPage: React.FC = () => {
                       })}
                     </ul>
                   </div>
-
-                  {/* Achievements */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-white/80 mb-2">주요 성과</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {ceoProfile.achievements.map((item, i) => (
-                        <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Quote */}
-                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4 whitespace-pre-line">
-                    {ceoProfile.quote}
-                  </blockquote>
                 </div>
               </div>
+
+              {/* Bottom Section: Full Width */}
+              {/* Achievements */}
+              <div className="mb-6 pt-6 border-t border-white/10">
+                <h4 className="text-sm font-semibold text-white/80 mb-3">주요 성과</h4>
+                <div className="flex flex-wrap gap-2">
+                  {ceoProfile.achievements.map((item, i) => (
+                    <span key={i} className="text-sm px-4 py-2 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quote */}
+              <blockquote className="text-lg md:text-xl italic text-white/80 border-l-4 border-amber-500 pl-6 whitespace-pre-line">
+                {ceoProfile.quote}
+              </blockquote>
             </div>
           </div>
         </div>
