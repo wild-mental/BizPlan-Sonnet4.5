@@ -316,8 +316,12 @@ export const TeamPage: React.FC = () => {
               </div>
 
               {/* Quote */}
-              <blockquote className="text-lg md:text-xl italic text-white/80 border-l-4 border-amber-500 pl-6 whitespace-pre-line">
-                {ceoProfile.quote}
+              <blockquote className="text-lg md:text-xl italic text-white/80 border-l-4 border-amber-500 pl-6">
+                "앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다.
+                <br />
+                AI 연구자의 시선으로 설계하고,
+                <br className="md:hidden" />
+                {' '}전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."
               </blockquote>
             </div>
           </div>

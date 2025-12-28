@@ -1783,7 +1783,7 @@ export const LandingPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-blue-900/50 to-slate-900" />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            지금 바로<br /><span className="text-gradient">AI 심사위원단</span>를 만나보세요
+            지금 바로<br /><span className="text-gradient">AI 심사위원단</span>을 만나보세요
           </h2>
           <p className="text-xl text-white/70 mb-10 max-w-xl mx-auto">
             무료로 시작하고, 6명의 AI 심사위원에게<br />사업계획서 피드백을 받아보세요
