@@ -281,13 +281,21 @@ export const TeamPage: React.FC = () => {
                   {/* Career */}
                   <div className="mb-4">
                     <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
-                    <ul className="space-y-1">
-                      {ceoProfile.career.map((item, i) => (
-                        <li key={i} className="text-sm text-white/60 flex items-start gap-2">
-                          <span className="text-amber-400 mt-1">•</span>
-                          {item}
-                        </li>
-                      ))}
+                    <ul className="space-y-2">
+                      {ceoProfile.career.map((item, i) => {
+                        const [title, desc] = item.includes(' - ') ? item.split(' - ') : [item, null];
+                        return (
+                          <li key={i} className="text-sm flex items-start gap-2">
+                            <span className="text-amber-400 mt-1">•</span>
+                            <div>
+                              <span className="text-white/60">{title}</span>
+                              {desc && (
+                                <span className="block text-white/40 text-xs mt-0.5">{desc}</span>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
 
