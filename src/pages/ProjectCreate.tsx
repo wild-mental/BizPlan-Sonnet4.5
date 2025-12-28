@@ -130,38 +130,50 @@ export const ProjectCreate: React.FC = () => {
                 템플릿 선택
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {templates.map((template) => (
-                  <Card
-                    key={template.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedTemplate === template.id
-                        ? 'ring-2 ring-primary-600 border-primary-600'
-                        : 'hover:border-primary-300'
-                    }`}
-                    onClick={() => {
-                      setSelectedTemplate(template.id);
-                      setError('');
-                    }}
-                  >
-                    <CardHeader>
-                      <div className="text-4xl mb-2">{template.icon}</div>
-                      <CardTitle className="text-base">{template.name}</CardTitle>
-                      <CardDescription className="text-xs">
-                        {template.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-1">
-                        {template.features.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2 text-xs text-gray-600">
-                            <span className="text-primary-600 mt-0.5">✓</span>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
+                {templates.map((template) => {
+                  const isDisabled = template.id === 'bank-loan';
+                  return (
+                    <Card
+                      key={template.id}
+                      className={`transition-all ${
+                        isDisabled
+                          ? 'opacity-60 cursor-not-allowed bg-gray-50'
+                          : selectedTemplate === template.id
+                            ? 'cursor-pointer ring-2 ring-primary-600 border-primary-600'
+                            : 'cursor-pointer hover:border-primary-300'
+                      }`}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          setSelectedTemplate(template.id);
+                          setError('');
+                        }
+                      }}
+                    >
+                      <CardHeader className="relative">
+                        {isDisabled && (
+                          <div className="absolute top-2 right-2 px-2 py-0.5 bg-gray-500 text-white text-xs font-medium rounded-full">
+                            오픈예정
+                          </div>
+                        )}
+                        <div className="text-4xl mb-2">{template.icon}</div>
+                        <CardTitle className="text-base">{template.name}</CardTitle>
+                        <CardDescription className="text-xs">
+                          {template.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-1">
+                          {template.features.map((feature, index) => (
+                            <li key={index} className={`flex items-start gap-2 text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <span className={`mt-0.5 ${isDisabled ? 'text-gray-400' : 'text-primary-600'}`}>✓</span>
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 
