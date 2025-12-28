@@ -46,7 +46,6 @@ const ceoProfile = {
 /** AI 개발진 프로필 */
 const aiDevelopers = [
   {
-    name: '박지능',
     role: 'AI Research Lead',
     specialty: 'LLM & Multi-Agent Systems',
     education: 'KAIST AI대학원 박사',
@@ -57,7 +56,6 @@ const aiDevelopers = [
     ],
   },
   {
-    name: '이알고',
     role: 'ML Engineer',
     specialty: 'NLP & Document AI',
     education: '서울대학교 컴퓨터공학 석사',
@@ -68,7 +66,6 @@ const aiDevelopers = [
     ],
   },
   {
-    name: '최데이터',
     role: 'Data Scientist',
     specialty: 'Financial Modeling & Analytics',
     education: '연세대학교 응용통계학 석사',
@@ -330,9 +327,8 @@ export const TeamPage: React.FC = () => {
               >
                 {/* Info */}
                 <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold">{dev.name}</h3>
-                  <p className="text-purple-400 text-sm font-medium">{dev.role}</p>
-                  <p className="text-white/50 text-xs mt-1">{dev.specialty}</p>
+                  <h3 className="text-xl font-bold text-purple-300">{dev.role}</h3>
+                  <p className="text-white/60 text-sm mt-1">{dev.specialty}</p>
                 </div>
 
                 {/* Education */}
