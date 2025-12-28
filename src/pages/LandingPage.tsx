@@ -1302,7 +1302,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => handlePlanSelect('프리미엄')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
             >
-              내 사업에 맞는 계획서 작성하기
+              프리미엄 컨설팅 사전등록하기
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
