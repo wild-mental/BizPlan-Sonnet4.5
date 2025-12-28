@@ -3,8 +3,9 @@
  * 
  * 파일 용도:
  * 프로젝트 생성 페이지 - 애플리케이션의 진입점
- * - 사용자로부터 프로젝트명과 템플릿 선택을 받음
+ * - 사용자로부터 템플릿 선택을 받음
  * - 프로젝트 생성 후 마법사 단계로 이동
+ * - 프로젝트명(사업 아이템명)은 마법사 1단계에서 입력
  * 
  * 호출 구조:
  * ProjectCreate (이 컴포넌트)
@@ -13,10 +14,10 @@
  *   └─> navigate('/wizard/1') - 첫 번째 마법사 단계로 이동
  * 
  * 데이터 흐름:
- * 1. 사용자 입력 (프로젝트명, 템플릿) → 로컬 state
- * 2. 제출 시 → useProjectStore에 저장
+ * 1. 사용자 입력 (템플릿) → 로컬 state
+ * 2. 제출 시 → useProjectStore에 저장 (임시 이름으로 생성)
  * 3. 마법사 초기화 → useWizardStore.resetWizard()
- * 4. 페이지 이동 → /wizard/1
+ * 4. 페이지 이동 → /wizard/1 (사업 아이템명 입력)
  * 
  * 사용하는 Store:
  * - useProjectStore: 프로젝트 정보 관리
@@ -29,7 +30,7 @@ import { useProjectStore } from '../stores/useProjectStore';
 import { useWizardStore } from '../stores/useWizardStore';
 import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
 import { Rocket } from 'lucide-react';
 
 /**
@@ -37,14 +38,13 @@ import { Rocket } from 'lucide-react';
  * 
  * 역할:
  * - 신규 프로젝트 생성을 위한 초기 설정 페이지
- * - 프로젝트 이름과 템플릿 선택 UI 제공
+ * - 템플릿 선택 UI 제공
  * - 입력 유효성 검증 및 에러 처리
  * 
  * 주요 기능:
- * 1. 프로젝트명 입력 폼
- * 2. 템플릿 선택 (스타트업/소상공인/프리랜서)
- * 3. 입력 유효성 검증
- * 4. 프로젝트 생성 및 마법사로 이동
+ * 1. 템플릿 선택 (예비창업패키지/초기창업패키지/정책자금)
+ * 2. 입력 유효성 검증
+ * 3. 프로젝트 생성 및 마법사로 이동
  * 
  * @returns {JSX.Element} 프로젝트 생성 페이지
  */
@@ -53,7 +53,6 @@ export const ProjectCreate: React.FC = () => {
   const { createProject } = useProjectStore();
   const { resetWizard } = useWizardStore();
   // Local state
-  const [projectName, setProjectName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
   const [error, setError] = useState('');
 
@@ -61,29 +60,24 @@ export const ProjectCreate: React.FC = () => {
    * 폼 제출 핸들러
    * 
    * 처리 순서:
-   * 1. 프로젝트명 유효성 검증
-   * 2. 템플릿 선택 여부 검증
-   * 3. useProjectStore.createProject() 호출
-   * 4. useWizardStore.resetWizard() 호출
-   * 5. /wizard/1 경로로 이동
+   * 1. 템플릿 선택 여부 검증
+   * 2. useProjectStore.createProject() 호출 (임시 이름으로 생성)
+   * 3. useWizardStore.resetWizard() 호출
+   * 4. /wizard/1 경로로 이동
    * 
    * @param {React.FormEvent} e - 폼 제출 이벤트
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!projectName.trim()) {
-      setError('프로젝트 이름을 입력해주세요.');
-      return;
-    }
 
     if (!selectedTemplate) {
       setError('템플릿을 선택해주세요.');
       return;
     }
 
-    // Create new project
-    createProject(projectName, selectedTemplate);
+    // Create new project with template name as temporary project name
+    const templateName = templates.find(t => t.id === selectedTemplate)?.name || '새 프로젝트';
+    createProject(templateName, selectedTemplate);
     resetWizard();
     
     // Navigate to wizard
@@ -108,22 +102,6 @@ export const ProjectCreate: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Project Name */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                프로젝트 이름
-              </h2>
-              <Input
-                placeholder="예: 우리 회사의 새로운 사업"
-                value={projectName}
-                onChange={(e) => {
-                  setProjectName(e.target.value);
-                  setError('');
-                }}
-                required
-              />
-            </div>
-
             {/* Template Selection */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
