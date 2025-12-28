@@ -657,7 +657,7 @@ export const LandingPage: React.FC = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => navigate('/evaluation-demo')}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-12 py-6 text-xl font-bold shadow-2xl shadow-purple-500/25 border-0 group"
               >
                 지금 바로 심사받기
@@ -1497,7 +1497,7 @@ export const LandingPage: React.FC = () => {
                         사업계획서 작성 데모
                       </Button>
                       <Button 
-                        onClick={() => navigate('/demo/evaluation')} 
+                        onClick={() => navigate('/evaluation-demo')} 
                         className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-sm py-2"
                       >
                         AI 평가받기 데모

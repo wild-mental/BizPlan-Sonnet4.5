@@ -31,6 +31,7 @@ import { TeamPage } from './pages/TeamPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
 import { BusinessPlanViewer } from './pages/BusinessPlanViewer';
+import { EvaluationDemoPage } from './pages/EvaluationDemo';
 
 /**
  * App 컴포넌트
@@ -57,6 +58,9 @@ function App() {
 
         {/* 앱 시작점: 프로젝트 생성 (사업계획서 작성 데모) */}
         <Route path="/writing-demo" element={<ProjectCreate />} />
+
+        {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
+        <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
 
         {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
         <Route element={<Layout />}>
