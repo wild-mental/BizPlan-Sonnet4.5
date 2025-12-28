@@ -27,7 +27,7 @@ export const EvaluationDemoPage: React.FC = () => {
   // BGM 토글
   const toggleBgm = () => {
     if (!audioRef.current) {
-      audioRef.current = new Audio('/assets/soundtrack/landing-page-bgm.mp3');
+      audioRef.current = new Audio('/assets/soundtrack/bgm1_StepForSuccess_A.mp3');
       audioRef.current.loop = true;
       audioRef.current.volume = 0.3;
     }
