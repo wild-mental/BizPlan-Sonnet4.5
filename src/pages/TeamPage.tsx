@@ -83,7 +83,7 @@ const domainConsultants = [
     domain: 'SaaS 온라인 서비스',
     domainColor: 'blue',
     icon: '💻',
-    education: '해외 유수 경영대학원 MBA',
+    education: '해외 주요 경영대학원 MBA',
     career: [
       '글로벌 IT기업 스타트업 지원 경력',
       '대기업 B2B사업부 총괄 경험',
@@ -96,7 +96,7 @@ const domainConsultants = [
     domain: '온오프라인 교육사업',
     domainColor: 'emerald',
     icon: '📚',
-    education: '해외 유수 교육대학원 석사',
+    education: '해외 주요 교육대학원 석사',
     career: [
       '대형 교육기업 신규사업 담당',
       '에듀테크 플랫폼 임원 경험',
@@ -135,7 +135,7 @@ const domainConsultants = [
     domain: '뷰티 코스메틱',
     domainColor: 'pink',
     icon: '💄',
-    education: '해외 유수 뷰티 MBA',
+    education: '해외 주요 뷰티 MBA',
     career: [
       '대기업 화장품 브랜드 디렉터 경력',
       '뷰티 유통 채널 MD 경험',
@@ -161,7 +161,7 @@ const domainConsultants = [
     domain: '멀티 채널 마케팅',
     domainColor: 'orange',
     icon: '📊',
-    education: '해외 유수 경영대학원 MBA',
+    education: '해외 주요 경영대학원 MBA',
     career: [
       '글로벌 IT기업 마케팅 담당 경력',
       '디지털 광고 플랫폼 파트너십 경험',
@@ -174,7 +174,7 @@ const domainConsultants = [
     domain: 'IT Infra 보안 & AI 안전',
     domainColor: 'slate',
     icon: '🔐',
-    education: '해외 유수 대학 사이버보안 석사',
+    education: '해외 주요 대학 사이버보안 석사',
     career: [
       '정보보호 기관 심사원 경력',
       '대기업 보안컨설팅 담당',
