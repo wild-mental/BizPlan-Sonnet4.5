@@ -2,11 +2,13 @@
  * 파일명: SignupPage.tsx
  * 
  * 파일 용도:
- * 회원가입 페이지 컴포넌트
+ * 회원가입 페이지 컴포넌트 (사전등록 프로모션 통합)
  * - 이메일/비밀번호 가입 폼
  * - 소셜 로그인 버튼 (Google, Kakao, Naver) - Mocked
  * - 약관 동의 체크박스 (최소 UX)
  * - 선택한 요금제 표시 및 저장
+ * - [NEW] 프로모션 할인 정보 및 카운트다운 표시
+ * - [NEW] 유료 요금제 선택 시 전화번호/사업분야 필수 입력
  * 
  * URL 파라미터:
  * - plan: 선택한 요금제 (기본, 플러스, 프로, 프리미엄)
@@ -14,11 +16,12 @@
  * 데이터 흐름:
  * 1. 랜딩페이지에서 요금제 선택 → /signup?plan=프로 로 이동
  * 2. 회원가입 폼 작성 및 약관 동의
- * 3. 가입 완료 시 useAuthStore에 사용자 정보 저장
- * 4. /app 페이지로 리다이렉트
+ * 3. 유료 요금제 + 프로모션 활성 시 사전등록 API도 함께 호출
+ * 4. 가입 완료 시 useAuthStore에 사용자 정보 저장
+ * 5. /writing-demo 페이지로 리다이렉트
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -27,18 +30,60 @@ import {
   EyeOff,
   Rocket,
   Shield,
-  Zap
+  Zap,
+  Clock,
+  Flame,
+  Sparkles,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuthStore, PricingPlanType } from '../stores/useAuthStore';
+import { useCountdown, formatTimeUnit } from '../hooks';
+import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
+import {
+  PHASE_A_END,
+  PHASE_B_END,
+  getCurrentPromotionPhase,
+  getCurrentDiscountRate,
+  isPromotionActive as checkPromotionActive,
+} from '../constants/promotion';
+import { formatPrice, getPlanPricing } from '../utils/pricing';
+import { formatPhoneNumber, businessCategories } from '../schemas/preRegistrationSchema';
 
 /** 요금제별 표시 정보 */
-const planDisplayInfo: Record<PricingPlanType, { color: string; badge: string; price: string }> = {
+const planDisplayInfo: Record<PricingPlanType, { color: string; badge: string; price: string; planKey?: 'plus' | 'pro' | 'premium' }> = {
   '기본': { color: 'emerald', badge: '무료', price: '무료' },
-  '플러스': { color: 'blue', badge: '인기', price: '₩29,000/월' },
-  '프로': { color: 'purple', badge: '추천', price: '₩79,000/월' },
-  '프리미엄': { color: 'amber', badge: 'VIP', price: '₩199,000/월' },
+  '플러스': { color: 'blue', badge: '인기', price: '₩399,000', planKey: 'plus' },
+  '프로': { color: 'purple', badge: '추천', price: '₩799,000', planKey: 'pro' },
+  '프리미엄': { color: 'amber', badge: 'VIP', price: '₩1,499,000', planKey: 'premium' },
+};
+
+/** 한글 요금제명 → API 키 변환 */
+const planNameToKey = (planName: PricingPlanType): 'plus' | 'pro' | 'premium' | null => {
+  const mapping: Record<string, 'plus' | 'pro' | 'premium'> = {
+    '플러스': 'plus',
+    '프로': 'pro',
+    '프리미엄': 'premium',
+  };
+  return mapping[planName] || null;
+};
+
+/** API 키 → 한글 요금제명 변환 (URL 파라미터용) */
+const planKeyToName = (planKey: string | null): PricingPlanType | null => {
+  if (!planKey) return null;
+  const mapping: Record<string, PricingPlanType> = {
+    'plus': '플러스',
+    'pro': '프로',
+    'premium': '프리미엄',
+    'basic': '기본',
+    // 한글 키도 그대로 허용
+    '기본': '기본',
+    '플러스': '플러스',
+    '프로': '프로',
+    '프리미엄': '프리미엄',
+  };
+  return mapping[planKey] || null;
 };
 
 /**
@@ -54,20 +99,47 @@ export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { signup, socialLogin, isLoading, setSelectedPlan, selectedPlan } = useAuthStore();
+  const { submitRegistration } = usePreRegistrationStore();
 
-  // URL에서 요금제 파라미터 읽기
-  const planFromUrl = searchParams.get('plan') as PricingPlanType | null;
+  // URL에서 요금제 파라미터 읽기 (영문 키를 한글로 변환)
+  const planFromUrl = planKeyToName(searchParams.get('plan'));
   const currentPlan: PricingPlanType = planFromUrl || selectedPlan || '기본';
 
-  // 폼 상태
+  // 프로모션 상태
+  const phase = getCurrentPromotionPhase();
+  const discountRate = getCurrentDiscountRate();
+  const isPromotionActive = checkPromotionActive();
+  const isPaidPlan = ['플러스', '프로', '프리미엄'].includes(currentPlan);
+  const showPromotionFeatures = isPromotionActive && isPaidPlan;
+
+  // 카운트다운 (프로모션 활성 시에만 사용)
+  const targetDate = phase === 'A' ? PHASE_A_END : PHASE_B_END;
+  const countdown = useCountdown(targetDate);
+
+  // Phase별 스타일
+  const isPhaseA = phase === 'A';
+  const gradientClass = isPhaseA
+    ? 'from-rose-500 to-orange-500'
+    : 'from-emerald-500 to-cyan-500';
+  const accentColor = isPhaseA ? 'rose' : 'emerald';
+  const PhaseIcon = isPhaseA ? Flame : Sparkles;
+
+  // 현재 요금제 할인 정보
+  const planKey = planNameToKey(currentPlan);
+  const planPricing = planKey ? getPlanPricing(planKey) : null;
+
+  // 폼 상태 (전화번호/사업분야 추가)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     passwordConfirm: '',
     name: '',
+    phone: '',
+    businessCategory: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [isBusinessCategoryOpen, setIsBusinessCategoryOpen] = useState(false);
 
   // 약관 동의 상태 (최소 UX: 전체 동의 + 개별 항목)
   const [agreements, setAgreements] = useState({
@@ -113,7 +185,7 @@ export const SignupPage: React.FC = () => {
   };
 
   // 입력 값 변경 처리
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     // 에러 클리어
@@ -121,6 +193,15 @@ export const SignupPage: React.FC = () => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
+
+  // 전화번호 포맷팅 핸들러
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setFormData(prev => ({ ...prev, phone: formatted }));
+    if (errors.phone) {
+      setErrors(prev => ({ ...prev, phone: '' }));
+    }
+  }, [errors.phone]);
 
   // 폼 유효성 검사
   const validateForm = (): boolean => {
@@ -146,6 +227,19 @@ export const SignupPage: React.FC = () => {
       newErrors.name = '이름을 입력해주세요';
     }
 
+    // 유료 요금제 선택 시 전화번호/사업분야 필수
+    if (isPaidPlan) {
+      if (!formData.phone) {
+        newErrors.phone = '전화번호를 입력해주세요';
+      } else if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(formData.phone)) {
+        newErrors.phone = '올바른 휴대폰 번호 형식이 아닙니다';
+      }
+
+      if (!formData.businessCategory) {
+        newErrors.businessCategory = '사업 분야를 선택해주세요';
+      }
+    }
+
     if (!agreements.terms) {
       newErrors.terms = '이용약관에 동의해주세요';
     }
@@ -165,6 +259,7 @@ export const SignupPage: React.FC = () => {
     if (!validateForm()) return;
 
     try {
+      // 기본 회원가입
       await signup({
         email: formData.email,
         password: formData.password,
@@ -174,10 +269,28 @@ export const SignupPage: React.FC = () => {
         privacyAgreed: agreements.privacy,
         marketingConsent: agreements.marketing,
       });
+
+      // 유료 요금제 선택 시 사전등록도 함께 처리 (할인 코드 발급)
+      if (isPaidPlan && planKey) {
+        try {
+          await submitRegistration({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            selectedPlan: planKey,
+            businessCategory: formData.businessCategory as typeof businessCategories[number] | undefined,
+            agreeTerms: true,
+            agreeMarketing: agreements.marketing,
+          });
+        } catch {
+          // 사전등록 실패해도 회원가입은 성공했으므로 진행
+          console.warn('Pre-registration failed, but signup succeeded');
+        }
+      }
       
-      // 가입 완료 후 앱으로 이동
-      navigate('/app');
-    } catch (error) {
+      // 가입 완료 후 사업계획서 작성 데모로 이동
+      navigate('/writing-demo');
+    } catch {
       setErrors({ submit: '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.' });
     }
   };
@@ -195,13 +308,14 @@ export const SignupPage: React.FC = () => {
 
     try {
       await socialLogin(provider, currentPlan);
-      navigate('/app');
-    } catch (error) {
+      navigate('/writing-demo');
+    } catch {
       setErrors({ submit: '소셜 로그인 중 오류가 발생했습니다. 다시 시도해주세요.' });
     }
   };
 
-  const planInfo = planDisplayInfo[currentPlan];
+  // planInfo 안전하게 가져오기 (fallback to 기본)
+  const planInfo = planDisplayInfo[currentPlan] || planDisplayInfo['기본'];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex">
@@ -239,7 +353,7 @@ export const SignupPage: React.FC = () => {
             <div className="space-y-4 pt-6">
               {[
                 { icon: Zap, text: '30분 만에 사업계획서 완성' },
-                { icon: Shield, text: '정부지원사업 합격률 65% 이상' },
+                { icon: Shield, text: '지원사업 별 합격률 예측 및 개선' },
                 { icon: Check, text: 'HWP/PDF 즉시 다운로드' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 justify-center">
@@ -252,15 +366,39 @@ export const SignupPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Selected Plan Badge */}
+          {/* Selected Plan Badge with Discount Info */}
           <div className="mt-12">
-            <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-${planInfo.color}-500/20 border border-${planInfo.color}-500/30`}>
+            <div className={`inline-flex flex-col items-center gap-3 px-6 py-4 rounded-2xl bg-${planInfo.color}-500/20 border border-${planInfo.color}-500/30`}>
+              {/* 프로모션 할인 배지 */}
+              {showPromotionFeatures && planPricing && (
+                <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${gradientClass} text-white`}>
+                  <PhaseIcon className="w-3 h-3" />
+                  {discountRate}% OFF
+                </span>
+              )}
+              
               <div className={`px-3 py-1 rounded-full bg-${planInfo.color}-500/30 text-${planInfo.color}-400 text-sm font-medium`}>
                 {planInfo.badge}
               </div>
-              <div className="text-left">
+              
+              <div className="text-center">
                 <p className="text-sm text-white/60">선택한 요금제</p>
-                <p className="text-xl font-bold">{currentPlan} · {planInfo.price}</p>
+                <p className="text-xl font-bold">{currentPlan}</p>
+                
+                {/* 할인가 표시 */}
+                {showPromotionFeatures && planPricing ? (
+                  <div className="mt-1">
+                    <p className="text-sm text-white/40 line-through">₩{formatPrice(planPricing.originalPrice)}</p>
+                    <p className={`text-lg font-bold text-${accentColor}-400`}>
+                      ₩{formatPrice(planPricing.currentPrice)}
+                    </p>
+                    <p className={`text-xs text-${accentColor}-300`}>
+                      ₩{formatPrice(planPricing.savings)} 절약
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-lg font-bold mt-1">{planInfo.price}</p>
+                )}
               </div>
             </div>
           </div>
@@ -281,29 +419,64 @@ export const SignupPage: React.FC = () => {
         </div>
 
         {/* Form Container */}
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-md space-y-8">
+        <div className="flex-1 flex items-center justify-center p-4 py-6">
+          <div className="w-full max-w-md">
+            {/* Promotion Banner - 유료 요금제 + 프로모션 활성 시 */}
+            {showPromotionFeatures && (
+              <div className={`p-3 rounded-xl bg-gradient-to-r ${gradientClass} mb-4`}>
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  {/* 할인 문구 */}
+                  <div className="flex items-center gap-2">
+                    <PhaseIcon className="w-4 h-4 text-white flex-shrink-0" />
+                    <span className="font-bold text-white text-sm whitespace-nowrap">
+                      {isPhaseA ? '🔥 30% 사전등록 할인' : '✨ 10% 사전등록 할인'}
+                    </span>
+                  </div>
+                  
+                  {/* 카운트다운 */}
+                  <div className="flex items-center gap-1.5 text-white text-xs">
+                    <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="whitespace-nowrap">마감</span>
+                    <div className="flex items-center gap-0.5 font-mono font-bold whitespace-nowrap">
+                      {countdown.days > 0 && (
+                        <>
+                          <span className="bg-white/20 rounded px-1 py-0.5">{countdown.days}</span>
+                          <span className="text-white/70">일</span>
+                        </>
+                      )}
+                      <span className="bg-white/20 rounded px-1 py-0.5">{formatTimeUnit(countdown.hours)}</span>
+                      <span className="text-white/70">:</span>
+                      <span className="bg-white/20 rounded px-1 py-0.5">{formatTimeUnit(countdown.minutes)}</span>
+                      <span className="text-white/70">:</span>
+                      <span className="bg-white/20 rounded px-1 py-0.5">{formatTimeUnit(countdown.seconds)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Mobile Plan Display */}
-            <div className="lg:hidden mb-6">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-${planInfo.color}-500/20 border border-${planInfo.color}-500/30 text-sm`}>
+            <div className="lg:hidden mb-4">
+              <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-${planInfo.color}-500/20 border border-${planInfo.color}-500/30 text-sm`}>
                 <span className="text-white/60">선택 요금제:</span>
                 <span className="font-bold">{currentPlan}</span>
                 <span className="text-white/60">({planInfo.price})</span>
               </div>
             </div>
 
+            <div className="space-y-5">
             {/* Title */}
             <div>
-              <h2 className="text-3xl font-bold mb-2">회원가입</h2>
-              <p className="text-white/60">계정을 만들고 바로 시작하세요</p>
+              <h2 className="text-2xl font-bold mb-1">회원가입</h2>
+              <p className="text-white/60 text-sm">계정을 만들고 바로 시작하세요</p>
             </div>
 
             {/* Social Login Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <button
                 onClick={() => handleSocialLogin('google')}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-gray-800 rounded-xl font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-800 rounded-lg font-medium text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -317,7 +490,7 @@ export const SignupPage: React.FC = () => {
               <button
                 onClick={() => handleSocialLogin('kakao')}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#FEE500] text-[#191919] rounded-xl font-medium hover:bg-[#FDD800] transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FEE500] text-[#191919] rounded-lg font-medium text-sm hover:bg-[#FDD800] transition-colors disabled:opacity-50"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#191919" d="M12 3c-5.52 0-10 3.59-10 8.03 0 2.84 1.87 5.33 4.67 6.75l-1.18 4.36c-.1.38.34.68.67.47l5.2-3.44c.21.01.42.02.64.02 5.52 0 10-3.59 10-8.03S17.52 3 12 3z"/>
@@ -328,7 +501,7 @@ export const SignupPage: React.FC = () => {
               <button
                 onClick={() => handleSocialLogin('naver')}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#03C75A] text-white rounded-xl font-medium hover:bg-[#02B350] transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#03C75A] text-white rounded-lg font-medium text-sm hover:bg-[#02B350] transition-colors disabled:opacity-50"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="white" d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/>
@@ -348,7 +521,7 @@ export const SignupPage: React.FC = () => {
             </div>
 
             {/* Email Signup Form */}
-            <form onSubmit={handleEmailSignup} className="space-y-4">
+            <form onSubmit={handleEmailSignup} className="space-y-3">
               <div>
                 <Input
                   type="email"
@@ -411,12 +584,91 @@ export const SignupPage: React.FC = () => {
                 </button>
               </div>
 
+              {/* 유료 요금제 선택 시 추가 필드 */}
+              {isPaidPlan && (
+                <>
+                  {/* 전화번호 */}
+                  <div>
+                    <Input
+                      type="tel"
+                      name="phone"
+                      placeholder="전화번호 (010-1234-5678)"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      error={errors.phone}
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-purple-500"
+                    />
+                    {showPromotionFeatures && (
+                      <p className="mt-1 text-xs text-white/40">
+                        * 사전등록 할인코드 발송을 위해 필요합니다
+                      </p>
+                    )}
+                  </div>
+
+                  {/* 사업 분야 - 커스텀 드롭다운 */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsBusinessCategoryOpen(!isBusinessCategoryOpen)}
+                      className={`w-full px-4 py-3 pr-10 bg-white/5 border rounded-lg text-left transition-all cursor-pointer ${
+                        isBusinessCategoryOpen 
+                          ? 'border-purple-500 ring-2 ring-purple-500/20' 
+                          : 'border-white/10 hover:border-white/20'
+                      } ${formData.businessCategory ? 'text-white' : 'text-white/40'}`}
+                    >
+                      {formData.businessCategory || '사업 분야 선택'}
+                    </button>
+                    <ChevronDown 
+                      className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 pointer-events-none transition-transform ${
+                        isBusinessCategoryOpen ? 'rotate-180' : ''
+                      }`} 
+                    />
+                    
+                    {/* 드롭다운 메뉴 */}
+                    {isBusinessCategoryOpen && (
+                      <>
+                        {/* 배경 클릭 시 닫기 */}
+                        <div 
+                          className="fixed inset-0 z-10" 
+                          onClick={() => setIsBusinessCategoryOpen(false)}
+                        />
+                        <div className="absolute z-20 top-full left-0 right-0 mt-1 py-1 bg-slate-800 border border-white/10 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                          {businessCategories.map((category) => (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, businessCategory: category }));
+                                setIsBusinessCategoryOpen(false);
+                                if (errors.businessCategory) {
+                                  setErrors(prev => ({ ...prev, businessCategory: '' }));
+                                }
+                              }}
+                              className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                                formData.businessCategory === category
+                                  ? 'bg-purple-500/20 text-purple-300'
+                                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              {category}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {errors.businessCategory && (
+                      <p className="mt-1 text-xs text-red-400">{errors.businessCategory}</p>
+                    )}
+                  </div>
+                </>
+              )}
+
               {/* Terms Agreement - Minimal UX */}
-              <div className="space-y-3 pt-4">
+              <div className="space-y-2 pt-2">
                 {/* All Agree */}
-                <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${agreements.all ? 'bg-purple-500 border-purple-500' : 'border-white/30'}`}>
-                    {agreements.all && <Check className="w-3 h-3 text-white" />}
+                <label className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${agreements.all ? 'bg-purple-500 border-purple-500' : 'border-white/30'}`}>
+                    {agreements.all && <Check className="w-2.5 h-2.5 text-white" />}
                   </div>
                   <input
                     type="checkbox"
@@ -424,11 +676,11 @@ export const SignupPage: React.FC = () => {
                     onChange={handleAllAgree}
                     className="hidden"
                   />
-                  <span className="font-medium">전체 동의</span>
+                  <span className="font-medium text-sm">전체 동의</span>
                 </label>
 
                 {/* Individual Terms */}
-                <div className="pl-2 space-y-2">
+                <div className="pl-2 space-y-1.5">
                   {/* 이용약관 (필수) */}
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${agreements.terms ? 'bg-purple-500 border-purple-500' : 'border-white/30'}`}>
@@ -492,9 +744,20 @@ export const SignupPage: React.FC = () => {
               <Button
                 type="submit"
                 isLoading={isLoading}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-lg font-bold"
+                className={`w-full py-3 text-base font-bold bg-gradient-to-r ${
+                  showPromotionFeatures 
+                    ? gradientClass + ' hover:opacity-90' 
+                    : 'from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500'
+                }`}
               >
-                {currentPlan} 요금제로 시작하기
+                {showPromotionFeatures ? (
+                  <>
+                    <PhaseIcon className="w-4 h-4 mr-1.5 inline" />
+                    가입하고 {discountRate}% 할인 받기
+                  </>
+                ) : (
+                  '가입 후 무료 데모 체험하기'
+                )}
               </Button>
             </form>
 
@@ -505,6 +768,7 @@ export const SignupPage: React.FC = () => {
                 로그인
               </Link>
             </p>
+            </div>
           </div>
         </div>
       </div>

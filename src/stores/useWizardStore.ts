@@ -7,6 +7,7 @@
  * - 각 단계별 질문 답변 저장
  * - 단계 완료 여부 검증
  * - localStorage에 자동 영속화 (steps 제외 - 항상 최신 정의 사용)
+ * - 템플릿별 질문 구성 로드 지원 (예비창업/초기창업 차별화)
  * 
  * 호출 구조:
  * useWizardStore (이 Store)
@@ -15,6 +16,7 @@
  *   ├─> getStepData() - 각 단계 컴포넌트에서 데이터 로드
  *   ├─> isStepCompleted() - Layout, WizardStep에서 진행률 확인
  *   ├─> goToNextStep() / goToPreviousStep() - 네비게이션
+ *   ├─> loadTemplateQuestions() - 템플릿별 질문 로드
  *   └─> resetWizard() - ProjectCreate에서 새 프로젝트 시작 시 호출
  * 
  * 사용하는 컴포넌트:
@@ -37,14 +39,22 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WizardData, WizardStep } from '../types';
+import { WizardData, WizardStep, TemplateType } from '../types';
 import { wizardSteps } from '../types/mockData';
+import { 
+  ExtendedWizardStep, 
+  getQuestionsForTemplate 
+} from '../types/templateQuestions';
 
 interface WizardState {
   /** 현재 마법사 단계 (1-7) */
   currentStep: number;
-  /** 전체 마법사 단계 정의 */
+  /** 전체 마법사 단계 정의 (기본) */
   steps: WizardStep[];
+  /** 템플릿별 확장 마법사 단계 (가이드 포함) */
+  extendedSteps: ExtendedWizardStep[] | null;
+  /** 현재 선택된 템플릿 타입 */
+  templateType: TemplateType | null;
   /** 단계별 사용자 입력 데이터 */
   wizardData: WizardData;
   /** 사용자가 방문한 단계 목록 (6, 7단계 완료 조건에 사용) */
@@ -52,6 +62,10 @@ interface WizardState {
   
   /** 현재 단계 설정 */
   setCurrentStep: (step: number) => void;
+  /** 템플릿 타입 설정 및 질문 로드 */
+  loadTemplateQuestions: (templateType: TemplateType) => void;
+  /** 현재 활성화된 단계 목록 반환 (템플릿별 또는 기본) */
+  getActiveSteps: () => WizardStep[] | ExtendedWizardStep[];
   /** 단계별 질문 답변 업데이트 */
   updateStepData: (stepId: number, questionId: string, value: any) => void;
   /** 특정 단계의 데이터 조회 */
@@ -93,6 +107,8 @@ export const useWizardStore = create<WizardState>()(
     (set, get) => ({
       currentStep: 1,
       steps: wizardSteps,
+      extendedSteps: null,
+      templateType: null,
       wizardData: {},
       visitedSteps: [],
 
@@ -103,6 +119,34 @@ export const useWizardStore = create<WizardState>()(
        */
       setCurrentStep: (step: number) => {
         set({ currentStep: step });
+      },
+
+      /**
+       * 템플릿 타입 설정 및 해당 템플릿의 질문 로드
+       * 예비창업패키지/초기창업패키지에 따라 다른 질문 구성 사용
+       * 
+       * @param {TemplateType} templateType - 템플릿 타입
+       */
+      loadTemplateQuestions: (templateType: TemplateType) => {
+        // bank-loan은 아직 지원하지 않음
+        if (templateType === 'bank-loan') {
+          set({ templateType, extendedSteps: null });
+          return;
+        }
+        
+        const extendedSteps = getQuestionsForTemplate(templateType);
+        set({ templateType, extendedSteps });
+      },
+
+      /**
+       * 현재 활성화된 단계 목록 반환
+       * 템플릿별 확장 단계가 있으면 그것을, 없으면 기본 단계를 반환
+       * 
+       * @returns {WizardStep[] | ExtendedWizardStep[]} 활성화된 단계 목록
+       */
+      getActiveSteps: () => {
+        const state = get();
+        return state.extendedSteps || state.steps;
       },
 
       /**
@@ -145,7 +189,9 @@ export const useWizardStore = create<WizardState>()(
        */
       getStepDataWithDefaults: (stepId: number) => {
         const state = get();
-        const step = state.steps.find((s) => s.id === stepId);
+        // 확장 단계 또는 기본 단계에서 검색
+        const activeSteps = state.extendedSteps || state.steps;
+        const step = activeSteps.find((s) => s.id === stepId);
         if (!step) return {};
 
         const stepData = state.wizardData[stepId] || {};
@@ -174,9 +220,12 @@ export const useWizardStore = create<WizardState>()(
       getAllDataWithDefaults: () => {
         const state = get();
         const allDataWithDefaults: Record<number, Record<string, any>> = {};
+        
+        // 확장 단계 또는 기본 단계 사용
+        const activeSteps = state.extendedSteps || state.steps;
 
-        // 1-5단계만 질문 데이터가 있음 (6, 7단계는 재무/PMF 별도 처리)
-        state.steps.forEach((step) => {
+        // 1-5단계만 질문 데이터가 있음 (6단계는 재무 별도 처리)
+        activeSteps.forEach((step) => {
           if (step.id <= 5) {
             const stepData = state.wizardData[step.id] || {};
             const dataWithDefaults: Record<string, any> = {};
@@ -267,21 +316,29 @@ export const useWizardStore = create<WizardState>()(
        * 마법사 초기화
        * - 첫 단계로 돌아가고 모든 데이터 삭제
        * - 방문 기록도 초기화
+       * - 템플릿 정보도 초기화
        * - 새 프로젝트 시작 시 호출
        */
       resetWizard: () => {
-        set({ currentStep: 1, wizardData: {}, visitedSteps: [] });
+        set({ 
+          currentStep: 1, 
+          wizardData: {}, 
+          visitedSteps: [],
+          templateType: null,
+          extendedSteps: null,
+        });
       },
     }),
     {
       name: 'wizard-storage',
-      // steps는 항상 최신 정의를 사용해야 하므로 persist에서 제외
+      // steps, extendedSteps는 항상 최신 정의를 사용해야 하므로 persist에서 제외
       // wizardSteps에서 정의된 최신 단계 구성을 사용
       partialize: (state) => ({
         currentStep: state.currentStep,
         wizardData: state.wizardData,
         visitedSteps: state.visitedSteps,
-        // steps는 제외 - 항상 wizardSteps에서 로드
+        templateType: state.templateType,
+        // steps, extendedSteps는 제외 - 항상 최신 정의에서 로드
       }),
       // 기존 localStorage에 저장된 이전 steps 데이터를 무시하고
       // 항상 wizardSteps에서 정의된 최신 단계 구성 사용
@@ -290,6 +347,8 @@ export const useWizardStore = create<WizardState>()(
         ...(persistedState as Partial<WizardState>),
         // steps는 항상 현재 정의(wizardSteps)를 사용
         steps: currentState.steps,
+        // extendedSteps는 templateType에 따라 재로드 필요
+        extendedSteps: null,
       }),
     }
   )

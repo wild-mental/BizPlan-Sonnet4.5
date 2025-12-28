@@ -10,238 +10,191 @@
  */
 
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
-  ArrowRight,
   Rocket,
   Sparkles,
   Brain,
-  Code,
-  Cpu,
   Users,
   Award,
-  Linkedin,
-  Mail,
-  Star,
   Check,
   Zap
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { PricingCards } from '../components/PricingCards';
 
 /** CEO 프로필 */
 const ceoProfile = {
-  name: '김메이커',
+  name: '박병준',
   role: 'CEO & Founder',
+  sub: 'AI 연구자 / 10년차 아키텍트\n비즈니스 전략가 / 글로벌 사업개발(Biz-Dev)',
   company: 'Makers World',
-  image: '👨‍💼',
-  education: '서울대학교 경영학/컴퓨터공학 복수전공',
+  image: '/assets/profiles/pbj-ceo-profile-251004-warm-shirt-notie.png',
   career: [
-    '전) 네이버 스타트업 지원 프로그램 총괄',
-    '전) 중소벤처기업부 창업진흥원 자문위원',
-    '전) Y Combinator Visiting Partner',
+    '현) 메이커스월드 주식회사 대표',
+    '현) 모두의연구소 현직자 AI 서비스 개발과정 - 최신 AI 트렌드 교육',
+    '전) 삼육대 KDT 과정 AI 풀스택 개발과정 전임강사 - 전 과정 수료율 100%',
+    '전) 카카오 키즈노트 백엔드 개발 - 데이터 기반 매출 2배 견인',
+    '전) 한국생산성본부 객원 컨설턴트 - SW 고성장 클럽 글로벌 진출 지원',
+    '전) Luxrobo 글로벌 사업개발 매니저 - 미국·중동·중국 시장 개척',
   ],
   achievements: [
-    '예비창업패키지 심사위원 5년 역임',
-    '창업 지원 기업 누적 500개사 돌파',
-    '정부지원금 합격률 68% 달성 (업계 평균 32%)',
+    'LLM(거대언어모델) 파인튜닝 연구',
+    '300만 트래픽 무장애·매출 성장',
+    '국가 주도 SW 비즈니스 컨설팅',
+    'Global SW/HW 융합 비즈니스 확장 전략',
   ],
-  quote: '"모든 창업자는 성공할 자격이 있습니다. 우리는 그 가능성을 현실로 만듭니다."',
+  quote: '"앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다.\nAI 연구자의 시선으로 설계하고,\n전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."',
 };
 
 /** AI 개발진 프로필 */
 const aiDevelopers = [
   {
-    name: '박지능',
     role: 'AI Research Lead',
-    image: '👨‍🔬',
     specialty: 'LLM & Multi-Agent Systems',
-    education: 'KAIST AI대학원 박사',
+    education: '국내 AI 특성화 대학원 박사',
     career: [
-      '전) OpenAI Research Intern',
-      '전) Google DeepMind Korea',
-      'NeurIPS/ICML 논문 7편 게재',
+      '글로벌 AI 연구소 경력',
+      '멀티에이전트 시스템 설계 전문',
+      '국제 AI 학회 논문 다수 게재',
     ],
-    contribution: 'M.A.K.E.R.S 멀티에이전트 아키텍처 설계',
   },
   {
-    name: '이알고',
     role: 'ML Engineer',
-    image: '👩‍💻',
     specialty: 'NLP & Document AI',
-    education: '서울대학교 컴퓨터공학 석사',
+    education: '국내 주요 대학 컴퓨터공학 석사',
     career: [
-      '전) 네이버 클로바 AI',
-      '전) 카카오브레인',
-      'HWP/PDF 문서 처리 특허 3건',
+      '대기업 AI 연구소 경력',
+      '자연어 처리 엔진 개발 전문',
+      '문서 처리 관련 실무경력',
     ],
-    contribution: '사업계획서 자동 생성 엔진 개발',
   },
   {
-    name: '최데이터',
     role: 'Data Scientist',
-    image: '👨‍💻',
     specialty: 'Financial Modeling & Analytics',
-    education: '연세대학교 응용통계학 석사',
+    education: '국내 주요 대학 응용통계학 석사',
     career: [
-      '전) 삼성증권 퀀트팀',
-      '전) 토스 데이터사이언스팀',
+      '금융권 데이터 분석 경력',
+      '핀테크 스타트업 경험',
       '금융 AI 모델링 경력 8년',
     ],
-    contribution: '재무 시뮬레이션 엔진 & Economics Agent 개발',
   },
 ];
 
 /** 도메인별 컨설턴트 프로필 */
 const domainConsultants = [
   {
-    name: '송테크',
     domain: 'SaaS 온라인 서비스',
     domainColor: 'blue',
     icon: '💻',
-    image: '👨‍💼',
-    role: '도메인 리드 컨설턴트',
-    education: 'Stanford University MBA',
+    education: '해외 주요 경영대학원 MBA',
     career: [
-      '전) AWS 한국 스타트업 담당',
-      '전) 토스 B2B사업부 총괄',
-      'SaaS 스타트업 3회 창업/EXIT',
+      '글로벌 IT기업 스타트업 지원 경력',
+      '대기업 B2B사업부 총괄 경험',
+      'SaaS 스타트업 다수 창업/EXIT',
     ],
     expertise: 'B2B SaaS 비즈니스 모델 설계, ARR 성장 전략',
-    achievements: 'SaaS 스타트업 30개사 지원, 총 ARR 200억 원 달성',
+    achievements: 'SaaS 스타트업 다수 지원 실적',
   },
   {
-    name: '박에듀',
     domain: '온오프라인 교육사업',
     domainColor: 'emerald',
     icon: '📚',
-    image: '👩‍🏫',
-    role: '도메인 리드 컨설턴트',
-    education: '하버드 교육대학원 석사',
+    education: '해외 주요 교육대학원 석사',
     career: [
-      '전) 메가스터디 신규사업팀장',
-      '전) 클래스101 COO',
-      '에듀테크 스타트업 2회 창업',
+      '대형 교육기업 신규사업 담당',
+      '에듀테크 플랫폼 임원 경험',
+      '교육 스타트업 다수 창업',
     ],
     expertise: '교육 콘텐츠 수익화, 에듀테크 플랫폼 구축',
-    achievements: '교육 스타트업 50개사 투자 유치 지원, 총 300억 원 펀딩',
+    achievements: '교육 스타트업 투자 유치 지원 다수',
   },
   {
-    name: '이글로벌',
     domain: '글로벌 유통사업',
     domainColor: 'cyan',
     icon: '🌏',
-    image: '👨‍💼',
-    role: '도메인 리드 컨설턴트',
-    education: '고려대학교 국제통상학 석사',
+    education: '국내 주요 대학 국제통상학 석사',
     career: [
-      '전) KOTRA 해외진출 지원팀장',
-      '전) 아마존 글로벌 셀링 한국 대표',
-      '해외 바이어 네트워크 500개사 보유',
+      '해외 진출 지원 기관 근무 경력',
+      '글로벌 이커머스 플랫폼 경험',
+      '해외 바이어 네트워크 다수 보유',
     ],
-    expertise: '아마존/쿠팡 글로벌 셀링, 해외 시장 진출 전략',
-    achievements: '아마존·쿠팡 셀러 150개사 육성, 연간 해외 매출 500억 원',
+    expertise: '글로벌 셀링 전략, 해외 시장 진출 컨설팅',
+    achievements: '글로벌 셀러 다수 육성',
   },
   {
-    name: '김여행',
     domain: '레저 관광업',
     domainColor: 'amber',
     icon: '✈️',
-    image: '👩‍💼',
-    role: '도메인 리드 컨설턴트',
-    education: '경희대학교 관광학 박사',
+    education: '국내 주요 대학 관광학 박사',
     career: [
-      '전) 하나투어 신사업본부장',
-      '전) 한국관광공사 정책자문위원',
+      '대형 여행사 신사업 담당',
+      '관광 정책 자문 경력',
       '호텔/리조트 컨설팅 경력 15년',
     ],
     expertise: '관광 상품 개발, 지역관광 활성화 전략',
-    achievements: '지역관광 활성화 프로젝트 50건, 정부지원금 합격률 87%',
+    achievements: '지역관광 프로젝트 다수 수행',
   },
   {
-    name: '최뷰티',
     domain: '뷰티 코스메틱',
     domainColor: 'pink',
     icon: '💄',
-    image: '👩‍🎨',
-    role: '도메인 리드 컨설턴트',
-    education: '파리 ESMOD 뷰티 MBA',
+    education: '해외 주요 뷰티 MBA',
     career: [
-      '전) 아모레퍼시픽 브랜드 디렉터',
-      '전) 올리브영 MD팀장',
-      '인디 뷰티 브랜드 2회 창업/EXIT',
+      '대기업 화장품 브랜드 디렉터 경력',
+      '뷰티 유통 채널 MD 경험',
+      '인디 뷰티 브랜드 창업 경험',
     ],
     expertise: '뷰티 브랜딩, 유통 채널 입점 전략',
-    achievements: '인디 뷰티 브랜드 40개 런칭, 올리브영·시코르 입점 성공률 90%',
+    achievements: '인디 뷰티 브랜드 다수 런칭',
   },
   {
-    name: '정크리에이터',
     domain: 'SNS 콘텐츠 수익화',
     domainColor: 'purple',
     icon: '📱',
-    image: '👨‍🎤',
-    role: '도메인 리드 컨설턴트',
-    education: '중앙대학교 미디어커뮤니케이션 석사',
+    education: '국내 주요 대학 미디어 석사',
     career: [
-      '유튜브 구독자 150만 채널 운영',
-      '전) 샌드박스네트워크 MCN 팀장',
+      '대형 채널 운영 경험',
+      'MCN 기업 팀장 경력',
       '크리에이터 이코노미 전문가',
     ],
     expertise: '콘텐츠 수익화 전략, MCN 사업 모델 설계',
-    achievements: '크리에이터 200명 육성, 누적 콘텐츠 수익 100억 원',
+    achievements: '크리에이터 다수 육성',
   },
   {
-    name: '한마케터',
     domain: '멀티 채널 마케팅',
     domainColor: 'orange',
     icon: '📊',
-    image: '👩‍💼',
-    role: '도메인 리드 컨설턴트',
-    education: 'Northwestern Kellogg MBA',
+    education: '해외 주요 경영대학원 MBA',
     career: [
-      '전) Google Korea 마케팅 총괄',
-      '전) Meta Korea 파트너십 매니저',
-      'Google/Meta 공인 파트너 자격',
+      '글로벌 IT기업 마케팅 담당 경력',
+      '디지털 광고 플랫폼 파트너십 경험',
+      '퍼포먼스 마케팅 전문가',
     ],
     expertise: '퍼포먼스 마케팅, D2C 브랜드 성장 전략',
-    achievements: '퍼포먼스 마케팅 ROAS 평균 520%, D2C 브랜드 100개사 성장 지원',
+    achievements: 'D2C 브랜드 다수 성장 지원',
   },
   {
-    name: '윤시큐리티',
     domain: 'IT Infra 보안 & AI 안전',
     domainColor: 'slate',
     icon: '🔐',
-    image: '👨‍💻',
-    role: '도메인 리드 컨설턴트',
-    education: 'MIT 사이버보안 석사',
+    education: '해외 주요 대학 사이버보안 석사',
     career: [
-      '전) KISA 정보보호 심사원',
-      '전) 삼성SDS 보안컨설팅팀장',
-      'ISMS/ISO27001 인증 심사관',
+      '정보보호 기관 심사원 경력',
+      '대기업 보안컨설팅 담당',
+      '정보보안 인증 심사관 자격',
     ],
     expertise: '정보보안 인증, AI 윤리 및 안전성 평가',
-    achievements: '정보보안 인증 취득 80건, AI 서비스 안전성 평가 50건',
+    achievements: '정보보안 인증 및 AI 안전성 평가 다수 수행',
   },
 ];
 
-/** 요금제 데이터 */
-const pricingPlans = [
-  { name: '기본', price: '무료', period: '', color: 'emerald', features: ['사업계획서 자동 생성', 'HWP/PDF 다운로드', '기본 템플릿 3종'] },
-  { name: '플러스', price: '29,000', period: '월', color: 'blue', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트'] },
-  { name: '프로', price: '79,000', period: '월', color: 'purple', popular: true, features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '무제한 수정'] },
-  { name: '프리미엄', price: '199,000', period: '월', color: 'amber', features: ['프로 기능 전체', '도메인 전문가 매칭', '1:1 원격 컨설팅'] },
-];
+// 요금제 데이터는 PricingCards 컴포넌트에서 관리
 
 /**
  * TeamPage 컴포넌트
  */
 export const TeamPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handlePlanSelect = (planName: string) => {
-    navigate(`/signup?plan=${encodeURIComponent(planName)}`);
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Header */}
@@ -260,7 +213,7 @@ export const TeamPage: React.FC = () => {
 
           {/* Back Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => window.history.back()}
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -307,51 +260,69 @@ export const TeamPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <div className="glass-card rounded-3xl p-8 md:p-12 border border-amber-500/20">
-              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+              {/* Top Section: Image + Basic Info */}
+              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-8">
                 {/* Profile Image */}
                 <div className="flex-shrink-0">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-6xl md:text-7xl shadow-2xl shadow-amber-500/20">
-                    {ceoProfile.image}
+                  <div className="w-72 h-72 md:w-[400px] md:h-[400px] rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
+                    <img 
+                      src={ceoProfile.image} 
+                      alt={ceoProfile.name}
+                      className="w-full h-full object-cover object-top"
+                    />
                   </div>
                 </div>
 
                 {/* Profile Info */}
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl md:text-3xl font-bold mb-1">{ceoProfile.name}</h3>
-                  <p className="text-amber-400 font-medium mb-2">{ceoProfile.role}</p>
-                  <p className="text-white/60 text-sm mb-4">{ceoProfile.education}</p>
+                  <p className="text-amber-400 font-medium mb-1">{ceoProfile.role}</p>
+                  <p className="text-white/60 text-sm mb-4 whitespace-pre-line">{ceoProfile.sub}</p>
 
                   {/* Career */}
-                  <div className="mb-4">
+                  <div className="text-left">
                     <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
-                    <ul className="space-y-1">
-                      {ceoProfile.career.map((item, i) => (
-                        <li key={i} className="text-sm text-white/60 flex items-start gap-2">
-                          <span className="text-amber-400 mt-1">•</span>
-                          {item}
-                        </li>
-                      ))}
+                    <ul className="space-y-2">
+                      {ceoProfile.career.map((item, i) => {
+                        const [title, desc] = item.includes(' - ') ? item.split(' - ') : [item, null];
+                        return (
+                          <li key={i} className="text-sm flex items-start gap-2">
+                            <span className="text-amber-400 mt-1">•</span>
+                            <div className="text-left">
+                              <span className="text-white/60">{title}</span>
+                              {desc && (
+                                <span className="block text-white/40 text-xs mt-0.5">{desc}</span>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
-
-                  {/* Achievements */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-white/80 mb-2">주요 성과</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {ceoProfile.achievements.map((item, i) => (
-                        <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Quote */}
-                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4">
-                    {ceoProfile.quote}
-                  </blockquote>
                 </div>
               </div>
+
+              {/* Bottom Section: Full Width */}
+              {/* Achievements */}
+              <div className="mb-6 pt-6 border-t border-white/10">
+                <h4 className="text-sm font-semibold text-white/80 mb-3">주요 성과</h4>
+                <div className="flex flex-wrap gap-2">
+                  {ceoProfile.achievements.map((item, i) => (
+                    <span key={i} className="text-sm px-4 py-2 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quote */}
+              <blockquote className="text-lg md:text-xl italic text-white/80 border-l-4 border-amber-500 pl-6">
+                "앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다.
+                <br />
+                AI 연구자의 시선으로 설계하고,
+                <br className="md:hidden" />
+                {' '}전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."
+              </blockquote>
             </div>
           </div>
         </div>
@@ -366,7 +337,7 @@ export const TeamPage: React.FC = () => {
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">MakersRound AI Team</h2>
             <p className="text-white/60 max-w-2xl mx-auto">
-              세계 최고 수준의 AI 연구진이 M.A.K.E.R.S 멀티에이전트 시스템을 구축했습니다
+              탄탄한 전문성을 갖춘 AI 연구진이 M.A.K.E.R.S 멀티에이전트 시스템을 구축했습니다
             </p>
           </div>
 
@@ -376,18 +347,10 @@ export const TeamPage: React.FC = () => {
                 key={i}
                 className="glass-card rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all hover-lift"
               >
-                {/* Profile Image */}
-                <div className="flex justify-center mb-4">
-                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-4xl shadow-lg">
-                    {dev.image}
-                  </div>
-                </div>
-
                 {/* Info */}
                 <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold">{dev.name}</h3>
-                  <p className="text-purple-400 text-sm font-medium">{dev.role}</p>
-                  <p className="text-white/50 text-xs mt-1">{dev.specialty}</p>
+                  <h3 className="text-xl font-bold text-purple-300">{dev.role}</h3>
+                  <p className="text-white/60 text-sm mt-1">{dev.specialty}</p>
                 </div>
 
                 {/* Education */}
@@ -403,11 +366,6 @@ export const TeamPage: React.FC = () => {
                   ))}
                 </ul>
 
-                {/* Contribution */}
-                <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-purple-400 font-medium mb-1">담당 기여</p>
-                  <p className="text-sm text-white/80">{dev.contribution}</p>
-                </div>
               </div>
             ))}
           </div>
@@ -434,21 +392,15 @@ export const TeamPage: React.FC = () => {
                 className={`glass-card rounded-2xl p-6 border border-${consultant.domainColor}-500/20 hover:border-${consultant.domainColor}-500/40 transition-all hover-lift`}
               >
                 {/* Domain Badge */}
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-${consultant.domainColor}-500/20 text-${consultant.domainColor}-400 text-xs font-bold mb-4`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-${consultant.domainColor}-500/20 text-${consultant.domainColor}-400 text-xs font-bold mb-3`}>
                   <span>{consultant.icon}</span>
                   {consultant.domain}
                 </div>
 
-                {/* Profile */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-${consultant.domainColor}-400 to-${consultant.domainColor}-600 flex items-center justify-center text-2xl`}>
-                    {consultant.image}
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{consultant.name}</h3>
-                    <p className={`text-${consultant.domainColor}-400 text-xs`}>{consultant.role}</p>
-                  </div>
-                </div>
+                {/* Role */}
+                <h3 className={`font-bold text-lg mb-3 text-${consultant.domainColor}-300`}>
+                  {consultant.domain} 리드 컨설턴트
+                </h3>
 
                 {/* Education */}
                 <p className="text-white/50 text-xs mb-3">{consultant.education}</p>
@@ -499,59 +451,24 @@ export const TeamPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-            {pricingPlans.map((plan, i) => (
-              <div
-                key={i}
-                className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
-                    가장 인기
-                  </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</span>
-                  {plan.period && <span className="text-white/60">/{plan.period}</span>}
-                </div>
-                <ul className="space-y-2 mb-6">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-white/70">
-                      <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() => handlePlanSelect(plan.name)}
-                  className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}
-                >
-                  {plan.name} 요금제로 시작
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            ))}
+          {/* Pricing Cards (공통 컴포넌트) */}
+          <div className="mb-12">
+            <PricingCards showTimetable={true} showDemoButtons={true} />
           </div>
 
-          {/* Bottom Note */}
-          <p className="text-center text-white/50 text-sm">
-            모든 요금제는 7일 무료 체험 후 결제됩니다. 언제든지 해지 가능합니다.
-          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/10">
+      <footer className="py-8 border-t border-white/10 select-none">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center pointer-events-none">
               <Rocket className="w-4 h-4" />
             </div>
             <span className="font-bold">Makers Round</span>
           </div>
-          <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
+          <p className="text-white/40 text-sm">© 2020 Makers World®. M.A.K.E.R.S AI 심사위원단</p>
         </div>
       </footer>
     </div>

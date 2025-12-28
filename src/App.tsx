@@ -9,8 +9,8 @@
  * 라우팅 구조:
  * / (루트)
  *   └─> LandingPage: 고객 유입용 랜딩페이지
- * /app
- *   └─> ProjectCreate: 프로젝트 생성 페이지
+ * /writing-demo
+ *   └─> ProjectCreate: 사업계획서 작성 데모 페이지
  * /wizard/:stepId
  *   └─> Layout > WizardStep: 단계별 마법사 페이지
  * /business-plan
@@ -31,6 +31,7 @@ import { TeamPage } from './pages/TeamPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
 import { BusinessPlanViewer } from './pages/BusinessPlanViewer';
+import { EvaluationDemoPage } from './pages/EvaluationDemo';
 
 /**
  * App 컴포넌트
@@ -55,8 +56,11 @@ function App() {
         {/* 팀 소개 페이지 */}
         <Route path="/team" element={<TeamPage />} />
 
-        {/* 앱 시작점: 프로젝트 생성 */}
-        <Route path="/app" element={<ProjectCreate />} />
+        {/* 앱 시작점: 프로젝트 생성 (사업계획서 작성 데모) */}
+        <Route path="/writing-demo" element={<ProjectCreate />} />
+
+        {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
+        <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
 
         {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
         <Route element={<Layout />}>

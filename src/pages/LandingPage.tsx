@@ -5,22 +5,19 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui';
+import { Button, PromotionBanner } from '../components/ui';
+import PreRegistrationSuccess from '../components/PreRegistrationSuccess';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
   Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare,
   TrendingUp, Globe, Lightbulb, BarChart3, Scale, Heart, Cpu,
-  Volume2, VolumeX
+  Volume2, VolumeX, Flame
 } from 'lucide-react';
-
-// BGM 트랙 목록
-const bgmTracks = [
-  '/assets/soundtrack/bgm1_StepForSuccess_A.mp3',
-  '/assets/soundtrack/bgm2_StepForSuccess_B.mp3',
-  '/assets/soundtrack/bgm3_BizStartPath_A.mp3',
-  '/assets/soundtrack/bgm4_BizStartPath_B.mp3',
-];
+import { getPlanPricing, getPromotionStatus, formatPrice } from '../utils/pricing';
+import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
+import { useMusicStore } from '../stores/useMusicStore';
+import type { PlanType } from '../utils/pricing';
 
 // M.A.K.E.R.S 위원회 데이터
 const makersCommittee = [
@@ -29,21 +26,62 @@ const makersCommittee = [
   { letter: 'K', name: 'Key Technology', korean: '핵심기술', icon: Cpu, color: 'from-cyan-500 to-teal-600', bgColor: 'bg-cyan-500/20', borderColor: 'border-cyan-500/30', description: '기술의 혁신성, 차별화, 지식재산권, 기술 보호' },
   { letter: 'E', name: 'Economics', korean: '경제성', icon: BarChart3, color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-500/20', borderColor: 'border-emerald-500/30', description: '매출·손익 계획, 자금 조달, 투자 회수, 재무 건전성' },
   { letter: 'R', name: 'Realization', korean: '실현가능성', icon: Target, color: 'from-orange-500 to-amber-600', bgColor: 'bg-orange-500/20', borderColor: 'border-orange-500/30', description: '사업 추진 일정, 단계별 실행 계획, 리스크 관리' },
-  { letter: 'S', name: 'Social Value', korean: '사회적가치', icon: Heart, color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-500/20', borderColor: 'border-pink-500/30', description: '일자리 창출, 지역 균형, ESG, 정부 정책 방향' },
+  { letter: 'S', name: 'Social Impact', korean: '사회적가치', icon: Heart, color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-500/20', borderColor: 'border-pink-500/30', description: '일자리 창출, 지역 균형, ESG, 정부 정책 방향' },
 ];
 
-// 요금제 데이터
+// 요금제 데이터 (할인가 정보 포함)
 const pricingPlans = [
-  { name: '기본', price: '무료', period: '', features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험'], cta: '무료 데모', popular: false },
-  { name: '플러스', price: '399,000', period: '2026 상반기 시즌', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트', '개선 피드백 제공'], cta: '플러스 시작', popular: false },
-  { name: '프로', price: '799,000', period: '2026 상반기 시즌', features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '무제한 수정'], cta: '프로 시작', popular: true },
-  { name: '프리미엄', price: '1,499,000', period: '2026 상반기 시즌', features: ['프로 기능 전체', '도메인 특화 전문가 매칭', '1:1 원격 컨설팅', '우선 지원'], cta: '프리미엄 시작', popular: false },
+  { 
+    name: '기본', 
+    planKey: null as null, // 무료 요금제는 할인 미적용
+    price: '무료 데모', 
+    originalPrice: 0,
+    period: '', 
+    features: [
+      '사업계획서 핵심 질문 리스트 제공', 
+      '사업계획서 자동 생성 체험', 
+      'AI 심사위원 평가 체험', 
+      { text: 'HWP/PDF 다운로드 체험', note: '2026년 양식 통합공고 후 제공' }
+    ], 
+    cta: '무료 데모 바로가기', 
+    popular: false 
+  },
+  { 
+    name: '플러스', 
+    planKey: 'plus' as const,
+    price: '399,000', 
+    originalPrice: 399000,
+    period: '2026 상반기 시즌', 
+    features: ['기본 기능 전체', '6개 영역 점수 리포트', '통합 개선 피드백 제공', { text: 'AI 고도화 토큰 제공', note: '약 3회 재작성 가능' }], 
+    cta: '플러스 시작', 
+    popular: false 
+  },
+  { 
+    name: '프로', 
+    planKey: 'pro' as const,
+    price: '799,000', 
+    originalPrice: 799000,
+    period: '2026 상반기 시즌', 
+    features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', { text: '토큰 제한 없는 무제한 수정', note: '제출 마감까지 제공' }], 
+    cta: '프로 시작', 
+    popular: true 
+  },
+  { 
+    name: '프리미엄', 
+    planKey: 'premium' as const,
+    price: '1,499,000', 
+    originalPrice: 1499000,
+    period: '2026 상반기 시즌', 
+    features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, { text: '1:1 원격 컨설팅', note: '회당 1시간, 최대 3회 제공' }, '우선 지원'], 
+    cta: '프리미엄 시작', 
+    popular: false 
+  },
 ];
 
 // 페르소나 데이터
 const personas = [
   { id: 'kim', name: '김예비', role: '예비창업패키지 지원자', icon: User, problem: '마감이 일주일 남았는데 시장 분석과 재무 추정을 어떻게 채워야 할지 막막합니다.', goal: '5천만 원 지원금을 위한 전문가 수준 사업계획서 완성', emotion: '불안, 초조', color: 'blue', badge: '가장 많이 사용' },
-  { id: 'choi', name: '최민혁', role: '재창업가 (CTO 출신)', icon: Brain, problem: '첫 창업 때 시장 수요 없음으로 실패. 이번엔 데이터로 검증하고 싶습니다.', goal: '코드 한 줄 짜기 전 PMF 철저히 검증', emotion: '신중함, 분석적', color: 'purple', badge: 'PMF 진단 추천' },
+  { id: 'choi', name: '최민혁', role: '재창업가 (엔지니어 출신)', icon: Brain, problem: '첫 창업 때 시장 수요 없음으로 실패. 이번엔 데이터로 검증하고 싶습니다.', goal: '코드 한 줄 짜기 전 PMF 철저히 검증', emotion: '신중함, 분석적', color: 'purple', badge: 'PMF 진단 추천' },
   { id: 'park', name: '박사장', role: '소상공인 (카페)', icon: Coffee, problem: '은행에서 상권 분석과 추정 손익이 포함된 사업계획서를 요구합니다.', goal: '은행 대출 심사 통과하여 운영 자금 확보', emotion: '답답함', color: 'amber', badge: '소상공인 추천' },
   { id: 'han', name: '한서윤', role: '시드 투자 유치 CEO', icon: Briefcase, problem: 'IR Deck을 만들었지만 TAM-SAM-SOM 근거가 부족합니다.', goal: '5억 원 시드 투자 유치를 위한 IR Deck 완성', emotion: '압박감', color: 'emerald', badge: '투자유치 추천' },
   { id: 'lee', name: '이지은', role: '대학생 창업동아리', icon: GraduationCap, problem: '팀원 모두 BM, CAC, LTV 같은 용어를 모릅니다.', goal: '창업경진대회 1등을 위한 완성도 높은 사업계획서', emotion: '열정적, 막연함', color: 'rose', badge: '학생 추천' },
@@ -240,10 +278,14 @@ export const LandingPage: React.FC = () => {
   const [activePersona, setActivePersona] = useState(0);
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
 
-  // AI 심사위원단 Flip 상태
-  const [isMakersFlipped, setIsMakersFlipped] = useState(false);
+  // 사전 등록 스토어 (성공 정보 표시용)
+  const { lastRegistration } = usePreRegistrationStore();
+
+  // AI 심사위원단 갤러리 상태
   const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
+  const [isMakersDetailOpen, setIsMakersDetailOpen] = useState(false);
 
   // 히어로 섹션 텍스트 플리핑 상태
   const [heroFlipIndex, setHeroFlipIndex] = useState(0);
@@ -323,7 +365,7 @@ export const LandingPage: React.FC = () => {
     },
     {
       letter: 'S',
-      name: 'Social Value',
+      name: 'Social Impact',
       korean: '사회적가치 전문 AI',
       color: 'from-pink-500 to-rose-600',
       image: '/assets/juror-single/j6_social_tr.png',
@@ -337,51 +379,13 @@ export const LandingPage: React.FC = () => {
     }
   ];
 
-  // BGM 상태 관리
-  const [isBgmPlaying, setIsBgmPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const trackIndexRef = useRef(0);
-
-  // BGM 초기화
+  // 전역 음악 상태 사용
+  const { isPlaying: isBgmPlaying, togglePlay: toggleBgm, initAudio } = useMusicStore();
+  
+  // 컴포넌트 마운트 시 Audio 초기화
   useEffect(() => {
-    // Audio 객체 생성
-    const audio = new Audio(bgmTracks[0]);
-    audio.volume = 0.3;
-    audioRef.current = audio;
-
-    // 트랙 종료 시 다음 트랙으로 자동 전환
-    const handleTrackEnd = () => {
-      trackIndexRef.current = (trackIndexRef.current + 1) % bgmTracks.length;
-      audio.src = bgmTracks[trackIndexRef.current];
-      audio.play().catch(() => { });
-    };
-
-    audio.addEventListener('ended', handleTrackEnd);
-
-    // 컨포넌트 언마운트 시 정리
-    return () => {
-      audio.pause();
-      audio.removeEventListener('ended', handleTrackEnd);
-      audioRef.current = null;
-    };
-  }, []);
-
-  // BGM 토글 함수
-  const toggleBgm = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isBgmPlaying) {
-      audio.pause();
-      setIsBgmPlaying(false);
-    } else {
-      audio.play()
-        .then(() => {
-          setIsBgmPlaying(true);
-        })
-        .catch(() => { });
-    }
-  };
+    initAudio();
+  }, [initAudio]);
 
   // 스크롤 감지
   React.useEffect(() => {
@@ -407,10 +411,12 @@ export const LandingPage: React.FC = () => {
     return () => clearInterval(flipInterval);
   }, []);
 
-  const handleCTAClick = () => navigate('/app');
+  const handleCTAClick = () => navigate('/writing-demo');
 
-  // 요금제 선택 시 회원가입 페이지로 이동
+  // 요금제 선택 시 프로모션 활성화 여부에 따라 모달 또는 회원가입 페이지로 이동
   const handlePlanSelect = (planName: string) => {
+    const promoStatus = getPromotionStatus();
+    // 모든 요금제에서 회원가입 페이지로 이동 (프로모션은 SignupPage에서 통합 처리)
     navigate(`/signup?plan=${encodeURIComponent(planName)}`);
   };
 
@@ -423,9 +429,17 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+      {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
+      <PromotionBanner 
+        onRegisterClick={() => navigate('/signup?plan=프로')} 
+        onVisibilityChange={setIsBannerVisible}
+      />
+      
       {/* ===== FIXED HEADER NAVIGATION ===== */}
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
+        className={`fixed left-0 w-full z-50 transition-all duration-300 ${
+          isBannerVisible ? 'top-12 sm:top-10' : 'top-0'
+        } ${isScrolled
           ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
           : 'bg-transparent'
           }`}
@@ -582,7 +596,7 @@ export const LandingPage: React.FC = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => navigate('/evaluation-demo')}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-12 py-6 text-xl font-bold shadow-2xl shadow-purple-500/25 border-0 group"
               >
                 지금 바로 심사받기
@@ -641,10 +655,10 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
-              <MessageSquare className="w-4 h-4" /> 실제 사용자 리뷰
+              <MessageSquare className="w-4 h-4" /> 고객 후기
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Makers Round 서비스 <span className="text-gradient">사용자 리얼 후기</span>
+              Makers Round 서비스 <span className="text-gradient">체험 피드백</span>
             </h2>
             <p className="text-white/60 text-lg">좌우로 드래그하여 더 많은 후기를 확인하세요</p>
           </div>
@@ -659,7 +673,7 @@ export const LandingPage: React.FC = () => {
               reviews: [
                 { name: '이*우', role: '예비창업패키지 준비 / IT 플랫폼', content: '마감 3일 남기고 멘붕이었는데, \'Basic 기능\'으로 10분 만에 HWP 초안 뽑고 소름 돋았습니다. 줄 간격, 폰트 깨짐 없이 공공기관 양식 그대로 나오네요. 덕분에 내용 다듬는 데만 집중해서 마감 1시간 전에 여유 있게 제출했습니다.' },
                 { name: '박*현', role: '청년창업사관학교 지원 / 제조 스타트업', content: '솔직히 처음엔 짜증 났습니다. \'Pro 기능\' 쓰는데 점수가 72점이라며 계속 반려당했거든요. 근데 AI가 지적해 준 \'경쟁사 대비 차별점\'을 고치고 나니 비로소 글이 논리적으로 변하더군요. 결국 합격했습니다. 그 깐깐함이 신의 한 수였어요.' },
-                { name: '최*진', role: '초기창업패키지 / 에듀테크', content: 'Social Value 위원이 \'ESG 및 일자리 창출 효과\'를 구체적인 숫자로 제안해 줘서 놀랐습니다. 교육 사업이라 막연하게만 썼던 가치를 정량화하니 심사위원들이 보는 눈이 달라지는 게 느껴졌습니다.' },
+                { name: '최*진', role: '초기창업패키지 / 에듀테크', content: 'Social Impact 위원이 \'ESG 및 일자리 창출 효과\'를 구체적인 숫자로 제안해 줘서 놀랐습니다. 교육 사업이라 막연하게만 썼던 가치를 정량화하니 심사위원들이 보는 눈이 달라지는 게 느껴졌습니다.' },
                 { name: '김*수', role: '로컬 크리에이터 지원 / 관광업', content: '시장 분석이 제일 어려웠는데, Marketability 위원이 최신 관광 트렌드 통계를 긁어와서 근거로 넣어주니 신뢰도가 확 올라갔습니다. 혼자 구글링할 땐 안 나오던 자료들이라 너무 유용했습니다.' },
                 { name: '정*영', role: '예비 창업자 / 생활 소비재', content: '컨설팅 업체에 300만 원 부르는 거 보고 포기했다가 메이커스 라운드를 썼습니다. 비용은 1/10도 안 되는데 퀄리티는 훨씬 낫네요. 특히 \'실현 가능성\' 파트에서 구체적인 마일스톤 잡아주는 게 진짜 전문가 같았습니다.' },
                 { name: '오*민', role: 'R&D 과제 기획 / 헬스케어', content: '기술은 자신 있는데 사업계획서로 푸는 게 고역이었습니다. Key Technology 위원이 제 기술 용어를 심사위원이 이해하기 쉬운 비즈니스 언어로 번역해 줘서, 기술성 평가에서 만점을 받았습니다.' },
@@ -723,14 +737,6 @@ export const LandingPage: React.FC = () => {
             </div>
           ))}
 
-          {/* Scroll hint */}
-          <div className="flex justify-center mt-8">
-            <div className="flex items-center gap-2 text-white/40 text-sm">
-              <ChevronRight className="w-4 h-4" />
-              <span>마우스를 올리면 슬라이딩이 멈추고, 드래그로 위치 조절 가능</span>
-              <ChevronRight className="w-4 h-4 rotate-180" />
-            </div>
-          </div>
         </div>
       </section>
 
@@ -745,8 +751,7 @@ export const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* ===== FRONT SIDE ===== */}
-          {!isMakersFlipped && (
-            <div className="animate-fade-in">
+          <div className="animate-fade-in">
               {/* Section Title */}
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-6">
@@ -803,34 +808,29 @@ export const LandingPage: React.FC = () => {
                     사업계획서의 6가지 핵심 영역을 사전 심사합니다
                   </p>
 
-                  {/* CTA Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                    <Button size="lg" onClick={handleCTAClick} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
+                  {/* CTA Buttons - 세로 배치 */}
+                  <div className="flex flex-col gap-4">
+                    <Button size="lg" onClick={() => navigate('/evaluation-demo')} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
                       무료로 AI 심사 받아보기
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                     <Button
                       size="lg"
-                      onClick={() => { setIsMakersFlipped(true); setMakersGalleryIndex(0); }}
+                      onClick={() => {
+                        const newState = !isMakersDetailOpen;
+                        setIsMakersDetailOpen(newState);
+                        if (newState) {
+                          setMakersGalleryIndex(0);
+                          setTimeout(() => {
+                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 100);
+                        }
+                      }}
                       className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-4 text-lg font-semibold"
                     >
-                      최고의 전문성 확인하기
-                      <ChevronRight className="w-5 h-5 ml-2" />
+                      {isMakersDetailOpen ? '전문성 상세 닫기' : '최고의 전문성 확인하기'}
+                      <ChevronRight className={`w-5 h-5 ml-2 transition-transform ${isMakersDetailOpen ? '-rotate-90' : 'rotate-90'}`} />
                     </Button>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { value: '3,500+', label: '사업계획서 심사' },
-                      { value: '94.7%', label: '사용자 만족도' },
-                      { value: '10분', label: '평균 소요시간' },
-                    ].map((s, i) => (
-                      <div key={i} className="text-center glass rounded-xl p-3">
-                        <div className="text-xl md:text-2xl font-bold text-gradient">{s.value}</div>
-                        <div className="text-xs text-white/60">{s.label}</div>
-                      </div>
-                    ))}
                   </div>
                 </div>
 
@@ -849,7 +849,17 @@ export const LandingPage: React.FC = () => {
                         className={`glass-card rounded-xl p-4 hover-lift cursor-pointer transition-all ${hoveredMaker === i ? 'border-2 ' + m.borderColor + ' glow-purple' : 'border border-white/10'}`}
                         onMouseEnter={() => setHoveredMaker(i)}
                         onMouseLeave={() => setHoveredMaker(null)}
-                        onClick={() => { setMakersGalleryIndex(i); setIsMakersFlipped(true); }}
+                        onClick={() => {
+                          setMakersGalleryIndex(i);
+                          if (!isMakersDetailOpen) {
+                            setIsMakersDetailOpen(true);
+                            setTimeout(() => {
+                              document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
+                          } else {
+                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg flex-shrink-0`}>
@@ -867,19 +877,13 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
 
-          {/* ===== BACK SIDE (Gallery) ===== */}
-          {isMakersFlipped && (
-            <div className="animate-fade-in">
-              {/* Back Header */}
+          {/* ===== AI 심사위원 상세 (Gallery) - 토글로 표시/숨김 ===== */}
+          {isMakersDetailOpen && (
+            <div id="makers-detail" className="pt-24 scroll-mt-20 animate-fade-in">
+              <div>
+              {/* Section Header */}
               <div className="text-center mb-8">
-                <button
-                  onClick={() => setIsMakersFlipped(false)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm mb-6 transition-all"
-                >
-                  <ArrowRight className="w-4 h-4 rotate-180" /> 돌아가기
-                </button>
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">
                   AI 심사위원 <span className="text-gradient">전문성 상세</span>
                 </h2>
@@ -930,7 +934,7 @@ export const LandingPage: React.FC = () => {
                 {/* CTA Button */}
                 <Button
                   size="lg"
-                  onClick={handleCTAClick}
+                  onClick={() => navigate('/evaluation-demo')}
                   className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-6 py-3 text-sm font-bold shadow-lg shadow-emerald-500/25 border-0 ml-4"
                 >
                   무료로 AI 심사 받아보기
@@ -1017,6 +1021,7 @@ export const LandingPage: React.FC = () => {
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
+              </div>
               </div>
             </div>
           )}
@@ -1224,10 +1229,10 @@ export const LandingPage: React.FC = () => {
           <div className="text-center mt-12">
             <p className="text-white/50 text-sm mb-4">그 외 모든 업종 지원 가능</p>
             <Button
-              onClick={handleCTAClick}
+              onClick={() => handlePlanSelect('프리미엄')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
             >
-              내 사업에 맞는 계획서 작성하기
+              프리미엄 컨설팅 사전등록하기
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
@@ -1237,39 +1242,223 @@ export const LandingPage: React.FC = () => {
       {/* ===== PRICING SECTION ===== */}
       <section id="pricing-section" className="py-24 relative scroll-mt-20" >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
               <Zap className="w-4 h-4" /> 요금제
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">합리적인 가격, 압도적인 가치</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {pricingPlans.map((plan, i) => (
-              <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
-                    가장 인기
+          {/* 프로모션 기간 타임테이블 */}
+          {getPromotionStatus().isActive && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="glass-card rounded-xl p-4 border border-white/10">
+                <h3 className="text-base font-bold text-center mb-4 flex items-center justify-center gap-2">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                  사전 등록 프로모션 일정
+                </h3>
+                
+                {/* 타임라인 */}
+                <div className="relative">
+                  {/* 배경 라인 */}
+                  <div className="absolute top-5 left-0 right-0 h-1 bg-white/10 rounded-full" />
+                  
+                  {/* 진행 상태 표시 */}
+                  <div className={`absolute top-5 left-0 h-1 rounded-full transition-all duration-500 ${
+                    getPromotionStatus().isPhaseA 
+                      ? 'w-1/2 bg-gradient-to-r from-rose-500 to-orange-500' 
+                      : 'w-full bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                  }`} />
+                  
+                  {/* 기간 표시 */}
+                  <div className="relative flex justify-between">
+                    {/* Phase A: 연말연시 특별 */}
+                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseA ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                        getPromotionStatus().isPhaseA 
+                          ? 'bg-gradient-to-r from-rose-500 to-orange-500 shadow-lg shadow-rose-500/30' 
+                          : 'bg-white/20'
+                      }`}>
+                        <Flame className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-sm font-bold text-white mb-0.5">🔥 연말연시 특별</div>
+                      <div className={`text-xl font-bold ${getPromotionStatus().isPhaseA ? 'text-rose-400' : 'text-white/50'}`}>
+                        30% 할인
+                      </div>
+                      <div className="text-xs text-white/60">12/28 ~ 1/3</div>
+                      {getPromotionStatus().isPhaseA && (
+                        <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-rose-500/20 rounded-full text-xs text-rose-300 font-medium">
+                          <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse" />
+                          진행 중
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Phase B: 공고 전 얼리버드 */}
+                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                        getPromotionStatus().isPhaseB 
+                          ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30' 
+                          : 'bg-white/20'
+                      }`}>
+                        <Sparkles className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-sm font-bold text-white mb-0.5">✨ 공고 전 얼리버드</div>
+                      <div className={`text-xl font-bold ${getPromotionStatus().isPhaseB ? 'text-emerald-400' : 'text-white/50'}`}>
+                        10% 할인
+                      </div>
+                      <div className="text-xs text-white/60">1/4 ~ 접수 시작일</div>
+                      {getPromotionStatus().isPhaseB && (
+                        <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 rounded-full text-xs text-emerald-300 font-medium">
+                          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                          진행 중
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <div className="text-4xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</div>
-                  {plan.period && <div className="text-sm text-white/60 mt-1">{plan.period}</div>}
                 </div>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-white/80">
-                      <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button onClick={() => handlePlanSelect(plan.name)} className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}>
-                  {plan.cta}
-                </Button>
+                
+                {/* 안내 메시지 */}
+                <div className="mt-3 text-center text-xs text-white/50">
+                  {getPromotionStatus().isPhaseA ? (
+                    <span>연말연시 기간에 등록하면 <strong className="text-rose-300">추가 20% 절약</strong> 혜택!</span>
+                  ) : (
+                    <span>정부지원사업 접수 시작일 전까지 사전 등록 시 할인 적용</span>
+                  )}
+                </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {pricingPlans.map((plan, i) => {
+              // 할인 정보 계산 (무료 요금제 제외)
+              const promoStatus = getPromotionStatus();
+              const planPricing = plan.planKey ? getPlanPricing(plan.planKey) : null;
+              const hasDiscount = planPricing && planPricing.isDiscounted;
+              
+              return (
+                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative flex flex-col ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
+                  {/* 할인 배지 (유료 요금제만) */}
+                  {hasDiscount && (
+                    <div className={`absolute -top-3 -right-3 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 animate-pulse ${
+                      promoStatus.isPhaseA 
+                        ? 'bg-gradient-to-r from-rose-500 to-orange-500' 
+                        : 'bg-gradient-to-r from-emerald-500 to-cyan-500'
+                    }`}>
+                      {promoStatus.isPhaseA ? <Flame className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
+                      {promoStatus.discountRate}% OFF
+                    </div>
+                  )}
+                  
+                  {/* 인기 배지 */}
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
+                      가장 인기
+                    </div>
+                  )}
+                  
+                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                  
+                  {/* 가격 영역 */}
+                  <div className="mb-6">
+                    {plan.planKey === null ? (
+                      <div className="text-3xl font-bold text-white/50">₩0 <span className="text-lg">(무료 데모)</span></div>
+                    ) : hasDiscount && planPricing ? (
+                      <>
+                        {/* 정가 (취소선) */}
+                        <div className="text-lg text-white/40 line-through">
+                          ₩{formatPrice(planPricing.originalPrice)}
+                        </div>
+                        {/* 할인가 */}
+                        <div className={`text-3xl font-bold ${
+                          promoStatus.isPhaseA ? 'text-rose-400' : 'text-emerald-400'
+                        }`}>
+                          ₩{formatPrice(planPricing.currentPrice)}
+                        </div>
+                        {/* 절약 금액 */}
+                        <div className={`text-sm font-medium mt-1 ${
+                          promoStatus.isPhaseA ? 'text-rose-300' : 'text-emerald-300'
+                        }`}>
+                          ₩{formatPrice(planPricing.savings)} 절약!
+                        </div>
+                        {/* Phase A 추가 절약 표시 */}
+                        {promoStatus.isPhaseA && planPricing.extraSavingsVsPhaseB > 0 && (
+                          <div className="text-xs text-orange-300 mt-1">
+                            연말 특가 추가 혜택 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-4xl font-bold">₩{plan.price}</div>
+                    )}
+                    {plan.period && <div className="text-sm text-white/60 mt-2">{plan.period}</div>}
+                  </div>
+                  
+                  <ul className="space-y-3 mb-6 flex-1">
+                    {plan.features.map((f, j) => {
+                      const isObject = typeof f === 'object' && f !== null;
+                      const text = isObject ? f.text : f;
+                      const note = isObject ? f.note : null;
+                      
+                      return (
+                        <li key={j} className="flex items-start gap-2 text-sm text-white/80">
+                          <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span>{text}</span>
+                            {note && (
+                              <div className="text-xs text-white/40 mt-0.5">{note}</div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  
+                  {/* CTA 버튼 */}
+                  {plan.name === '기본' ? (
+                    // 무료 데모 전용: 두 개의 버튼이 있는 카드 영역
+                    <div className="bg-white/5 rounded-lg p-3 space-y-2">
+                      <p className="text-xs text-white/50 text-center mb-2">무료 데모 바로가기</p>
+                      <Button 
+                        onClick={() => navigate('/writing-demo')} 
+                        className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-sm py-2"
+                      >
+                        사업계획서 작성 데모
+                      </Button>
+                      <Button 
+                        onClick={() => navigate('/evaluation-demo')} 
+                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-sm py-2"
+                      >
+                        AI 평가받기 데모
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      onClick={() => handlePlanSelect(plan.name)} 
+                      className={`w-full ${
+                        hasDiscount && promoStatus.isPhaseA
+                          ? 'bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400'
+                          : plan.popular 
+                            ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
+                            : 'bg-white/10 hover:bg-white/20'
+                      }`}
+                    >
+                      {hasDiscount && promoStatus.isPhaseA ? (
+                        <>
+                          <Flame className="w-4 h-4 mr-1" />
+                          연말연시 특가 등록
+                        </>
+                      ) : hasDiscount ? (
+                        '사전 등록하기'
+                      ) : (
+                        plan.cta
+                      )}
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1307,20 +1496,22 @@ export const LandingPage: React.FC = () => {
                 goal: '5천만 원 지원금을 위한 전문가 수준 사업계획서 완성',
                 color: 'slate',
                 gradient: 'from-slate-500 to-zinc-600',
-                borderColor: 'border-slate-500/30'
+                borderColor: 'border-slate-500/30',
+                buttonText: '가입 및 무료 데모 체험'
               },
               {
                 tier: '플러스',
                 tierDesc: '심사위원회 평가 추천',
                 name: '최민혁',
-                role: '재창업가 (CTO 출신)',
+                role: '재창업가 (엔지니어 출신)',
                 avatar: '🧑‍💻',
                 problem: '첫 창업 때 시장 수요 없음으로 실패. 기술력만 믿고 2년간 개발했는데 아무도 원하지 않았습니다.',
                 emotion: '신중함, 분석적',
                 goal: '코드 한 줄 짜기 전, 데이터로 철저히 검증하고 PMF 찾기',
                 color: 'blue',
                 gradient: 'from-blue-500 to-indigo-600',
-                borderColor: 'border-blue-500/30'
+                borderColor: 'border-blue-500/30',
+                buttonText: '플러스 요금제 사전등록'
               },
               {
                 tier: '프로',
@@ -1333,7 +1524,8 @@ export const LandingPage: React.FC = () => {
                 goal: '은행 대출 심사 통과하여 운영 자금 확보',
                 color: 'purple',
                 gradient: 'from-purple-500 to-violet-600',
-                borderColor: 'border-purple-500/30'
+                borderColor: 'border-purple-500/30',
+                buttonText: '프로 요금제 사전등록'
               },
               {
                 tier: '프리미엄',
@@ -1346,7 +1538,8 @@ export const LandingPage: React.FC = () => {
                 goal: '5억 원 투자 유치를 위한 방어 가능한 IR Deck 완성',
                 color: 'amber',
                 gradient: 'from-amber-500 to-orange-600',
-                borderColor: 'border-amber-500/30'
+                borderColor: 'border-amber-500/30',
+                buttonText: '프리미엄 요금제 사전등록'
               },
             ].map((persona, i) => (
               <div
@@ -1397,7 +1590,7 @@ export const LandingPage: React.FC = () => {
                   onClick={() => handlePlanSelect(persona.tier)}
                   className={`w-full mt-5 py-3 rounded-xl bg-gradient-to-r ${persona.gradient} text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2`}
                 >
-                  {persona.tier} 요금제로 시작하기
+                  {persona.buttonText}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -1520,7 +1713,7 @@ export const LandingPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-blue-900/50 to-slate-900" />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            지금 바로<br /><span className="text-gradient">AI 심사위원단</span>를 만나보세요
+            지금 바로<br /><span className="text-gradient">AI 심사위원단</span>을 만나보세요
           </h2>
           <p className="text-xl text-white/70 mb-10 max-w-xl mx-auto">
             무료로 시작하고, 6명의 AI 심사위원에게<br />사업계획서 피드백을 받아보세요
@@ -1537,17 +1730,20 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-12 border-t border-white/10" >
+      <footer className="py-12 border-t border-white/10 select-none">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center pointer-events-none">
               <Rocket className="w-5 h-5" />
             </div>
             <span className="font-bold text-lg">Makers Round</span>
           </div>
-          <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
+          <p className="text-white/40 text-sm">© 2020 Makers World®. M.A.K.E.R.S AI 심사위원단</p>
         </div>
       </footer>
+
+      {/* ===== 사전 등록 완료 화면 (회원가입 후 표시) ===== */}
+      {lastRegistration && <PreRegistrationSuccess />}
     </div>
   );
 };
