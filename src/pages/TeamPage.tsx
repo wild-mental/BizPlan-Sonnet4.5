@@ -25,22 +25,25 @@ import { PricingCards } from '../components/PricingCards';
 
 /** CEO 프로필 */
 const ceoProfile = {
-  name: '김메이커',
+  name: '박병준',
   role: 'CEO & Founder',
+  sub: 'AI 연구자 / 10년차 아키텍트 / 비즈니스 전략가 / 글로벌 사업개발(Biz-Dev)',
   company: 'Makers World',
-  image: '👨‍💼',
-  education: '서울대학교 경영학/컴퓨터공학 복수전공',
   career: [
-    '전) 네이버 스타트업 지원 프로그램 총괄',
-    '전) 중소벤처기업부 창업진흥원 자문위원',
-    '전) Y Combinator Visiting Partner',
+    '현) 메이커스월드 주식회사 대표',
+    '현) 모두의연구소 현직자 AI 서비스 개발과정 - 최신 AI 트렌드 교육',
+    '전) 삼육대 KDT 과정 AI 풀스택 개발과정 전임강사 - 전 과정 수료율 100%',
+    '전) 카카오 키즈노트 백엔드 개발 - 데이터 기반 매출 2배 견인',
+    '전) 한국생산성본부 객원 컨설턴트 - SW 고성장 클럽 글로벌 진출 지원',
+    '전) Luxrobo 글로벌 사업개발 매니저 - 미국·중동·중국 시장 개척',
   ],
   achievements: [
-    '예비창업패키지 심사위원 5년 역임',
-    '창업 지원 기업 누적 500개사 돌파',
-    '정부지원금 합격률 68% 달성 (업계 평균 32%)',
+    'LLM(거대언어모델) 파인튜닝 연구',
+    '300만 트래픽 무장애·매출 성장',
+    '국가 주도 SW 비즈니스 컨설팅',
+    'Global SW/HW 융합 비즈니스 확장 전략',
   ],
-  quote: '"모든 창업자는 성공할 자격이 있습니다. 우리는 그 가능성을 현실로 만듭니다."',
+  quote: '"앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다. AI 연구자의 시선으로 설계하고, 전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."',
 };
 
 /** AI 개발진 프로필 */
@@ -256,48 +259,58 @@ export const TeamPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <div className="glass-card rounded-3xl p-8 md:p-12 border border-amber-500/20">
-              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                {/* Profile Image */}
-                <div className="flex-shrink-0">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-6xl md:text-7xl shadow-2xl shadow-amber-500/20">
-                    {ceoProfile.image}
-                  </div>
+              <div className="flex flex-col gap-8">
+                {/* Profile Header */}
+                <div className="text-center">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
+                    {ceoProfile.name}
+                  </h3>
+                  <p className="text-amber-400 font-semibold text-xl mb-4">{ceoProfile.role}</p>
+                  <p className="text-white/70 text-sm max-w-2xl mx-auto leading-relaxed">
+                    {ceoProfile.sub}
+                  </p>
                 </div>
 
-                {/* Profile Info */}
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-1">{ceoProfile.name}</h3>
-                  <p className="text-amber-400 font-medium mb-2">{ceoProfile.role}</p>
-                  <p className="text-white/60 text-sm mb-4">{ceoProfile.education}</p>
-
+                {/* Career & Achievements Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
                   {/* Career */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
-                    <ul className="space-y-1">
+                  <div className="bg-white/5 rounded-2xl p-6">
+                    <h4 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                      <Award className="w-4 h-4" />
+                      경력
+                    </h4>
+                    <ul className="space-y-2">
                       {ceoProfile.career.map((item, i) => (
-                        <li key={i} className="text-sm text-white/60 flex items-start gap-2">
-                          <span className="text-amber-400 mt-1">•</span>
-                          {item}
+                        <li key={i} className="text-sm text-white/70 flex items-start gap-2">
+                          <span className="text-amber-400 mt-1 flex-shrink-0">•</span>
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {/* Achievements */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-white/80 mb-2">주요 성과</h4>
+                  <div className="bg-white/5 rounded-2xl p-6">
+                    <h4 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      주요 성과
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {ceoProfile.achievements.map((item, i) => (
-                        <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span key={i} className="text-sm px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
+                </div>
 
-                  {/* Quote */}
-                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4">
-                    {ceoProfile.quote}
+                {/* Quote */}
+                <div className="text-center pt-4">
+                  <blockquote className="text-lg md:text-xl italic text-white/80 max-w-3xl mx-auto relative">
+                    <span className="text-4xl text-amber-500/30 absolute -top-4 -left-2">"</span>
+                    {ceoProfile.quote.replace(/"/g, '')}
+                    <span className="text-4xl text-amber-500/30 absolute -bottom-6 -right-2">"</span>
                   </blockquote>
                 </div>
               </div>
