@@ -60,7 +60,7 @@ const pricingPlans = [
     price: '399,000', 
     originalPrice: 399000,
     period: '2026 상반기 시즌', 
-    features: ['기본 기능 전체', '6개 영역 점수 리포트', '통합 개선 피드백 제공', 'AI 고도화 토큰 제공'], 
+    features: ['기본 기능 전체', '6개 영역 점수 리포트', '통합 개선 피드백 제공', { text: 'AI 고도화 토큰 제공', note: '약 3회 재작성 가능' }], 
     cta: '플러스 시작', 
     popular: false 
   },
