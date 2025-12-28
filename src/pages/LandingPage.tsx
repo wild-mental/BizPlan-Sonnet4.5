@@ -70,7 +70,7 @@ const pricingPlans = [
     price: '799,000', 
     originalPrice: 799000,
     period: '2026 상반기 시즌', 
-    features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', '토큰 제한 없는 무제한 수정'], 
+    features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '파트별 고도화 피드백', { text: '토큰 제한 없는 무제한 수정', note: '제출 마감까지 제공' }], 
     cta: '프로 시작', 
     popular: true 
   },
