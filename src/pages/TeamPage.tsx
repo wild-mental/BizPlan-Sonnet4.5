@@ -280,7 +280,7 @@ export const TeamPage: React.FC = () => {
                   <p className="text-white/60 text-sm mb-4 whitespace-pre-line">{ceoProfile.sub}</p>
 
                   {/* Career */}
-                  <div>
+                  <div className="text-left">
                     <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
                     <ul className="space-y-2">
                       {ceoProfile.career.map((item, i) => {
@@ -288,7 +288,7 @@ export const TeamPage: React.FC = () => {
                         return (
                           <li key={i} className="text-sm flex items-start gap-2">
                             <span className="text-amber-400 mt-1">•</span>
-                            <div>
+                            <div className="text-left">
                               <span className="text-white/60">{title}</span>
                               {desc && (
                                 <span className="block text-white/40 text-xs mt-0.5">{desc}</span>
