@@ -1656,7 +1656,7 @@ export const LandingPage: React.FC = () => {
                   onClick={() => handlePlanSelect(persona.tier)}
                   className={`w-full mt-5 py-3 rounded-xl bg-gradient-to-r ${persona.gradient} text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2`}
                 >
-                  {persona.tier} 요금제로 시작하기
+                  {persona.tier} 요금제로 데모 체험
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
