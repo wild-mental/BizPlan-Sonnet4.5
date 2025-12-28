@@ -36,7 +36,6 @@ export const PreRegistrationModal: React.FC<PreRegistrationModalProps> = ({ onSu
     selectedPlan,
     isSubmitting,
     error,
-    openModal,
     closeModal,
     submitRegistration,
     clearError,
@@ -53,10 +52,7 @@ export const PreRegistrationModal: React.FC<PreRegistrationModalProps> = ({ onSu
     reset,
   } = useForm<PreRegistrationFormData>({
     resolver: zodResolver(preRegistrationSchema),
-    defaultValues: {
-      ...defaultFormValues,
-      selectedPlan: selectedPlan || 'pro',
-    },
+    defaultValues: defaultFormValues,
   });
 
   // 프로모션 Phase 및 카운트다운
@@ -68,20 +64,17 @@ export const PreRegistrationModal: React.FC<PreRegistrationModalProps> = ({ onSu
   // 선택된 요금제 감시
   const watchedPlan = watch('selectedPlan');
 
-  // selectedPlan 업데이트
+  // 모달 열릴 때 선택된 요금제 적용, 닫힐 때 폼 리셋
   useEffect(() => {
-    if (selectedPlan) {
+    if (isModalOpen && selectedPlan) {
+      // 모달이 열리면서 선택된 요금제로 설정
       setValue('selectedPlan', selectedPlan);
-    }
-  }, [selectedPlan, setValue]);
-
-  // 모달 닫기 시 폼 리셋
-  useEffect(() => {
-    if (!isModalOpen) {
+    } else if (!isModalOpen) {
+      // 모달이 닫히면 폼 리셋
       reset(defaultFormValues);
       clearError();
     }
-  }, [isModalOpen, reset, clearError]);
+  }, [isModalOpen, selectedPlan, setValue, reset, clearError]);
 
   // ESC 키로 모달 닫기
   useEffect(() => {
