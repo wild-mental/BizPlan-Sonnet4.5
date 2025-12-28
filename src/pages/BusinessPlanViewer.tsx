@@ -26,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '../components/ui';
 import { mockBusinessPlan } from '../types/mockData';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
+import { useProjectStore } from '../stores/useProjectStore';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileDown, Sparkles, RefreshCw, AlertCircle, X, AlertTriangle } from 'lucide-react';
@@ -66,6 +67,9 @@ export const BusinessPlanViewer: React.FC = () => {
     clearPlan,
     setError
   } = useBusinessPlanStore();
+  
+  // 프로젝트 정보 가져오기 (아이템명 표시용)
+  const { currentProject } = useProjectStore();
   
   // Store에 데이터가 없으면 mockData 사용 (fallback)
   // 에러가 있어도 예제 문서 표시
@@ -315,7 +319,7 @@ export const BusinessPlanViewer: React.FC = () => {
                 {isUsingMockData ? '예제 문서' : 'AI 생성 완료'}
               </span>
               <h1 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-white via-indigo-100 to-white bg-clip-text text-transparent leading-tight">
-                사업계획서
+                {currentProject?.name ? `${currentProject.name} 사업계획서` : '사업계획서'}
               </h1>
               <div className="flex items-center gap-4 mt-4">
                 <div className="flex items-center gap-2 text-white/80">
