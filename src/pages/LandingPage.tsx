@@ -880,7 +880,7 @@ export const LandingPage: React.FC = () => {
 
                   {/* CTA Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                    <Button size="lg" onClick={handleCTAClick} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
+                    <Button size="lg" onClick={() => navigate('/evaluation-demo')} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
                       무료로 AI 심사 받아보기
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
@@ -1005,7 +1005,7 @@ export const LandingPage: React.FC = () => {
                 {/* CTA Button */}
                 <Button
                   size="lg"
-                  onClick={handleCTAClick}
+                  onClick={() => navigate('/evaluation-demo')}
                   className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-6 py-3 text-sm font-bold shadow-lg shadow-emerald-500/25 border-0 ml-4"
                 >
                   무료로 AI 심사 받아보기
