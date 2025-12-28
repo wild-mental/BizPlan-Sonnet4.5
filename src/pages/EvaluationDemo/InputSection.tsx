@@ -191,12 +191,11 @@ export const InputSection: React.FC = () => {
 
             {/* PSST 시각화 그래픽 */}
             <div className="flex items-center justify-center gap-1 mb-4">
-              <span className="text-xs text-white/40 mr-2">PSST</span>
               {[
-                { code: 'P', name: 'Problem', num: '1', areas: ['[1. Problem]'] },
-                { code: 'S', name: 'Solution', num: '2', areas: ['[2. Solution]'] },
-                { code: 'S', name: 'Scale-up', num: '3', areas: ['[3. Scale-up]'] },
-                { code: 'T', name: 'Team', num: '4', areas: ['[4. Team]'] },
+                { code: 'P', name: 'Problem', areas: ['[1. Problem]'] },
+                { code: 'S', name: 'Solution', areas: ['[2. Solution]'] },
+                { code: 'S', name: 'Scale-up', areas: ['[3. Scale-up]'] },
+                { code: 'T', name: 'Team', areas: ['[4. Team]'] },
               ].map((psst, idx) => {
                 const isPrimary = currentArea.primaryCoverage.area.includes(psst.areas[0]);
                 const isSecondary = currentArea.secondaryCoverage.area?.includes(psst.areas[0]);
@@ -205,27 +204,32 @@ export const InputSection: React.FC = () => {
                 return (
                   <div
                     key={idx}
-                    className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
+                    className={`flex flex-col items-center px-4 py-2 rounded-lg transition-all ${
                       isPrimary 
                         ? 'bg-emerald-500/20 border border-emerald-500/40' 
                         : isSecondary 
                           ? 'bg-blue-500/20 border border-blue-500/40'
-                          : 'bg-white/5 border border-white/10'
+                          : 'bg-slate-950 border border-slate-800'
                     }`}
                     title={psst.name}
                   >
-                    <span className={`text-lg font-bold ${
-                      isPrimary ? 'text-emerald-400' : isSecondary ? 'text-blue-400' : 'text-white/30'
+                    <span className={`text-xl font-bold ${
+                      isPrimary ? 'text-emerald-400' : isSecondary ? 'text-blue-400' : 'text-slate-700'
                     }`}>
                       {psst.code}
                     </span>
-                    <span className={`text-[10px] ${isActive ? 'text-white/60' : 'text-white/30'}`}>
-                      {psst.num}
-                    </span>
+                    {/* 활성화된 영역만 풀네임 표시 */}
+                    {isActive && (
+                      <span className={`text-[10px] mt-0.5 ${
+                        isPrimary ? 'text-emerald-400/70' : 'text-blue-400/70'
+                      }`}>
+                        {psst.name}
+                      </span>
+                    )}
                   </div>
                 );
               })}
-              <div className="ml-3 flex items-center gap-3 text-[10px]">
+              <div className="ml-4 flex items-center gap-3 text-[10px]">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full" />
                   <span className="text-white/50">핵심</span>
