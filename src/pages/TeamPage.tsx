@@ -48,7 +48,6 @@ const aiDevelopers = [
   {
     name: '박지능',
     role: 'AI Research Lead',
-    image: '👨‍🔬',
     specialty: 'LLM & Multi-Agent Systems',
     education: 'KAIST AI대학원 박사',
     career: [
@@ -60,7 +59,6 @@ const aiDevelopers = [
   {
     name: '이알고',
     role: 'ML Engineer',
-    image: '👩‍💻',
     specialty: 'NLP & Document AI',
     education: '서울대학교 컴퓨터공학 석사',
     career: [
@@ -72,7 +70,6 @@ const aiDevelopers = [
   {
     name: '최데이터',
     role: 'Data Scientist',
-    image: '👨‍💻',
     specialty: 'Financial Modeling & Analytics',
     education: '연세대학교 응용통계학 석사',
     career: [
@@ -355,13 +352,6 @@ export const TeamPage: React.FC = () => {
                 key={i}
                 className="glass-card rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all hover-lift"
               >
-                {/* Profile Image */}
-                <div className="flex justify-center mb-4">
-                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-4xl shadow-lg">
-                    {dev.image}
-                  </div>
-                </div>
-
                 {/* Info */}
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold">{dev.name}</h3>
