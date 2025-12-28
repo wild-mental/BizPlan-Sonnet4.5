@@ -45,7 +45,12 @@ const pricingPlans = [
     price: '무료 데모', 
     originalPrice: 0,
     period: '', 
-    features: ['사업계획서 핵심 질문 리스트 제공', '사업계획서 자동 생성 체험', 'AI 심사위원 평가 체험', 'HWP/PDF 다운로드 체험 (2026년 양식 통합공고 후 제공)'], 
+    features: [
+      '사업계획서 핵심 질문 리스트 제공', 
+      '사업계획서 자동 생성 체험', 
+      'AI 심사위원 평가 체험', 
+      { text: 'HWP/PDF 다운로드 체험', note: '2026년 양식 통합공고 후 제공' }
+    ], 
     cta: '무료 데모 바로가기', 
     popular: false 
   },
@@ -1461,12 +1466,23 @@ export const LandingPage: React.FC = () => {
                   </div>
                   
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((f, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm text-white/80">
-                        <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                        {f}
-                      </li>
-                    ))}
+                    {plan.features.map((f, j) => {
+                      const isObject = typeof f === 'object' && f !== null;
+                      const text = isObject ? f.text : f;
+                      const note = isObject ? f.note : null;
+                      
+                      return (
+                        <li key={j} className="flex items-start gap-2 text-sm text-white/80">
+                          <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span>{text}</span>
+                            {note && (
+                              <div className="text-xs text-white/40 mt-0.5">{note}</div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                   
                   {/* CTA 버튼 */}
