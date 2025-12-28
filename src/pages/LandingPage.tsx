@@ -457,7 +457,7 @@ export const LandingPage: React.FC = () => {
     return () => clearInterval(flipInterval);
   }, []);
 
-  const handleCTAClick = () => navigate('/app');
+  const handleCTAClick = () => navigate('/writing-demo');
 
   // 요금제 선택 시 프로모션 활성화 여부에 따라 모달 또는 회원가입 페이지로 이동
   const handlePlanSelect = (planName: string) => {
@@ -1491,7 +1491,7 @@ export const LandingPage: React.FC = () => {
                     <div className="bg-white/5 rounded-lg p-3 space-y-2">
                       <p className="text-xs text-white/50 text-center mb-2">무료 데모 바로가기</p>
                       <Button 
-                        onClick={() => navigate('/demo/write')} 
+                        onClick={() => navigate('/writing-demo')} 
                         className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-sm py-2"
                       >
                         사업계획서 작성 데모

@@ -15,7 +15,7 @@
  * 1. 랜딩페이지에서 요금제 선택 → /signup?plan=프로 로 이동
  * 2. 회원가입 폼 작성 및 약관 동의
  * 3. 가입 완료 시 useAuthStore에 사용자 정보 저장
- * 4. /app 페이지로 리다이렉트
+ * 4. /writing-demo 페이지로 리다이렉트
  */
 
 import React, { useState, useEffect } from 'react';
@@ -175,8 +175,8 @@ export const SignupPage: React.FC = () => {
         marketingConsent: agreements.marketing,
       });
       
-      // 가입 완료 후 앱으로 이동
-      navigate('/app');
+      // 가입 완료 후 사업계획서 작성 데모로 이동
+      navigate('/writing-demo');
     } catch (error) {
       setErrors({ submit: '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.' });
     }
@@ -195,7 +195,7 @@ export const SignupPage: React.FC = () => {
 
     try {
       await socialLogin(provider, currentPlan);
-      navigate('/app');
+      navigate('/writing-demo');
     } catch (error) {
       setErrors({ submit: '소셜 로그인 중 오류가 발생했습니다. 다시 시도해주세요.' });
     }
