@@ -31,7 +31,7 @@
  * - 기타 경로: Outlet만 렌더링 (레이아웃 없음)
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
 import { useProjectStore } from '../stores/useProjectStore';
@@ -70,21 +70,24 @@ export const Layout: React.FC = () => {
 
   const isWizardPage = location.pathname.startsWith('/wizard');
 
-  // 마법사 페이지가 아닌 경우 레이아웃 없이 콘텐츠만 렌더링
-  if (!isWizardPage) {
-    return <Outlet />;
-  }
-
   // 템플릿별 테마 가져오기
   const theme = templateType ? TEMPLATE_THEMES[templateType] : null;
   const themeColor = theme?.primaryColor || 'primary';
   
   // 활성화된 단계 목록 (템플릿별 또는 기본)
-  const activeSteps = getActiveSteps();
+  // 모든 Hooks는 early return 전에 호출되어야 함
+  const activeSteps = useMemo(() => getActiveSteps(), [getActiveSteps]);
 
   // 진행률 계산
-  const completedSteps = activeSteps.filter((step) => isStepCompleted(step.id)).length;
-  const progressPercentage = (completedSteps / activeSteps.length) * 100;
+  const completedSteps = useMemo(
+    () => activeSteps.filter((step) => isStepCompleted(step.id)).length,
+    [activeSteps, isStepCompleted]
+  );
+  
+  const progressPercentage = useMemo(
+    () => (completedSteps / activeSteps.length) * 100,
+    [completedSteps, activeSteps.length]
+  );
 
   // 테마별 스타일 클래스
   const themeStyles = {
@@ -126,7 +129,10 @@ export const Layout: React.FC = () => {
     },
   };
   
-  const currentTheme = themeStyles[themeColor as keyof typeof themeStyles] || themeStyles.primary;
+  const currentTheme = useMemo(
+    () => themeStyles[themeColor as keyof typeof themeStyles] || themeStyles.primary,
+    [themeColor]
+  );
 
   // 작성 데모 단계 정의 (간결한 라벨 사용)
   const stepLabels: Record<string, string> = {
@@ -138,16 +144,28 @@ export const Layout: React.FC = () => {
     '재무 계획': '재무계획',
   };
   
-  const writingSteps = activeSteps.map((step) => ({
-    id: String(step.id),
-    label: stepLabels[step.title] || step.title,
-  }));
+  const writingSteps = useMemo(
+    () => activeSteps.map((step) => ({
+      id: String(step.id),
+      label: stepLabels[step.title] || step.title,
+    })),
+    [activeSteps]
+  );
 
   // 서브타이틀 생성 (템플릿명 + 프로젝트명)
-  const subtitle = [
-    theme ? `${theme.icon} ${theme.name}` : null,
-    currentProject?.name,
-  ].filter(Boolean).join(' | ');
+  const subtitle = useMemo(
+    () => [
+      theme ? `${theme.icon} ${theme.name}` : null,
+      currentProject?.name,
+    ].filter(Boolean).join(' | '),
+    [theme, currentProject?.name]
+  );
+
+  // 마법사 페이지가 아닌 경우 레이아웃 없이 콘텐츠만 렌더링
+  // 모든 Hooks 호출 후에 early return
+  if (!isWizardPage) {
+    return <Outlet />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -24,6 +24,7 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LandingPage } from './pages/LandingPage';
 import { SignupPage } from './pages/SignupPage';
@@ -45,33 +46,35 @@ import { EvaluationDemoPage } from './pages/EvaluationDemo';
  */
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* 랜딩페이지: 고객 유입 Hook */}
-        <Route path="/" element={<LandingPage />} />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          {/* 랜딩페이지: 고객 유입 Hook */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* 회원가입: 요금제 선택 후 가입 */}
-        <Route path="/signup" element={<SignupPage />} />
+          {/* 회원가입: 요금제 선택 후 가입 */}
+          <Route path="/signup" element={<SignupPage />} />
 
-        {/* 팀 소개 페이지 */}
-        <Route path="/team" element={<TeamPage />} />
+          {/* 팀 소개 페이지 */}
+          <Route path="/team" element={<TeamPage />} />
 
-        {/* 앱 시작점: 프로젝트 생성 (사업계획서 작성 데모) */}
-        <Route path="/writing-demo" element={<ProjectCreate />} />
+          {/* 앱 시작점: 프로젝트 생성 (사업계획서 작성 데모) */}
+          <Route path="/writing-demo" element={<ProjectCreate />} />
 
-        {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
-        <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
+          {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
+          <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
 
-        {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
-        <Route element={<Layout />}>
-          <Route path="/wizard/:stepId" element={<WizardStep />} />
-          <Route path="/business-plan" element={<BusinessPlanViewer />} />
-        </Route>
+          {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
+          <Route element={<Layout />}>
+            <Route path="/wizard/:stepId" element={<WizardStep />} />
+            <Route path="/business-plan" element={<BusinessPlanViewer />} />
+          </Route>
 
-        {/* 404 처리: 모든 미정의 경로를 루트로 리다이렉트 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* 404 처리: 모든 미정의 경로를 루트로 리다이렉트 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
