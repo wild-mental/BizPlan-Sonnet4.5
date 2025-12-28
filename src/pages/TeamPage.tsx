@@ -83,12 +83,9 @@ const aiDevelopers = [
 /** 도메인별 컨설턴트 프로필 */
 const domainConsultants = [
   {
-    name: '송테크',
     domain: 'SaaS 온라인 서비스',
     domainColor: 'blue',
     icon: '💻',
-    image: '👨‍💼',
-    role: '도메인 리드 컨설턴트',
     education: 'Stanford University MBA',
     career: [
       '전) AWS 한국 스타트업 담당',
@@ -99,12 +96,9 @@ const domainConsultants = [
     achievements: 'SaaS 스타트업 30개사 지원, 총 ARR 200억 원 달성',
   },
   {
-    name: '박에듀',
     domain: '온오프라인 교육사업',
     domainColor: 'emerald',
     icon: '📚',
-    image: '👩‍🏫',
-    role: '도메인 리드 컨설턴트',
     education: '하버드 교육대학원 석사',
     career: [
       '전) 메가스터디 신규사업팀장',
@@ -115,12 +109,9 @@ const domainConsultants = [
     achievements: '교육 스타트업 50개사 투자 유치 지원, 총 300억 원 펀딩',
   },
   {
-    name: '이글로벌',
     domain: '글로벌 유통사업',
     domainColor: 'cyan',
     icon: '🌏',
-    image: '👨‍💼',
-    role: '도메인 리드 컨설턴트',
     education: '고려대학교 국제통상학 석사',
     career: [
       '전) KOTRA 해외진출 지원팀장',
@@ -131,12 +122,9 @@ const domainConsultants = [
     achievements: '아마존·쿠팡 셀러 150개사 육성, 연간 해외 매출 500억 원',
   },
   {
-    name: '김여행',
     domain: '레저 관광업',
     domainColor: 'amber',
     icon: '✈️',
-    image: '👩‍💼',
-    role: '도메인 리드 컨설턴트',
     education: '경희대학교 관광학 박사',
     career: [
       '전) 하나투어 신사업본부장',
@@ -147,12 +135,9 @@ const domainConsultants = [
     achievements: '지역관광 활성화 프로젝트 50건, 정부지원금 합격률 87%',
   },
   {
-    name: '최뷰티',
     domain: '뷰티 코스메틱',
     domainColor: 'pink',
     icon: '💄',
-    image: '👩‍🎨',
-    role: '도메인 리드 컨설턴트',
     education: '파리 ESMOD 뷰티 MBA',
     career: [
       '전) 아모레퍼시픽 브랜드 디렉터',
@@ -163,12 +148,9 @@ const domainConsultants = [
     achievements: '인디 뷰티 브랜드 40개 런칭, 올리브영·시코르 입점 성공률 90%',
   },
   {
-    name: '정크리에이터',
     domain: 'SNS 콘텐츠 수익화',
     domainColor: 'purple',
     icon: '📱',
-    image: '👨‍🎤',
-    role: '도메인 리드 컨설턴트',
     education: '중앙대학교 미디어커뮤니케이션 석사',
     career: [
       '유튜브 구독자 150만 채널 운영',
@@ -179,12 +161,9 @@ const domainConsultants = [
     achievements: '크리에이터 200명 육성, 누적 콘텐츠 수익 100억 원',
   },
   {
-    name: '한마케터',
     domain: '멀티 채널 마케팅',
     domainColor: 'orange',
     icon: '📊',
-    image: '👩‍💼',
-    role: '도메인 리드 컨설턴트',
     education: 'Northwestern Kellogg MBA',
     career: [
       '전) Google Korea 마케팅 총괄',
@@ -195,12 +174,9 @@ const domainConsultants = [
     achievements: '퍼포먼스 마케팅 ROAS 평균 520%, D2C 브랜드 100개사 성장 지원',
   },
   {
-    name: '윤시큐리티',
     domain: 'IT Infra 보안 & AI 안전',
     domainColor: 'slate',
     icon: '🔐',
-    image: '👨‍💻',
-    role: '도메인 리드 컨설턴트',
     education: 'MIT 사이버보안 석사',
     career: [
       '전) KISA 정보보호 심사원',
@@ -398,21 +374,15 @@ export const TeamPage: React.FC = () => {
                 className={`glass-card rounded-2xl p-6 border border-${consultant.domainColor}-500/20 hover:border-${consultant.domainColor}-500/40 transition-all hover-lift`}
               >
                 {/* Domain Badge */}
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-${consultant.domainColor}-500/20 text-${consultant.domainColor}-400 text-xs font-bold mb-4`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-${consultant.domainColor}-500/20 text-${consultant.domainColor}-400 text-xs font-bold mb-3`}>
                   <span>{consultant.icon}</span>
                   {consultant.domain}
                 </div>
 
-                {/* Profile */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-${consultant.domainColor}-400 to-${consultant.domainColor}-600 flex items-center justify-center text-2xl`}>
-                    {consultant.image}
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{consultant.name}</h3>
-                    <p className={`text-${consultant.domainColor}-400 text-xs`}>{consultant.role}</p>
-                  </div>
-                </div>
+                {/* Role */}
+                <h3 className={`font-bold text-lg mb-3 text-${consultant.domainColor}-300`}>
+                  {consultant.domain} 리드 컨설턴트
+                </h3>
 
                 {/* Education */}
                 <p className="text-white/50 text-xs mb-3">{consultant.education}</p>
