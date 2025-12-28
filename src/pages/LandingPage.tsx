@@ -1299,7 +1299,7 @@ export const LandingPage: React.FC = () => {
           <div className="text-center mt-12">
             <p className="text-white/50 text-sm mb-4">그 외 모든 업종 지원 가능</p>
             <Button
-              onClick={handleCTAClick}
+              onClick={() => handlePlanSelect('프리미엄')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 px-8 py-3 font-semibold border-0"
             >
               내 사업에 맞는 계획서 작성하기
