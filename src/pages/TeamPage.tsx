@@ -27,7 +27,7 @@ import { PricingCards } from '../components/PricingCards';
 const ceoProfile = {
   name: '박병준',
   role: 'CEO & Founder',
-  sub: 'AI 연구자 / 10년차 아키텍트 / 비즈니스 전략가 / 글로벌 사업개발(Biz-Dev)',
+  sub: 'AI 연구자 / 10년차 아키텍트\n비즈니스 전략가 / 글로벌 사업개발(Biz-Dev)',
   company: 'Makers World',
   image: '/assets/profiles/pbj-ceo-profile-251004-warm-shirt-notie.png',
   career: [
@@ -276,7 +276,7 @@ export const TeamPage: React.FC = () => {
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl md:text-3xl font-bold mb-1">{ceoProfile.name}</h3>
                   <p className="text-amber-400 font-medium mb-1">{ceoProfile.role}</p>
-                  <p className="text-white/60 text-sm mb-4">{ceoProfile.sub}</p>
+                  <p className="text-white/60 text-sm mb-4 whitespace-pre-line">{ceoProfile.sub}</p>
 
                   {/* Career */}
                   <div className="mb-4">
