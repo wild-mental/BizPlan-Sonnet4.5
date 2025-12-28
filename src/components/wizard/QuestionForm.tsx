@@ -59,6 +59,65 @@ const isExtendedQuestion = (question: Question | ExtendedQuestion): question is 
   return 'guide' in question || 'examples' in question || 'warnings' in question;
 };
 
+// ============================================
+// QuestionWrapper 컴포넌트 (모듈 레벨 정의)
+// ============================================
+
+interface QuestionWrapperProps {
+  /** 질문 ID (key용) */
+  questionId: string;
+  /** 확장된 질문 여부 */
+  isExtended: boolean;
+  /** 인라인 가이드 텍스트 */
+  guide?: string;
+  /** 주의사항 목록 */
+  warnings?: string[];
+  /** 테마 색상 */
+  theme: 'emerald' | 'blue' | 'amber' | 'purple';
+  /** 자식 요소 (Input, Textarea 등) */
+  children: React.ReactNode;
+}
+
+/**
+ * QuestionWrapper - 질문 입력 필드 래퍼 컴포넌트
+ * 
+ * 역할:
+ * - 입력 필드와 가이드/경고를 함께 감싸는 컨테이너
+ * - 모듈 레벨에 정의하여 렌더링 간 컴포넌트 참조 유지
+ * - 이를 통해 리렌더링 시에도 Input 포커스 유지
+ */
+const QuestionWrapper: React.FC<QuestionWrapperProps> = ({
+  questionId,
+  isExtended,
+  guide,
+  warnings,
+  theme,
+  children,
+}) => (
+  <div key={questionId} className="space-y-1">
+    {children}
+    {/* 확장된 질문인 경우 인라인 가이드 표시 */}
+    {isExtended && guide && (
+      <InlineGuide text={guide} theme={theme} />
+    )}
+    {/* 주의사항이 있는 경우 */}
+    {isExtended && warnings && warnings.length > 0 && (
+      <div className="mt-2">
+        {warnings.map((warning, idx) => (
+          <p key={idx} className="text-xs text-amber-700 flex items-start gap-1">
+            <span>⚠️</span>
+            <span>{warning}</span>
+          </p>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+// ============================================
+// QuestionForm 메인 컴포넌트
+// ============================================
+
 /**
  * QuestionForm 컴포넌트
  * 
@@ -122,36 +181,21 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   const renderQuestion = (question: Question | ExtendedQuestion) => {
     const value = stepData[question.id] || '';
     const isExtended = isExtendedQuestion(question);
+    const extendedQ = isExtended ? (question as ExtendedQuestion) : null;
 
-    // 공통 래퍼 컴포넌트
-    const QuestionWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <div key={question.id} className="space-y-1">
-        {children}
-        {/* 확장된 질문인 경우 인라인 가이드 표시 */}
-        {isExtended && (question as ExtendedQuestion).guide && (
-          <InlineGuide 
-            text={(question as ExtendedQuestion).guide!} 
-            theme={theme}
-          />
-        )}
-        {/* 주의사항이 있는 경우 - 라이트 테마 */}
-        {isExtended && (question as ExtendedQuestion).warnings && (
-          <div className="mt-2">
-            {(question as ExtendedQuestion).warnings!.map((warning, idx) => (
-              <p key={idx} className="text-xs text-amber-700 flex items-start gap-1">
-                <span>⚠️</span>
-                <span>{warning}</span>
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+    // 공통 래퍼 props
+    const wrapperProps = {
+      questionId: question.id,
+      isExtended,
+      guide: extendedQ?.guide,
+      warnings: extendedQ?.warnings,
+      theme,
+    };
 
     switch (question.type) {
       case 'text':
         return (
-          <QuestionWrapper key={question.id}>
+          <QuestionWrapper key={question.id} {...wrapperProps}>
             <Input
               label={question.label}
               placeholder={question.placeholder}
@@ -166,7 +210,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
       case 'textarea':
         return (
-          <QuestionWrapper key={question.id}>
+          <QuestionWrapper key={question.id} {...wrapperProps}>
             <Textarea
               label={question.label}
               placeholder={question.placeholder}
@@ -181,7 +225,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
       case 'number':
         return (
-          <QuestionWrapper key={question.id}>
+          <QuestionWrapper key={question.id} {...wrapperProps}>
             <Input
               type="number"
               label={question.label}
