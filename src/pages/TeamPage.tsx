@@ -56,7 +56,6 @@ const aiDevelopers = [
       '전) Google DeepMind Korea',
       'NeurIPS/ICML 논문 7편 게재',
     ],
-    contribution: 'M.A.K.E.R.S 멀티에이전트 아키텍처 설계',
   },
   {
     name: '이알고',
@@ -69,7 +68,6 @@ const aiDevelopers = [
       '전) 카카오브레인',
       'HWP/PDF 문서 처리 특허 3건',
     ],
-    contribution: '사업계획서 자동 생성 엔진 개발',
   },
   {
     name: '최데이터',
@@ -82,7 +80,6 @@ const aiDevelopers = [
       '전) 토스 데이터사이언스팀',
       '금융 AI 모델링 경력 8년',
     ],
-    contribution: '재무 시뮬레이션 엔진 & Economics Agent 개발',
   },
 ];
 
@@ -385,11 +382,6 @@ export const TeamPage: React.FC = () => {
                   ))}
                 </ul>
 
-                {/* Contribution */}
-                <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs text-purple-400 font-medium mb-1">담당 기여</p>
-                  <p className="text-sm text-white/80">{dev.contribution}</p>
-                </div>
               </div>
             ))}
           </div>
