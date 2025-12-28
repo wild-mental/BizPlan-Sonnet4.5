@@ -2,22 +2,33 @@
  * 평가 결과 섹션
  */
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight, RefreshCw, Lock, TrendingUp, AlertTriangle, Lightbulb, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, RefreshCw, Lock, TrendingUp, AlertTriangle, Lightbulb, Award, Sparkles } from 'lucide-react';
 import { EVALUATION_AREAS } from '../../types/evaluation';
 import { useEvaluationStore } from '../../stores/useEvaluationStore';
 import ScoreRadarChart from '../../components/evaluation/ScoreRadarChart';
+import PaidPlanSelector from '../../components/PaidPlanSelector';
 
 export const ResultSection: React.FC = () => {
-  const navigate = useNavigate();
   const { evaluationResult, resetEvaluation } = useEvaluationStore();
+  const [showPricing, setShowPricing] = useState(false);
 
   if (!evaluationResult) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <p>평가 결과를 불러오는 중...</p>
       </div>
+    );
+  }
+
+  // 요금제 선택 화면 표시
+  if (showPricing) {
+    return (
+      <PaidPlanSelector 
+        title="상세 기능 이용하기"
+        description="강점 부각 전략, 개선 제안, 상세 피드백을 확인하려면 요금제를 선택하세요."
+        onBack={() => setShowPricing(false)}
+      />
     );
   }
 
@@ -46,10 +57,9 @@ export const ResultSection: React.FC = () => {
     resetEvaluation();
   };
 
-  // 요금제 보기
+  // 요금제 보기 (유료 기능 클릭 시)
   const handleViewPricing = () => {
-    navigate('/#pricing-section');
-    window.scrollTo(0, 0);
+    setShowPricing(true);
   };
 
   return (
@@ -123,6 +133,9 @@ export const ResultSection: React.FC = () => {
                   <p className={`text-3xl font-bold ${getPassRateColor(passRate)}`}>
                     {passRate}%
                   </p>
+                  <p className="text-xs text-rose-400 mt-2">
+                    ※ 80% 이상 달성 시 합격 가능성이 높아집니다
+                  </p>
                 </div>
               </div>
             </div>
@@ -169,16 +182,42 @@ export const ResultSection: React.FC = () => {
                   key={idx} 
                   className={`p-4 rounded-xl ${item.isBlurred ? 'bg-white/5 relative overflow-hidden' : 'bg-emerald-500/10 border border-emerald-500/20'}`}
                 >
-                  {item.isBlurred && (
-                    <div className="absolute inset-0 backdrop-blur-sm bg-slate-900/50 flex items-center justify-center z-10">
-                      <div className="text-center">
-                        <Lock className="w-5 h-5 text-white/40 mx-auto mb-1" />
-                        <span className="text-white/40 text-sm">유료 요금제에서 확인</span>
+                  {item.isBlurred ? (
+                    <>
+                      {/* 희미하게 보이는 콘텐츠 + 우측 버튼 */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 select-none pointer-events-none" style={{ filter: 'blur(3px)', transform: 'scaleY(0.95)' }}>
+                          <p className="font-semibold text-emerald-400/40 mb-1">{item.title}</p>
+                          <p className="text-white/30 text-sm">{item.description}</p>
+                        </div>
+                        {/* 유료 요금제 확인 버튼 - 우측 배치 */}
+                        <button 
+                          onClick={handleViewPricing}
+                          className="relative z-10 flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white/80 text-xs font-medium transition-all"
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                          유료 요금제에서 확인하기
+                        </button>
                       </div>
-                    </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="font-semibold text-emerald-400 mb-1">{item.title}</p>
+                          <p className="text-white/70 text-sm">{item.description}</p>
+                        </div>
+                        {/* 강점 부각 전략 버튼 */}
+                        <button
+                          onClick={handleViewPricing}
+                          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-medium transition-all"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          부각 전략 확인하기
+                        </button>
+                      </div>
+                    </>
                   )}
-                  <p className="font-semibold text-emerald-400 mb-1">{item.title}</p>
-                  <p className="text-white/70 text-sm">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -196,16 +235,42 @@ export const ResultSection: React.FC = () => {
                   key={idx} 
                   className={`p-4 rounded-xl ${item.isBlurred ? 'bg-white/5 relative overflow-hidden' : 'bg-amber-500/10 border border-amber-500/20'}`}
                 >
-                  {item.isBlurred && (
-                    <div className="absolute inset-0 backdrop-blur-sm bg-slate-900/50 flex items-center justify-center z-10">
-                      <div className="text-center">
-                        <Lock className="w-5 h-5 text-white/40 mx-auto mb-1" />
-                        <span className="text-white/40 text-sm">유료 요금제에서 확인</span>
+                  {item.isBlurred ? (
+                    <>
+                      {/* 희미하게 보이는 콘텐츠 + 우측 버튼 */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 select-none pointer-events-none" style={{ filter: 'blur(3px)', transform: 'scaleY(0.95)' }}>
+                          <p className="font-semibold text-amber-400/40 mb-1">{item.title}</p>
+                          <p className="text-white/30 text-sm">{item.description}</p>
+                        </div>
+                        {/* 유료 요금제 확인 버튼 - 우측 배치 */}
+                        <button 
+                          onClick={handleViewPricing}
+                          className="relative z-10 flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white/80 text-xs font-medium transition-all"
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                          유료 요금제에서 확인하기
+                        </button>
                       </div>
-                    </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="font-semibold text-amber-400 mb-1">{item.title}</p>
+                          <p className="text-white/70 text-sm">{item.description}</p>
+                        </div>
+                        {/* 개선 전략 제안 버튼 */}
+                        <button
+                          onClick={handleViewPricing}
+                          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-medium transition-all"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          개선 전략 제안 받기
+                        </button>
+                      </div>
+                    </>
                   )}
-                  <p className="font-semibold text-amber-400 mb-1">{item.title}</p>
-                  <p className="text-white/70 text-sm">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -247,7 +312,7 @@ export const ResultSection: React.FC = () => {
           {/* 하단 안내 */}
           <div className="text-center mt-8 text-white/40 text-sm">
             <p>
-              🔒 상세 피드백, 개선 제안, PDF 리포트는 유료 요금제에서 제공됩니다.
+              🔒 상세 피드백, 개선 제안, AI 재작성 루프는 유료 요금제에서 제공됩니다.
             </p>
           </div>
         </div>
@@ -257,4 +322,3 @@ export const ResultSection: React.FC = () => {
 };
 
 export default ResultSection;
-

@@ -31,6 +31,7 @@ import { useWizardStore } from '../stores/useWizardStore';
 import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
 import { Button } from '../components/ui';
+import { DemoHeader } from '../components/DemoHeader';
 import { Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
 import { TEMPLATE_THEMES } from '../constants/templateThemes';
 
@@ -88,11 +89,27 @@ export const ProjectCreate: React.FC = () => {
     navigate('/wizard/1');
   };
 
+  // 작성 데모 단계 정의
+  const demoSteps = [
+    { id: 'select', label: '템플릿 선택' },
+    { id: 'writing', label: '작성' },
+    { id: 'preview', label: '미리보기' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="container mx-auto px-4 py-16">
+      {/* 통합 데모 헤더 */}
+      <DemoHeader
+        demoType="writing"
+        currentStep="select"
+        steps={demoSteps}
+        theme="dark"
+        subtitle="사업계획서 작성"
+      />
+
+      <div className="container mx-auto px-4 py-12 pt-24">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
+          {/* Page Title */}
           <div className="text-center mb-8">
             {/* Demo Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-full mb-6">
@@ -266,7 +283,7 @@ export const ProjectCreate: React.FC = () => {
                 className="px-8 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 shadow-lg shadow-emerald-500/25"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                데모 체험 시작하기
+                사업계획서 작성 데모 체험
               </Button>
             </div>
           </form>
@@ -311,15 +328,6 @@ export const ProjectCreate: React.FC = () => {
             </div>
           </div>
 
-          {/* Back to Home */}
-          <div className="mt-12 text-center">
-            <button 
-              onClick={() => navigate('/')} 
-              className="text-white/50 hover:text-white text-sm transition-colors"
-            >
-              ← 메인 페이지로 돌아가기
-            </button>
-          </div>
         </div>
       </div>
     </div>

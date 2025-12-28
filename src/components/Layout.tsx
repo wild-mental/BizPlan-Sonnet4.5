@@ -36,6 +36,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
 import { useProjectStore } from '../stores/useProjectStore';
 import { SaveIndicator } from './SaveIndicator';
+import { DemoHeader } from './DemoHeader';
 import { Progress } from './ui';
 import { Check } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -127,54 +128,30 @@ export const Layout: React.FC = () => {
   
   const currentTheme = themeStyles[themeColor as keyof typeof themeStyles] || themeStyles.primary;
 
+  // 작성 데모 단계 정의 (동적으로 생성)
+  const writingSteps = activeSteps.map((step) => ({
+    id: String(step.id),
+    label: step.title.length > 8 ? step.title.substring(0, 8) + '...' : step.title,
+  }));
+
+  // 서브타이틀 생성 (템플릿명 + 프로젝트명)
+  const subtitle = [
+    theme ? `${theme.icon} ${theme.name}` : null,
+    currentProject?.name,
+  ].filter(Boolean).join(' | ');
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className={cn(
-        'border-b sticky top-0 z-10',
-        theme ? currentTheme.headerBg : 'bg-white border-gray-200'
-      )}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link 
-                to="/" 
-                className={cn(
-                  'text-xl font-bold',
-                  theme ? 'text-white' : 'text-primary-600'
-                )}
-              >
-                MakersRound
-              </Link>
-              {/* 템플릿 이름 (전체 이름) */}
-              {theme && (
-                <>
-                  <span className="text-white/50">/</span>
-                  <span className="text-white/90 font-medium flex items-center gap-1.5">
-                    <span>{theme.icon}</span>
-                    <span>{theme.name}</span>
-                  </span>
-                </>
-              )}
-              {/* 프로젝트명 (사용자 입력 아이템명) - 입력된 경우에만 표시 */}
-              {currentProject?.name && (
-                <>
-                  <span className={theme ? 'text-white/50' : 'text-gray-300'}>|</span>
-                  <span className={cn(
-                    'text-sm',
-                    theme ? 'text-white/70' : 'text-gray-600'
-                  )}>
-                    {currentProject.name}
-                  </span>
-                </>
-              )}
-            </div>
-            <SaveIndicator className={theme ? 'text-white' : ''} />
-          </div>
-        </div>
-      </header>
+      {/* 통합 데모 헤더 */}
+      <DemoHeader
+        demoType="writing"
+        currentStep={String(currentStep)}
+        steps={writingSteps}
+        theme="light"
+        subtitle={subtitle || '사업계획서 작성'}
+      />
 
-      <div className="flex max-w-7xl mx-auto">
+      <div className="flex max-w-7xl mx-auto pt-16">
         {/* Sidebar */}
         <aside className={cn(
           'w-64 border-r min-h-[calc(100vh-4rem)] p-6',

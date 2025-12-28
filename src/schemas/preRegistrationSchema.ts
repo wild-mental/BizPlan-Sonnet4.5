@@ -18,6 +18,7 @@ export const businessCategories = [
   'SNS 콘텐츠 수익화',
   '멀티 채널 마케팅',
   'IT Infra 보안 & AI 안전',
+  '기타',
 ] as const;
 
 // 요금제 타입

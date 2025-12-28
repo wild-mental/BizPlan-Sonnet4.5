@@ -7,129 +7,53 @@
 
 ---
 
-## 🎯 랜딩페이지 구성
+## 🎯 프로젝트 개요
+
+스타트업 창업자를 위한 AI 기반 사업계획서 평가 및 작성 솔루션입니다.
+M.A.K.E.R.S 6대 평가 영역에 기반한 AI 심사위원단이 사업계획서를 사전 평가하고 개선 피드백을 제공합니다.
+
+### 핵심 기능
+
+| 기능 | 설명 |
+|------|------|
+| **AI 평가 데모** | 6대 평가 영역 기반 사업계획서 사전 평가 체험 |
+| **사업계획서 작성 데모** | 템플릿 기반 사업계획서 작성 체험 |
+| **프로모션 시스템** | 2단계 할인 (Phase A: 30%, Phase B: 10%) |
+| **통합 회원가입** | 요금제 선택 + 사전등록 할인 통합 UX |
+
+---
+
+## 🗺 라우팅 구조
+
+| 경로 | 페이지 | 설명 |
+|------|--------|------|
+| `/` | LandingPage | 메인 랜딩페이지 |
+| `/signup` | SignupPage | 회원가입 (요금제 선택 통합) |
+| `/signup?plan=plus` | SignupPage | 특정 요금제로 회원가입 |
+| `/team` | TeamPage | 팀 소개 페이지 |
+| `/writing-demo` | ProjectCreate | 사업계획서 작성 데모 |
+| `/evaluation-demo` | EvaluationDemoPage | AI 평가 데모 |
+| `/wizard/:stepId` | WizardStep | 단계별 작성 마법사 |
+| `/business-plan` | BusinessPlanViewer | 사업계획서 뷰어 |
+
+---
+
+## 🎬 랜딩페이지 섹션 구성
 
 울트라 프리미엄 디자인의 **C+A 하이브리드 전략** 랜딩페이지
 
-### 페이지 섹션 순서
-
 | # | 섹션 | ID | 설명 |
 |---|------|-----|------|
-| 1 | **Fixed Header** | - | 로고, 네비게이션 링크, BGM 토글, CTA 버튼 |
-| 2 | **Primary Hero** | - | 비디오 배경 + 텍스트 플립 애니메이션 헤드라인 |
-| 3 | **실제 사용자 리뷰** | `#problem-section` | 4개 그룹별 자동 스크롤 캐러셀 (21개 후기) |
-| 4 | **AI 심사위원단 + M.A.K.E.R.S** | `#makers-section` | 통합 섹션 (좌우 2컬럼 + 갤러리 뷰) |
-| 5 | **사업분야 맞춤지원** | `#business-category` | 온라인/1인/프랜차이즈/AI 창업 지원 + 8개 도메인 전문 컨설팅 |
+| 1 | **Fixed Header** | - | 로고, 네비게이션, BGM 토글, CTA 버튼 |
+| 2 | **Primary Hero** | - | 비디오 배경 + 3D 텍스트 플립 애니메이션 |
+| 3 | **체험 피드백** | `#problem-section` | 4개 그룹별 자동 스크롤 캐러셀 (21개 후기) |
+| 4 | **AI 심사위원단** | `#makers-section` | 통합 섹션 (좌우 2컬럼 + 토글 갤러리 뷰) |
+| 5 | **사업분야 맞춤지원** | `#business-category` | 창업 유형별 + 도메인별 컨설팅 |
 | 6 | **요금제** | `#pricing-section` | 4단계 시즌 구독 요금제 |
-| 7 | **단계별 솔루션** | `#solution-steps` | 4개 페르소나별 문제/목표 매칭 (2x2 그리드) |
-| 8 | **기업 소개 (Makers World)** | `#testimonials-section` | 3단계 창업 여정 + 로고/영상 + 태그라인 |
-| 9 | **SEO 키워드** | - | 해시태그 키워드 배열 |
-| 10 | **Final CTA** | - | 무료 시작 유도 |
-| 11 | **Footer** | - | 저작권 정보 |
-
----
-
-## 🧭 네비게이션 바
-
-| 위치 | 구성 요소 |
-|------|----------|
-| **왼쪽** | Makers Round 로고 (클릭 시 최상단 이동) |
-| **중앙** | 6개 섹션 링크 (lg 이상) |
-| **오른쪽** | BGM 토글 스위치 + "사업계획서 작성" CTA 버튼 |
-
-### 네비게이션 링크 순서
-
-| 순서 | 탭 이름 | 연결 섹션 |
-|------|--------|-----------|
-| 1 | 고객 후기 | `#problem-section` |
-| 2 | AI 심사위원단 | `#makers-section` |
-| 3 | 맞춤 지원 | `#business-category` |
-| 4 | 요금제 | `#pricing-section` |
-| 5 | 단계별 솔루션 | `#solution-steps` |
-| 6 | 기업 소개 | `#testimonials-section` |
-
-### BGM 토글 기능
-- 4개 트랙 자동 순환 재생
-- 볼륨 30% 기본 설정
-- 트랙 종료 시 다음 곡 자동 전환
-
-### 특징
-- 전체 뷰포트 너비 보장 (`w-full`)
-- 스크롤 시 글래스모피즘 배경 + 블러 효과 적용
-- 스무스 스크롤링 지원
-- 반응형 디자인 (lg 이상에서 네비 링크 표시)
-
----
-
-## 🎬 Primary Hero 섹션
-
-### 텍스트 플립 애니메이션
-3초마다 순환하는 3D 플립 효과:
-- **예비창업패키지 합격** (emerald)
-- **초기창업패키지 합격** (cyan)
-- **정책자금지원 합격** (blue)
-
-### 헤드라인 구조
-```
-[플리핑 텍스트] 합격
-사업계획서,
-최고의 AI 심사위원단과 함께
-         ↑ 언더라인 강조
-```
-
-### CTA 버튼 (3개)
-| 버튼 | 스타일 | 동작 |
-|------|--------|------|
-| 지금 바로 작성하기 | emerald → cyan 그라데이션 | `/app` 이동 |
-| 지금 바로 심사받기 | purple → blue 그라데이션 | AI 심사위원단 섹션 스크롤 |
-| 심사 영역 알아보기 | 투명 (white/10) | AI 심사위원단 섹션 스크롤 |
-
-### Key Benefits (3개 카드)
-| 아이콘 | 제목 | 설명 |
-|--------|------|------|
-| ⏱️ | 쉽고 빠른 작성 | 영역별 답변으로 사업계획서 자동 생성 |
-| 🎯 | 합격률 극대화 | M.A.K.E.R.S 6가지 심사기준 사전 검증 |
-| 📄 | 즉시 다운로드 | 바로 제출 가능한 HWP/PDF 양식 |
-
-### 배경
-- `MakersRoundHeroVideo.mp4` 전체화면 비디오
-- 어두운 그라데이션 오버레이 (80%/70%/100%)
-- 애니메이션 그라데이션 오브 효과
-
----
-
-## 🖼️ 미디어 리소스
-
-### 디렉토리 구조
-```
-public/assets/
-├── juror-logos/           # 로고 및 심사위원단 합성 이미지
-│   ├── 0_MakersRound-logo-transparent.png
-│   ├── MakersRoundConceptEnhanced*.png
-│   └── all-jurors-*.png
-├── juror-single/          # 개별 AI 심사위원 캐릭터 이미지
-│   ├── j1_market_tr.png      (M - 시장성)
-│   ├── j2_ability_tr.png     (A - 수행능력)
-│   ├── j3_keytech_tr.png     (K - 핵심기술)
-│   ├── j4_economy_tr.png     (E - 경제성)
-│   ├── j5_realization_tr.png (R - 실현가능성)
-│   └── j6_social_tr.png      (S - 사회적가치)
-├── soundtrack/            # BGM 트랙
-│   ├── bgm1_StepForSuccess_A.mp3
-│   ├── bgm2_StepForSuccess_B.mp3
-│   ├── bgm3_BizStartPath_A.mp3
-│   └── bgm4_BizStartPath_B.mp3
-├── MakersRoundHeroVideo.mp4    # 히어로 배경 비디오
-├── 2_Makersworld-logo-neon.png # Makers World 로고
-└── favicon_makersround.png     # 파비콘
-```
-
-### 영상
-| 파일 | 용도 | 위치 |
-|------|------|------|
-| `MakersRoundHeroVideo.mp4` | 히어로 배경 | Primary Hero 섹션 |
-| `AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4` | 프로모 영상 | AI 심사위원단 섹션 우측 |
-| `1_251204_메이커스월드_소개영상.mp4` | 서비스 소개 | 기업 소개 섹션 우측 |
+| 7 | **단계별 솔루션** | `#solution-steps` | 4개 페르소나별 문제/목표 매칭 |
+| 8 | **기업 소개** | `#testimonials-section` | Makers World 소개 + 영상 |
+| 9 | **Final CTA** | - | 무료 시작 유도 |
+| 10 | **Footer** | - | 저작권 정보 |
 
 ---
 
@@ -137,201 +61,261 @@ public/assets/
 
 정부지원사업 평가의 6가지 핵심 영역을 전담하는 AI 심사위원단
 
-### 6가지 평가 영역
-
 | 위원 | 영역 | 한국어 | 색상 | 평가 항목 |
 |------|------|--------|------|----------|
-| **M** | Marketability | 시장성 | purple | 시장 규모, 고객 수요, 경쟁 상황, 타깃 시장 분석 |
-| **A** | Ability | 수행능력 | blue | 팀 구성, 창업자 역량, 실행 가능성, 인프라 |
-| **K** | Key Technology | 핵심기술 | cyan | 기술 혁신성, 차별화, 지식재산권, 기술 보호 |
-| **E** | Economics | 경제성 | emerald | 매출/손익 계획, 자금 조달, 투자 회수, 재무 건전성 |
-| **R** | Realization | 실현가능성 | orange | 사업 추진 일정, 단계별 실행 계획, 리스크 관리 |
-| **S** | Social Impact | 사회적가치 | pink | 일자리 창출, 지역 균형, ESG, 정부 정책 방향 |
-
-### AI 심사위원 상세 카드
-
-각 심사위원별 상세 정보 카드 (갤러리 뷰):
-
-| 항목 | 내용 |
-|------|------|
-| **캐릭터 이미지** | 256px 크기 AI 캐릭터 일러스트 |
-| **타이틀** | `{영역명} Agent` (예: Marketability Agent) |
-| **서브타이틀** | `{한글명} 전문 AI 심사위원` |
-| **통계** | 학습 데이터량, 정확도, 검증 점수, 특수 기능 |
-| **학습 출처** | 데이터 소스 설명 |
-| **평가 기능** | 주요 평가 항목 태그 |
-| **설명** | 상세 기능 설명 |
-
-### Front/Back 플립 구조
-
-**Front Side (기본 뷰):**
-- Makers Round 브랜드 배지
-- 헤드라인 + M.A.K.E.R.S 아이콘 프리뷰
-- 프로모 비디오 + 6개 미니 카드
-
-**Back Side (갤러리 뷰):**
-- 6개 심사위원 네비게이션 아이콘
-- 선택된 심사위원 상세 카드
-- 좌/우 화살표 네비게이션
+| **M** | Marketability | 시장성 | purple | TAM/SAM/SOM, 경쟁사 분석 |
+| **A** | Ability | 수행능력 | blue | 팀 구성, 창업자 역량 |
+| **K** | Key Technology | 핵심기술 | cyan | 기술 혁신성, 지식재산권 |
+| **E** | Economics | 경제성 | emerald | 매출/손익 계획, 자금 조달 |
+| **R** | Realization | 실현가능성 | orange | 사업 추진 일정, 리스크 관리 |
+| **S** | Social Impact | 사회적가치 | pink | 일자리 창출, ESG |
 
 ---
 
-## 📢 실제 사용자 리얼 후기
+## 🚀 AI 평가 데모
 
-4개 그룹으로 분류된 21개 실제 리뷰
+`/evaluation-demo` 경로에서 체험 가능한 4단계 AI 평가 프로세스
 
-| 그룹 | 대상 | 색상 | 후기 수 | 스크롤 방향 |
-|------|------|------|---------|------------|
-| Group 1 | 예비창업패키지 & 정부지원사업 지원자 | 에메랄드 | 7개 | ← 왼쪽 |
-| Group 2 | 기술 검증 & 피벗이 필요한 재창업가 | 블루 | 5개 | → 오른쪽 |
-| Group 3 | 소상공인 & 자영업자 | 앰버 | 4개 | ← 왼쪽 |
-| Group 4 | 투자 유치(IR) 준비 CEO | 퍼플 | 5개 | → 오른쪽 |
+### 단계 구성
 
-### 캐러셀 특징 (JavaScript 기반)
-- **자동 스크롤**: `requestAnimationFrame` 기반 부드러운 스크롤
-- **호버 정지**: 마우스 호버 시 즉시 일시정지
-- **양방향 드래그**: 좌/우 드래그로 위치 조절
-- **무한 루프**: 경계 도달 시 자동 리셋
-- **비주얼 분리자**: 4배 복제된 카드 세트 경계에 구분선 표시
-- **카드 크기**: 612px 너비, 본문 text-lg
-- **텍스트 선택 방지**: `select-none`
+| 단계 | 컴포넌트 | 설명 |
+|------|----------|------|
+| 1. 소개 | IntroSection | 6대 평가 영역 안내 + 무료/유료 기능 구분 |
+| 2. 입력 | InputSection | 사업 아이디어 입력 폼 |
+| 3. 분석 | AnalyzingSection | AI 분석 중 애니메이션 (6개 단계) |
+| 4. 결과 | ResultSection | 레이더 차트 + 점수 + 피드백 |
+
+### 무료 데모 체험 범위
+
+- ✓ 6대 영역 점수
+- ✓ 합격 예상 확률
+- ✓ 핵심 피드백 3개
+
+### 유료 추가 기능 (블러 처리)
+
+- 🔒 영역별 상세 피드백
+- 🔒 개선 가이드
+- 🔒 AI 기반 재작성 루프
 
 ---
 
-## 🌐 기업 소개 (Makers World)
+## ✍️ 사업계획서 작성 데모
 
-"세상의 모든 Maker를 위한 World" - 전방위 창업자 지원 서비스
+`/writing-demo` 경로에서 시작하는 템플릿 기반 작성 데모
 
-### 섹션 구성
+### 지원 템플릿
 
-1. **상단 타이틀 영역**
-   - 전방위 창업자 지원 서비스 배지
-   - "Makers World가 당신의 사업 여정을 함께합니다" 타이틀
-   - 3단계 창업 여정 카드 (창업 시작 / 자금 확보 / 성장 가속)
-
-2. **좌우 2컬럼 레이아웃**
-   - 좌측: Makers World 네온 로고
-   - 우측: 소개 영상
-
-3. **하단 태그라인 (전체 너비)**
-   - "세상의 모든 Maker를 위한 World"
-   - 팀 소개 보기 버튼 → `/team` 페이지 이동 (최상단 스크롤)
-
-### 3단계 창업 여정
-
-| 아이콘 | 단계 | 설명 |
+| 템플릿 | 대상 | 색상 |
 |--------|------|------|
-| 🚀 | **창업 시작** | 아이디어 구체화부터 사업계획서 작성까지 |
-| 🎯 | **자금 확보** | 정부지원금, 투자유치, 대출 등 다양한 경로 |
-| 📈 | **성장 가속** | 시장 분석, 마케팅 전략, 사업 확장까지 |
+| 예비창업패키지 | 예비창업자 | emerald |
+| 초기창업패키지 | 3년 이하 법인 | blue |
+| 정책자금지원 | 소상공인/중소기업 | purple |
+
+### Wizard 단계 (stepId)
+
+1. `idea` - 아이디어 설명
+2. `market` - 시장 분석
+3. `team` - 팀 구성
+4. `technology` - 핵심 기술
+5. `financial` - 재무 계획
+6. `schedule` - 추진 일정
+7. `social` - 사회적 가치
+8. `summary` - 요약 및 다운로드
 
 ---
 
-## 💼 사업분야 맞춤지원
+## 💰 요금제 및 프로모션
 
-### 창업 유형 (4개 카드)
+### 요금제
 
-| 분야 | 대상 | 키워드 |
-|------|------|--------|
-| **온라인 창업** | 온라인 쇼핑몰, 디지털 서비스 | #스마트스토어, #SaaS |
-| **1인 소자본 창업** | 최소 비용 1인 창업 | #프리랜서, #크리에이터 |
-| **프랜차이즈 사업** | 프랜차이즈 전문 양식 | #가맹점, #본사 |
-| **AI 분야 창업** | AI 스타트업 특화 | #LLM, #AI에이전트 |
+| 플랜 | 가격 | 핵심 기능 |
+|------|------|----------|
+| **기본** | 무료 | 체험 기능 |
+| **플러스** | ₩399,000 | 6개 영역 점수 리포트, 통합 피드백 |
+| **프로** | ₩799,000 | 80점 미달 재작성 루프, 무제한 수정 |
+| **프리미엄** | ₩1,499,000 | 전문가 매칭, 1:1 컨설팅 |
 
-### 도메인별 전문 컨설팅 (8개 분야)
+### 프로모션 시스템 (2단계)
 
-| 도메인 | 팀 규모 | 전문성 |
-|--------|---------|--------|
-| SaaS 온라인 서비스 | 8명 | AWS·Azure 아키텍트, PM 출신 |
-| 온오프라인 교육사업 | 6명 | 에듀테크·학원사업·기업교육 전문가 |
-| 글로벌 유통사업 | 10명 | KOTRA 출신, 해외 바이어 네트워크 |
-| 레저 관광업 | 5명 | 관광학 박사·호텔리어·여행사 CEO |
-| 뷰티 코스메틱 | 7명 | 대기업 뷰티 브랜드 디렉터·MD |
-| SNS 콘텐츠 수익화 | 9명 | 100만 구독자 크리에이터·MCN 대표 |
-| 멀티 채널 마케팅 | 12명 | Google·Meta·네이버 공인 파트너 |
-| IT Infra 보안 & AI 안전 | 11명 | ISMS·ISO27001 심사원, AI 윤리 인증 |
+| Phase | 기간 | 할인율 | 설명 |
+|-------|------|--------|------|
+| **Phase A** | ~2026-01-03 | 30% | 연말연시 특별 할인 |
+| **Phase B** | ~2026-03-01 | 10% | 정부지원사업 접수 전 얼리버드 |
 
 ---
 
-## 💰 요금제
+## 🧭 네비게이션
 
-시즌 기반 구독 모델 (2026 상반기 시즌)
+### 헤더 (LandingPage)
 
-| 플랜 | 가격 | 기간 | 핵심 기능 |
-|------|------|------|----------|
-| **기본** | 무료 | - | 사업계획서 핵심 질문 리스트 제공, 자동 생성 체험, AI 심사위원 평가 체험, HWP/PDF 다운로드 체험 |
-| **플러스** | ₩399,000 | 2026 상반기 시즌 | 기본 기능 전체, M.A.K.E.R.S AI 평가, 6개 영역 점수 리포트, 개선 피드백 |
-| **프로** | ₩799,000 | 2026 상반기 시즌 | 플러스 기능 전체, 80점 미달 재작성 루프, 파트별 고도화 피드백, 무제한 수정 |
-| **프리미엄** | ₩1,499,000 | 2026 상반기 시즌 | 프로 기능 전체, 도메인 특화 전문가 매칭, 1:1 원격 컨설팅, 우선 지원 |
+| 위치 | 구성 |
+|------|------|
+| 왼쪽 | Makers Round 로고 |
+| 중앙 | 6개 섹션 링크 (lg 이상) |
+| 오른쪽 | BGM 토글 + CTA 버튼 |
 
----
+### DemoHeader (데모 페이지 공통)
 
-## 👥 단계별 솔루션 (페르소나)
+| 위치 | 구성 |
+|------|------|
+| 왼쪽 | 뒤로가기 + 로고 + 서브타이틀 |
+| 중앙 | 진행 단계 표시 |
+| 오른쪽 | BGM 토글 + 회원가입 버튼 |
 
-2x2 그리드 레이아웃, 문제와 감정이 통합 표시
+### 전역 BGM 상태
 
-| 요금제 | 페르소나 | 역할 | 목표 |
-|--------|----------|------|------|
-| **기본** | 김예비 👨‍💼 | 예비창업패키지 지원자 | 5천만원 지원금 확보 |
-| **플러스** | 최민혁 🧑‍💻 | 재창업가 (CTO) | PMF 데이터 검증 |
-| **프로** | 박사장 ☕ | 2년 차 소상공인 (카페) | 3천만원 대출 확보 |
-| **프리미엄** | 한서윤 👩‍💼 | 투자유치 준비 CEO | 5억원 투자유치 |
-
-### 카드 구성
-- 요금제 배지 (우상단)
-- 아바타 + 이름/역할
-- 겪고 있는 문제 | 감정 (통합 표시)
-- 이루고 싶은 목표 (강조 박스)
-- CTA 버튼
-
----
-
-## 🗺 라우팅
-
-| 경로 | 페이지 | 설명 |
-|------|--------|------|
-| `/` | LandingPage | 랜딩페이지 (메인) |
-| `/app` | ProjectCreate | 사업계획서 작성 시작 |
-| `/wizard/:stepId` | WizardStep | 단계별 마법사 |
-| `/business-plan` | BusinessPlanViewer | 사업계획서 뷰어 |
-| `/team` | TeamPage | 팀 소개 페이지 |
-| `/signup` | SignupPage | 회원가입 페이지 |
+- `useMusicStore` Zustand 스토어로 전역 관리
+- 4개 트랙 자동 순환 재생
+- localStorage 동기화 (페이지 이동 간 상태 유지)
+- 볼륨 30% 기본 설정
 
 ---
 
 ## 🛠 기술 스택
 
-- **Framework:** React 19 + Vite 7
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS + Custom Glassmorphism
-- **State:** Zustand
-- **Routing:** React Router DOM v7
-- **Icons:** Lucide React
-- **Charts:** Recharts
+### 프레임워크 및 라이브러리
+
+| 분류 | 기술 | 버전 |
+|------|------|------|
+| **Framework** | React | 19.2.0 |
+| **Build Tool** | Vite | 7.2.4 |
+| **Language** | TypeScript | 5.9.3 |
+| **Styling** | Tailwind CSS | 3.4.1 |
+| **State** | Zustand | 5.0.8 |
+| **Routing** | React Router DOM | 7.9.6 |
+| **Forms** | React Hook Form + Zod | 7.66.1 / 4.1.12 |
+| **Charts** | Recharts | 3.4.1 |
+| **Icons** | Lucide React | 0.554.0 |
+| **HTTP** | Axios | 1.13.2 |
+
+### 상태 관리 (Zustand Stores)
+
+| 스토어 | 용도 |
+|--------|------|
+| `useAuthStore` | 인증 상태 |
+| `useProjectStore` | 프로젝트 정보 |
+| `useWizardStore` | 마법사 단계 상태 |
+| `useBusinessPlanStore` | 사업계획서 데이터 |
+| `useEvaluationStore` | AI 평가 상태 |
+| `useMusicStore` | 전역 BGM 상태 |
+| `usePreRegistrationStore` | 사전등록 상태 |
+| `useFinancialStore` | 재무 시뮬레이션 |
+| `usePMFStore` | PMF 진단 |
+
+---
+
+## 📁 프로젝트 구조
+
+```
+src/
+├── components/
+│   ├── ui/                    # 공통 UI 컴포넌트
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Card.tsx
+│   │   └── ...
+│   ├── wizard/                # 마법사 관련 컴포넌트
+│   │   ├── QuestionForm.tsx
+│   │   ├── FinancialSimulation.tsx
+│   │   └── ...
+│   ├── evaluation/            # 평가 관련 컴포넌트
+│   │   └── ScoreRadarChart.tsx
+│   ├── DemoHeader.tsx         # 데모 공통 헤더
+│   ├── PaidPlanSelector.tsx   # 유료 요금제 선택
+│   ├── PricingCards.tsx       # 요금제 카드
+│   └── Layout.tsx             # 레이아웃 래퍼
+├── pages/
+│   ├── LandingPage.tsx        # 메인 랜딩페이지
+│   ├── SignupPage.tsx         # 회원가입
+│   ├── TeamPage.tsx           # 팀 소개
+│   ├── ProjectCreate.tsx      # 프로젝트 생성 (작성 데모)
+│   ├── WizardStep.tsx         # 단계별 마법사
+│   ├── BusinessPlanViewer.tsx # 사업계획서 뷰어
+│   └── EvaluationDemo/        # AI 평가 데모
+│       ├── index.tsx
+│       ├── IntroSection.tsx
+│       ├── InputSection.tsx
+│       ├── AnalyzingSection.tsx
+│       └── ResultSection.tsx
+├── stores/                    # Zustand 스토어
+├── hooks/                     # 커스텀 훅
+│   ├── useAutoSave.ts
+│   ├── useCountdown.ts
+│   └── useFinancialCalc.ts
+├── constants/                 # 상수 정의
+│   ├── pricingPlans.ts
+│   ├── promotion.ts
+│   └── templateThemes.ts
+├── utils/                     # 유틸리티 함수
+│   ├── pricing.ts
+│   ├── evaluationSimulator.ts
+│   └── dataMasking.ts
+├── types/                     # TypeScript 타입 정의
+├── schemas/                   # Zod 스키마
+├── services/                  # API 서비스
+├── App.tsx                    # 라우팅 설정
+├── main.tsx                   # 엔트리포인트
+└── index.css                  # 글로벌 스타일
+
+public/assets/
+├── juror-logos/               # 로고 및 합성 이미지
+├── juror-single/              # 개별 AI 심사위원 이미지
+├── soundtrack/                # BGM 트랙 (4개)
+├── profiles/                  # 프로필 이미지
+└── *.mp4                      # 비디오 파일
+
+docs/                          # 프로젝트 문서
+tasks/                         # 개선 작업 목록
+```
+
+---
+
+## 🖼️ 미디어 리소스
+
+### 이미지
+
+| 경로 | 용도 |
+|------|------|
+| `juror-single/j1~j6_*.png` | 6개 AI 심사위원 캐릭터 |
+| `juror-logos/all-jurors-*.png` | 심사위원단 합성 이미지 |
+| `MakersRoundHeroWallpaper.png` | 히어로 배경 |
+
+### 영상
+
+| 파일 | 위치 |
+|------|------|
+| `MakersRoundHeroVideo.mp4` | Primary Hero 배경 |
+| `AI_스타트업_사업계획서_솔루션_영상_프롬프트.mp4` | AI 심사위원단 섹션 |
+| `1_251204_메이커스월드_소개영상.mp4` | 기업 소개 섹션 |
+
+### BGM
+
+| 파일 | 설명 |
+|------|------|
+| `bgm1_StepForSuccess_A.mp3` | 트랙 1 |
+| `bgm2_StepForSuccess_B.mp3` | 트랙 2 |
+| `bgm3_BizStartPath_A.mp3` | 트랙 3 |
+| `bgm4_BizStartPath_B.mp3` | 트랙 4 |
 
 ---
 
 ## 🎨 CSS 애니메이션
 
-### 텍스트 플립 애니메이션
-```css
-@keyframes text-flip-in {
-  0% { transform: rotateX(90deg); opacity: 0; }
-  100% { transform: rotateX(0deg); opacity: 1; }
-}
+### 주요 애니메이션
 
-@keyframes text-flip-out {
-  0% { transform: rotateX(0deg); opacity: 1; }
-  100% { transform: rotateX(-90deg); opacity: 0; }
-}
-```
+| 이름 | 효과 | 지속 시간 |
+|------|------|----------|
+| `text-flip-in/out` | 3D 텍스트 플립 | 0.6s |
+| `animate-fade-in` | 페이드인 | 0.8s |
+| `animate-fade-in-up` | 아래→위 페이드 | 1s |
+| `animate-float` | 부유 효과 | 6s (무한) |
+| `animate-pulse-glow` | 글로우 펄스 | 3s (무한) |
 
-### 기타 애니메이션
-- `animate-fade-in`: 페이드인 (0.8s)
-- `animate-fade-in-up`: 아래에서 위로 페이드인 (1s)
-- `animate-float`: 부유 효과 (6s 무한)
-- `animate-pulse-glow`: 글로우 펄스 (3s 무한)
-- `animate-gradient`: 그라데이션 시프트 (4s 무한)
+### 글래스모피즘
+
+- `.glass`: 반투명 + 블러 효과
+- `.glass-card`: 카드형 글래스 효과
+- `.hover-lift`: 호버 시 상승 효과
 
 ---
 
@@ -341,45 +325,26 @@ public/assets/
 # 의존성 설치
 npm install
 
-# 개발 서버 실행 (포트 5175)
-npm run dev -- --port 5175
+# 개발 서버 실행
+npm run dev
 
 # 빌드
 npm run build
 
-# 프리뷰
+# 빌드 프리뷰
 npm run preview
+
+# 린트 검사
+npm run lint
 ```
 
----
+### 환경 설정
 
-## 📁 프로젝트 구조
-
-```
-src/
-├── components/ui/          # 공통 UI 컴포넌트
-├── pages/
-│   ├── LandingPage.tsx     # 메인 랜딩페이지
-│   ├── TeamPage.tsx        # 팀 소개 페이지
-│   ├── SignupPage.tsx      # 회원가입 페이지
-│   └── ...
-├── stores/                 # Zustand 스토어
-├── App.tsx                 # 라우팅 설정
-├── index.css               # 글로벌 스타일 + 애니메이션
-└── main.tsx                # 엔트리포인트
-
-public/assets/
-├── juror-logos/            # 로고 및 합성 이미지
-├── juror-single/           # 개별 AI 심사위원 이미지
-├── soundtrack/             # BGM 트랙
-└── *.mp4                   # 비디오 파일
-
-docs/
-├── landing-page-checklist.md        # 랜딩페이지 체크리스트
-├── landing-page-worklog.md          # 랜딩페이지 작업 히스토리
-├── landing-page-training-guide.md   # 개발자용 코드 교육안
-└── landing-page-ai-agent-guide.md   # AI 에이전트 활용 교육안
-```
+| 항목 | 값 |
+|------|-----|
+| 개발 서버 포트 | 5173 (기본) |
+| Node.js | 18+ 권장 |
+| 패키지 매니저 | npm |
 
 ---
 
@@ -391,4 +356,4 @@ MIT License
 
 **Made with ❤️ by Makers World**
 
-*Last Updated: 2025-12-26*
+*Last Updated: 2025-12-28*

@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, PromotionBanner } from '../components/ui';
-import PreRegistrationModal from '../components/PreRegistrationModal';
 import PreRegistrationSuccess from '../components/PreRegistrationSuccess';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
@@ -17,15 +16,8 @@ import {
 } from 'lucide-react';
 import { getPlanPricing, getPromotionStatus, formatPrice } from '../utils/pricing';
 import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
+import { useMusicStore } from '../stores/useMusicStore';
 import type { PlanType } from '../utils/pricing';
-
-// BGM 트랙 목록
-const bgmTracks = [
-  '/assets/soundtrack/bgm1_StepForSuccess_A.mp3',
-  '/assets/soundtrack/bgm2_StepForSuccess_B.mp3',
-  '/assets/soundtrack/bgm3_BizStartPath_A.mp3',
-  '/assets/soundtrack/bgm4_BizStartPath_B.mp3',
-];
 
 // M.A.K.E.R.S 위원회 데이터
 const makersCommittee = [
@@ -288,12 +280,12 @@ export const LandingPage: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
 
-  // 사전 등록 스토어
-  const { openModal: openPreRegistrationModal, lastRegistration } = usePreRegistrationStore();
+  // 사전 등록 스토어 (성공 정보 표시용)
+  const { lastRegistration } = usePreRegistrationStore();
 
-  // AI 심사위원단 Flip 상태
-  const [isMakersFlipped, setIsMakersFlipped] = useState(false);
+  // AI 심사위원단 갤러리 상태
   const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
+  const [isMakersDetailOpen, setIsMakersDetailOpen] = useState(false);
 
   // 히어로 섹션 텍스트 플리핑 상태
   const [heroFlipIndex, setHeroFlipIndex] = useState(0);
@@ -387,51 +379,13 @@ export const LandingPage: React.FC = () => {
     }
   ];
 
-  // BGM 상태 관리
-  const [isBgmPlaying, setIsBgmPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const trackIndexRef = useRef(0);
-
-  // BGM 초기화
+  // 전역 음악 상태 사용
+  const { isPlaying: isBgmPlaying, togglePlay: toggleBgm, initAudio } = useMusicStore();
+  
+  // 컴포넌트 마운트 시 Audio 초기화
   useEffect(() => {
-    // Audio 객체 생성
-    const audio = new Audio(bgmTracks[0]);
-    audio.volume = 0.3;
-    audioRef.current = audio;
-
-    // 트랙 종료 시 다음 트랙으로 자동 전환
-    const handleTrackEnd = () => {
-      trackIndexRef.current = (trackIndexRef.current + 1) % bgmTracks.length;
-      audio.src = bgmTracks[trackIndexRef.current];
-      audio.play().catch(() => { });
-    };
-
-    audio.addEventListener('ended', handleTrackEnd);
-
-    // 컨포넌트 언마운트 시 정리
-    return () => {
-      audio.pause();
-      audio.removeEventListener('ended', handleTrackEnd);
-      audioRef.current = null;
-    };
-  }, []);
-
-  // BGM 토글 함수
-  const toggleBgm = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isBgmPlaying) {
-      audio.pause();
-      setIsBgmPlaying(false);
-    } else {
-      audio.play()
-        .then(() => {
-          setIsBgmPlaying(true);
-        })
-        .catch(() => { });
-    }
-  };
+    initAudio();
+  }, [initAudio]);
 
   // 스크롤 감지
   React.useEffect(() => {
@@ -462,22 +416,7 @@ export const LandingPage: React.FC = () => {
   // 요금제 선택 시 프로모션 활성화 여부에 따라 모달 또는 회원가입 페이지로 이동
   const handlePlanSelect = (planName: string) => {
     const promoStatus = getPromotionStatus();
-    
-    // 프로모션 활성화 중이고 유료 요금제인 경우 사전 등록 모달 오픈
-    if (promoStatus.isActive && planName !== '기본') {
-      const planKeyMap: Record<string, 'plus' | 'pro' | 'premium'> = {
-        '플러스': 'plus',
-        '프로': 'pro',
-        '프리미엄': 'premium',
-      };
-      const planKey = planKeyMap[planName];
-      if (planKey) {
-        openPreRegistrationModal(planKey);
-        return;
-      }
-    }
-    
-    // 기본 요금제 또는 프로모션 종료 시 회원가입 페이지로 이동
+    // 모든 요금제에서 회원가입 페이지로 이동 (프로모션은 SignupPage에서 통합 처리)
     navigate(`/signup?plan=${encodeURIComponent(planName)}`);
   };
 
@@ -492,7 +431,7 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
       {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
       <PromotionBanner 
-        onRegisterClick={() => openPreRegistrationModal('pro')} 
+        onRegisterClick={() => navigate('/signup?plan=프로')} 
         onVisibilityChange={setIsBannerVisible}
       />
       
@@ -716,10 +655,10 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
-              <MessageSquare className="w-4 h-4" /> 실제 사용자 리뷰
+              <MessageSquare className="w-4 h-4" /> 고객 후기
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Makers Round 서비스 <span className="text-gradient">사용자 리얼 후기</span>
+              Makers Round 서비스 <span className="text-gradient">체험 피드백</span>
             </h2>
             <p className="text-white/60 text-lg">좌우로 드래그하여 더 많은 후기를 확인하세요</p>
           </div>
@@ -798,14 +737,6 @@ export const LandingPage: React.FC = () => {
             </div>
           ))}
 
-          {/* Scroll hint */}
-          <div className="flex justify-center mt-8">
-            <div className="flex items-center gap-2 text-white/40 text-sm">
-              <ChevronRight className="w-4 h-4" />
-              <span>마우스를 올리면 슬라이딩이 멈추고, 드래그로 위치 조절 가능</span>
-              <ChevronRight className="w-4 h-4 rotate-180" />
-            </div>
-          </div>
         </div>
       </section>
 
@@ -820,8 +751,7 @@ export const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* ===== FRONT SIDE ===== */}
-          {!isMakersFlipped && (
-            <div className="animate-fade-in">
+          <div className="animate-fade-in">
               {/* Section Title */}
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-3 glass rounded-full px-6 py-3 mb-6">
@@ -878,34 +808,29 @@ export const LandingPage: React.FC = () => {
                     사업계획서의 6가지 핵심 영역을 사전 심사합니다
                   </p>
 
-                  {/* CTA Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                  {/* CTA Buttons - 세로 배치 */}
+                  <div className="flex flex-col gap-4">
                     <Button size="lg" onClick={() => navigate('/evaluation-demo')} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-4 text-lg font-bold shadow-2xl animate-pulse-glow border-0">
                       무료로 AI 심사 받아보기
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                     <Button
                       size="lg"
-                      onClick={() => { setIsMakersFlipped(true); setMakersGalleryIndex(0); }}
+                      onClick={() => {
+                        const newState = !isMakersDetailOpen;
+                        setIsMakersDetailOpen(newState);
+                        if (newState) {
+                          setMakersGalleryIndex(0);
+                          setTimeout(() => {
+                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 100);
+                        }
+                      }}
                       className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-4 text-lg font-semibold"
                     >
-                      최고의 전문성 확인하기
-                      <ChevronRight className="w-5 h-5 ml-2" />
+                      {isMakersDetailOpen ? '전문성 상세 닫기' : '최고의 전문성 확인하기'}
+                      <ChevronRight className={`w-5 h-5 ml-2 transition-transform ${isMakersDetailOpen ? '-rotate-90' : 'rotate-90'}`} />
                     </Button>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { value: '3,500+', label: '사업계획서 심사' },
-                      { value: '94.7%', label: '사용자 만족도' },
-                      { value: '10분', label: '평균 소요시간' },
-                    ].map((s, i) => (
-                      <div key={i} className="text-center glass rounded-xl p-3">
-                        <div className="text-xl md:text-2xl font-bold text-gradient">{s.value}</div>
-                        <div className="text-xs text-white/60">{s.label}</div>
-                      </div>
-                    ))}
                   </div>
                 </div>
 
@@ -924,7 +849,17 @@ export const LandingPage: React.FC = () => {
                         className={`glass-card rounded-xl p-4 hover-lift cursor-pointer transition-all ${hoveredMaker === i ? 'border-2 ' + m.borderColor + ' glow-purple' : 'border border-white/10'}`}
                         onMouseEnter={() => setHoveredMaker(i)}
                         onMouseLeave={() => setHoveredMaker(null)}
-                        onClick={() => { setMakersGalleryIndex(i); setIsMakersFlipped(true); }}
+                        onClick={() => {
+                          setMakersGalleryIndex(i);
+                          if (!isMakersDetailOpen) {
+                            setIsMakersDetailOpen(true);
+                            setTimeout(() => {
+                              document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
+                          } else {
+                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${m.color} flex items-center justify-center font-bold text-lg shadow-lg flex-shrink-0`}>
@@ -942,19 +877,13 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
 
-          {/* ===== BACK SIDE (Gallery) ===== */}
-          {isMakersFlipped && (
-            <div className="animate-fade-in">
-              {/* Back Header */}
+          {/* ===== AI 심사위원 상세 (Gallery) - 토글로 표시/숨김 ===== */}
+          {isMakersDetailOpen && (
+            <div id="makers-detail" className="pt-24 scroll-mt-20 animate-fade-in">
+              <div>
+              {/* Section Header */}
               <div className="text-center mb-8">
-                <button
-                  onClick={() => setIsMakersFlipped(false)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm mb-6 transition-all"
-                >
-                  <ArrowRight className="w-4 h-4 rotate-180" /> 돌아가기
-                </button>
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">
                   AI 심사위원 <span className="text-gradient">전문성 상세</span>
                 </h2>
@@ -1092,6 +1021,7 @@ export const LandingPage: React.FC = () => {
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
+              </div>
               </div>
             </div>
           )}
@@ -1567,7 +1497,7 @@ export const LandingPage: React.FC = () => {
                 color: 'slate',
                 gradient: 'from-slate-500 to-zinc-600',
                 borderColor: 'border-slate-500/30',
-                buttonText: '기본 요금제로 데모 체험'
+                buttonText: '가입 및 무료 데모 체험'
               },
               {
                 tier: '플러스',
@@ -1812,10 +1742,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </footer>
 
-      {/* ===== 사전 등록 모달 ===== */}
-      <PreRegistrationModal />
-
-      {/* ===== 사전 등록 완료 화면 ===== */}
+      {/* ===== 사전 등록 완료 화면 (회원가입 후 표시) ===== */}
       {lastRegistration && <PreRegistrationSuccess />}
     </div>
   );
