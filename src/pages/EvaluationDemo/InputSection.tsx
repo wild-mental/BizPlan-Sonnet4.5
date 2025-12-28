@@ -2,8 +2,8 @@
  * 사업계획서 입력 섹션
  */
 
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Sparkles, FileText } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowLeft, ArrowRight, Sparkles, FileText, Upload } from 'lucide-react';
 import { EVALUATION_AREAS } from '../../types/evaluation';
 import { useEvaluationStore } from '../../stores/useEvaluationStore';
 import { SAMPLE_INPUT } from '../../utils/evaluationSimulator';
@@ -63,6 +63,25 @@ export const InputSection: React.FC = () => {
     setFullInput(SAMPLE_INPUT);
   };
 
+  // 파일 업로드 ref
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 파일 업로드 핸들러
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      // TODO: 파일 내용 파싱 및 입력 필드에 적용
+      // 현재는 텍스트 파일만 지원 (추후 HWP/PDF 파싱 연동)
+      console.log('업로드된 파일 내용:', content);
+      alert('파일 업로드 기능은 준비 중입니다. 곧 지원될 예정입니다.');
+    };
+    reader.readAsText(file);
+  };
+
   // 진행률 계산
   const progress = ((activeArea + 1) / EVALUATION_AREAS.length) * 100;
 
@@ -82,9 +101,34 @@ export const InputSection: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             사업계획서 정보 입력
           </h1>
-          <p className="text-white/60">
+          <p className="text-white/60 mb-6">
             각 영역별 핵심 질문에 답변해 주세요. 입력 내용이 상세할수록 정확한 평가가 가능합니다.
           </p>
+          
+          {/* 샘플 데이터 / 파일 업로드 버튼 */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleUseSample}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
+            >
+              <FileText className="w-4 h-4" />
+              샘플 데이터로 채우기
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
+            >
+              <Upload className="w-4 h-4" />
+              파일 업로드
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".txt,.md,.hwp,.pdf"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </div>
         </div>
 
         {/* 진행률 표시 */}
@@ -164,17 +208,6 @@ export const InputSection: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* 샘플 데이터 버튼 */}
-          <div className="text-center mb-6">
-            <button
-              onClick={handleUseSample}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
-            >
-              <FileText className="w-4 h-4" />
-              샘플 데이터로 채우기
-            </button>
           </div>
 
           {/* 네비게이션 버튼 */}
