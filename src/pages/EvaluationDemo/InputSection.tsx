@@ -184,9 +184,49 @@ export const InputSection: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-white/60 text-sm mb-6 pb-6 border-b border-white/10">
-              {currentArea.description}
+            {/* 핵심 질문 (Tagline) */}
+            <p className="text-white/90 font-medium mb-4 italic">
+              "{currentArea.tagline}"
             </p>
+
+            {/* PSST 커버리지 정보 */}
+            <div className="grid md:grid-cols-2 gap-4 mb-6 pb-6 border-b border-white/10">
+              {/* 주 담당 영역 */}
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+                  <span className="text-xs font-semibold text-emerald-400">주 담당 (Primary)</span>
+                </div>
+                <p className="text-sm text-white/80 font-medium mb-2">{currentArea.primaryCoverage.area}</p>
+                <ul className="space-y-1">
+                  {currentArea.primaryCoverage.items.map((item, idx) => (
+                    <li key={idx} className="text-xs text-white/60 flex items-start gap-1.5">
+                      <span className="text-emerald-400 mt-0.5">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* 교차 지원 영역 */}
+              {currentArea.secondaryCoverage.area && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full" />
+                    <span className="text-xs font-semibold text-blue-400">교차 지원 (Secondary)</span>
+                  </div>
+                  <p className="text-sm text-white/80 font-medium mb-2">{currentArea.secondaryCoverage.area}</p>
+                  <ul className="space-y-1">
+                    {currentArea.secondaryCoverage.items.map((item, idx) => (
+                      <li key={idx} className="text-xs text-white/60 flex items-start gap-1.5">
+                        <span className="text-blue-400 mt-0.5">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
             {/* 질문 입력 필드 */}
             <div className="space-y-6">
