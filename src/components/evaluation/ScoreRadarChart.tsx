@@ -33,10 +33,10 @@ export const ScoreRadarChart: React.FC<ScoreRadarChartProps> = ({ scores }) => {
     if (active && payload && payload.length) {
       const item = payload[0].payload;
       return (
-        <div className="bg-slate-800 border border-white/20 rounded-lg px-3 py-2 shadow-xl">
-          <p className="text-white font-semibold">{item.subject}</p>
-          <p className="text-white/60 text-xs">{item.fullName}</p>
-          <p className="text-emerald-400 font-bold text-lg">{item.score}점</p>
+        <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-xl">
+          <p className="text-slate-800 font-semibold">{item.subject}</p>
+          <p className="text-slate-500 text-xs">{item.fullName}</p>
+          <p className="text-purple-600 font-bold text-lg">{item.score}점</p>
         </div>
       );
     }
@@ -47,29 +47,29 @@ export const ScoreRadarChart: React.FC<ScoreRadarChartProps> = ({ scores }) => {
     <ResponsiveContainer width="100%" height={320}>
       <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
         <PolarGrid 
-          stroke="rgba(255,255,255,0.15)" 
+          stroke="rgba(100,116,139,0.2)" 
           strokeDasharray="3 3"
         />
         <PolarAngleAxis 
           dataKey="subject" 
-          tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 12 }}
-          tickLine={{ stroke: 'rgba(255,255,255,0.3)' }}
+          tick={{ fill: 'rgb(71,85,105)', fontSize: 12 }}
+          tickLine={{ stroke: 'rgba(100,116,139,0.3)' }}
         />
         <PolarRadiusAxis 
           angle={30} 
           domain={[0, 100]}
-          tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
+          tick={{ fill: 'rgb(100,116,139)', fontSize: 10 }}
           tickCount={5}
-          axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+          axisLine={{ stroke: 'rgba(100,116,139,0.2)' }}
         />
         <Radar
           name="점수"
           dataKey="score"
-          stroke="#10b981"
+          stroke="#9333ea"
           strokeWidth={2}
-          fill="#10b981"
+          fill="#9333ea"
           fillOpacity={0.3}
-          dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+          dot={{ fill: '#9333ea', strokeWidth: 2, r: 4 }}
         />
         <Tooltip content={<CustomTooltip />} />
       </RadarChart>

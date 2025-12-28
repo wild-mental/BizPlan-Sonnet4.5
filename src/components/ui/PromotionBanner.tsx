@@ -91,7 +91,7 @@ export const PromotionBanner: React.FC<PromotionBannerProps> = ({ onRegisterClic
     : 'bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500';
   
   const PhaseIcon = isPhaseA ? Flame : Sparkles;
-  const phaseLabel = isPhaseA ? '연말연시 특별' : '공고 전 얼리버드';
+  const phaseLabel = isPhaseA ? '연말연시 특별' : '얼리버드 특가';
   const countdownLabel = isPhaseA ? '30% 할인 마감까지' : '10% 할인 마감까지';
 
   return (

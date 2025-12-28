@@ -87,7 +87,7 @@ const personas = [
   { id: 'lee', name: '이지은', role: '대학생 창업동아리', icon: GraduationCap, problem: '팀원 모두 BM, CAC, LTV 같은 용어를 모릅니다.', goal: '창업경진대회 1등을 위한 완성도 높은 사업계획서', emotion: '열정적, 막연함', color: 'rose', badge: '학생 추천' },
 ];
 
-// 고객 후기 데이터
+// 고객 시나리오 데이터
 const testimonials = [
   { name: '이창업', role: '예비창업패키지 합격자', content: 'M.A.K.E.R.S 평가 덕분에 제 사업계획서의 약점을 정확히 파악했습니다. 경제성 부분을 보완해서 최종 합격!', rating: 5, avatar: '👨‍💼' },
   { name: '박스타트업', role: '초기창업패키지 합격자', content: '6명의 AI 심사위원 피드백이 실제 심사위원 질문과 거의 일치했어요. 면접 준비까지 완벽!', rating: 5, avatar: '👩‍💻' },
@@ -99,7 +99,7 @@ const seoKeywords = ['정부사업지원금', '예비창업패키지', '초기�
 
 // 네비게이션 링크 데이터
 const navLinks = [
-  { label: '고객 후기', href: '#problem-section' },
+  { label: '고객 시나리오', href: '#problem-section' },
   { label: 'AI 심사위원단', href: '#makers-section' },
   { label: '맞춤 지원', href: '#business-category' },
   { label: '요금제', href: '#pricing-section' },
@@ -254,8 +254,7 @@ const AutoScrollCarousel: React.FC<AutoScrollCarouselProps> = ({ reviews, color,
                   <User className="w-6 h-6 text-white/60" />
                 </div>
                 <div>
-                  <div className="font-semibold">{review.name}</div>
-                  <div className="text-sm text-white/50">{review.role}</div>
+                  <div className="font-semibold text-white">{review.role}</div>
                 </div>
               </div>
             </div>
@@ -420,11 +419,25 @@ export const LandingPage: React.FC = () => {
     navigate(`/signup?plan=${encodeURIComponent(planName)}`);
   };
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
+  // 헤더 오프셋을 고려한 스크롤 함수
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      // 헤더 높이 (배너 + 네비게이션 = 100px)
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
+  };
+
+  const scrollToSection = (href: string) => {
+    const elementId = href.replace('#', '');
+    scrollToElement(elementId);
   };
 
   return (
@@ -604,7 +617,7 @@ export const LandingPage: React.FC = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={() => document.getElementById('makers-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => scrollToElement('makers-section')}
                 className="bg-white/10 hover:bg-white/20 border border-white/20 px-12 py-6 text-xl font-bold shadow-2xl shadow-white/5 group"
               >
                 심사 영역 알아보기
@@ -648,19 +661,19 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
-      <section id="problem-section" className="py-24 relative scroll-mt-20 overflow-hidden">
+      <section id="problem-section" className="py-24 relative scroll-mt-[100px] overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-emerald-950/10 to-slate-950" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
-              <MessageSquare className="w-4 h-4" /> 고객 후기
+              <MessageSquare className="w-4 h-4" /> 고객 시나리오
             </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Makers Round 서비스 <span className="text-gradient">체험 피드백</span>
+            <span className="text-gradient">Makers Round</span><br/>고객 상황별 성과 도출 예시
             </h2>
-            <p className="text-white/60 text-lg">좌우로 드래그하여 더 많은 후기를 확인하세요</p>
+            <p className="text-white/20 text-sm">*Makers Round의 AI 솔루션을 통해 경험할 수 있는 기대 효과입니다. <br/>귀하의 상황과 가장 유사한 사례를 찾아 솔루션을 미리 확인해보세요.</p>
           </div>
 
           {/* Testimonial Groups */}
@@ -741,7 +754,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 (Flip 기능) ===== */}
-      <section id="makers-section" className="py-24 relative overflow-hidden scroll-mt-16">
+      <section id="makers-section" className="py-24 relative overflow-hidden scroll-mt-[100px]">
         {/* Background Effects */}
         <div className="absolute inset-0 gradient-mesh" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -821,9 +834,7 @@ export const LandingPage: React.FC = () => {
                         setIsMakersDetailOpen(newState);
                         if (newState) {
                           setMakersGalleryIndex(0);
-                          setTimeout(() => {
-                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
-                          }, 100);
+                          setTimeout(() => scrollToElement('makers-detail'), 100);
                         }
                       }}
                       className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-4 text-lg font-semibold"
@@ -853,11 +864,9 @@ export const LandingPage: React.FC = () => {
                           setMakersGalleryIndex(i);
                           if (!isMakersDetailOpen) {
                             setIsMakersDetailOpen(true);
-                            setTimeout(() => {
-                              document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
-                            }, 100);
+                            setTimeout(() => scrollToElement('makers-detail'), 100);
                           } else {
-                            document.getElementById('makers-detail')?.scrollIntoView({ behavior: 'smooth' });
+                            scrollToElement('makers-detail');
                           }
                         }}
                       >
@@ -880,7 +889,7 @@ export const LandingPage: React.FC = () => {
 
           {/* ===== AI 심사위원 상세 (Gallery) - 토글로 표시/숨김 ===== */}
           {isMakersDetailOpen && (
-            <div id="makers-detail" className="pt-24 scroll-mt-20 animate-fade-in">
+            <div id="makers-detail" className="pt-24 scroll-mt-[100px] animate-fade-in">
               <div>
               {/* Section Header */}
               <div className="text-center mb-8">
@@ -1029,7 +1038,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== BUSINESS CATEGORY SUPPORT SECTION ===== */}
-      <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-20" >
+      <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-[100px]" >
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" >
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -1240,7 +1249,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing-section" className="py-24 relative scroll-mt-20" >
+      <section id="pricing-section" className="py-24 relative scroll-mt-[100px]" >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
@@ -1294,7 +1303,7 @@ export const LandingPage: React.FC = () => {
                       )}
                     </div>
                     
-                    {/* Phase B: 공고 전 얼리버드 */}
+                    {/* Phase B: 얼리버드 특가 */}
                     <div className={`flex-1 text-center ${getPromotionStatus().isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
                       <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         getPromotionStatus().isPhaseB 
@@ -1303,7 +1312,7 @@ export const LandingPage: React.FC = () => {
                       }`}>
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
-                      <div className="text-sm font-bold text-white mb-0.5">✨ 공고 전 얼리버드</div>
+                      <div className="text-sm font-bold text-white mb-0.5">✨ 얼리버드 특가</div>
                       <div className={`text-xl font-bold ${getPromotionStatus().isPhaseB ? 'text-emerald-400' : 'text-white/50'}`}>
                         10% 할인
                       </div>
@@ -1464,7 +1473,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== STEP-BY-STEP SOLUTION SECTION ===== */}
-      <section id="solution-steps" className="py-24 relative overflow-hidden scroll-mt-20" >
+      <section id="solution-steps" className="py-24 relative overflow-hidden scroll-mt-[100px]" >
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950" />
 
@@ -1607,7 +1616,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== MAKERS WORLD INTRODUCTION ===== */}
-      <section id="testimonials-section" className="py-24 relative overflow-hidden scroll-mt-20" >
+      <section id="testimonials-section" className="py-24 relative overflow-hidden scroll-mt-[100px]" >
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

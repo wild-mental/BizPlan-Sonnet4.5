@@ -128,10 +128,19 @@ export const Layout: React.FC = () => {
   
   const currentTheme = themeStyles[themeColor as keyof typeof themeStyles] || themeStyles.primary;
 
-  // 작성 데모 단계 정의 (동적으로 생성)
+  // 작성 데모 단계 정의 (간결한 라벨 사용)
+  const stepLabels: Record<string, string> = {
+    '일반현황 및 개요': '일반현황',
+    '문제인식 (Problem)': 'Problem',
+    '실현가능성 (Solution)': 'Solution',
+    '성장전략 (Scale-up)': 'Scale-up',
+    '팀 구성 (Team)': 'Team',
+    '재무 계획': '재무계획',
+  };
+  
   const writingSteps = activeSteps.map((step) => ({
     id: String(step.id),
-    label: step.title.length > 8 ? step.title.substring(0, 8) + '...' : step.title,
+    label: stepLabels[step.title] || step.title,
   }));
 
   // 서브타이틀 생성 (템플릿명 + 프로젝트명)
