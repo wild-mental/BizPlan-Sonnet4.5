@@ -29,7 +29,7 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
   onPlanSelect,
 }) => {
   const navigate = useNavigate();
-  const { openModal, setSelectedPlan } = usePreRegistrationStore();
+  const { openModal } = usePreRegistrationStore();
   const promoStatus = getPromotionStatus();
 
   // 요금제 선택 핸들러
@@ -42,8 +42,7 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
     // 기본 동작: 프로모션 중이면 사전등록 모달, 아니면 회원가입
     const plan = pricingPlans.find(p => p.name === planName);
     if (plan?.planKey && promoStatus.isActive) {
-      setSelectedPlan(plan.planKey);
-      openModal();
+      openModal(plan.planKey);
     } else {
       navigate(`/signup?plan=${encodeURIComponent(planName)}`);
     }

@@ -48,10 +48,16 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
+import { useProjectStore } from '../stores/useProjectStore';
 import { Button, Spinner } from '../components/ui';
-import { ChevronLeft, ChevronRight, Sparkles, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, AlertCircle, Info } from 'lucide-react';
 import { QuestionForm } from '../components/wizard/QuestionForm';
 import { FinancialSimulation } from '../components/wizard/FinancialSimulation';
+import { PreStartupBudgetCalculator } from '../components/wizard/PreStartupBudgetCalculator';
+import { EarlyStartupBudgetCalculator } from '../components/wizard/EarlyStartupBudgetCalculator';
+import { TemplateComparisonGuide } from '../components/wizard/GuideBox';
+import { TEMPLATE_THEMES } from '../constants/templateThemes';
+import { ExtendedWizardStep } from '../types/templateQuestions';
 import { 
   generateBusinessPlan, 
   buildBusinessPlanRequest 
@@ -77,15 +83,39 @@ import {
 export const WizardStep: React.FC = () => {
   const { stepId } = useParams<{ stepId: string }>();
   const navigate = useNavigate();
-  const { currentStep, setCurrentStep, steps, isStepCompleted, markStepVisited, goToNextStep, goToPreviousStep, getAllDataWithDefaults } = useWizardStore();
+  const { 
+    currentStep, 
+    setCurrentStep, 
+    steps, 
+    extendedSteps,
+    templateType,
+    isStepCompleted, 
+    markStepVisited, 
+    goToNextStep, 
+    goToPreviousStep, 
+    getAllDataWithDefaults,
+    getActiveSteps,
+  } = useWizardStore();
   const { setGeneratedPlan, setLoading, setError, isLoading, error } = useBusinessPlanStore();
+  const { currentProject } = useProjectStore();
   
   // AI 사업계획서 생성 중 상태 (로컬 상태 + Store 상태 병행)
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
 
   const stepNumber = parseInt(stepId || '1', 10);
-  const step = steps.find((s) => s.id === stepNumber);
+  
+  // 템플릿별 질문이 있으면 사용, 없으면 기본 질문 사용
+  const activeSteps = getActiveSteps();
+  const step = activeSteps.find((s) => s.id === stepNumber);
+  
+  // 확장된 단계인지 확인 (가이드 박스가 있는지)
+  const extendedStep = step as ExtendedWizardStep | undefined;
+  const hasGuideBox = extendedStep?.guideBox !== undefined;
+  
+  // 현재 템플릿 테마 가져오기
+  const theme = templateType ? TEMPLATE_THEMES[templateType] : null;
+  const themeColor = theme?.primaryColor || 'emerald';
 
   /**
    * URL 파라미터와 Store 상태 동기화
@@ -251,20 +281,52 @@ export const WizardStep: React.FC = () => {
     );
   }
 
+  // 3단계(실현가능성)에서 자금 계산기 표시 여부
+  const showBudgetCalculator = stepNumber === 3 && templateType && templateType !== 'bank-loan';
+
   return (
     <div className="max-w-3xl mx-auto">
+      {/* 템플릿 정보 배지 */}
+      {theme && (
+        <div className="mb-4">
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${
+            themeColor === 'emerald' 
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+              : themeColor === 'blue'
+                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+          }`}>
+            <span>{theme.icon}</span>
+            <span className="font-medium">{theme.name}</span>
+            <span className="text-white/40">|</span>
+            <span className="text-white/60">{theme.badge}</span>
+          </div>
+        </div>
+      )}
+
       {/* Step Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-4xl">{step.icon}</span>
           <div>
-            <div className="text-sm text-gray-500 font-medium">
-              Step {step.id} / {steps.length}
+            <div className={`text-sm font-medium ${
+              themeColor === 'emerald' ? 'text-emerald-400' 
+              : themeColor === 'blue' ? 'text-blue-400' 
+              : 'text-gray-500'
+            }`}>
+              Step {step.id} / {activeSteps.length}
             </div>
             <h1 className="text-3xl font-bold text-gray-900">{step.title}</h1>
           </div>
         </div>
         <p className="text-gray-600 mt-2">{step.description}</p>
+        
+        {/* 템플릿 비교 가이드 (1단계에서만 표시) */}
+        {stepNumber === 1 && templateType && templateType !== 'bank-loan' && (
+          <div className="mt-4">
+            <TemplateComparisonGuide selectedTemplate={templateType} />
+          </div>
+        )}
       </div>
 
       {/* Step Content */}
@@ -272,7 +334,32 @@ export const WizardStep: React.FC = () => {
         {stepNumber === 6 ? (
           <FinancialSimulation />
         ) : (
-          <QuestionForm questions={step.questions} stepId={stepNumber} />
+          <>
+            {/* 질문 폼 (가이드 박스 포함) */}
+            <QuestionForm 
+              questions={step.questions} 
+              stepId={stepNumber}
+              guideBox={hasGuideBox ? extendedStep?.guideBox : undefined}
+              theme={themeColor === 'blue' ? 'blue' : themeColor === 'amber' ? 'amber' : 'emerald'}
+            />
+            
+            {/* 3단계: 자금 계획 계산기 */}
+            {showBudgetCalculator && (
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <div className="flex items-center gap-2 mb-6">
+                  <Info className="w-5 h-5 text-gray-400" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    정부지원금 집행계획 계산기
+                  </h3>
+                </div>
+                {templateType === 'pre-startup' ? (
+                  <PreStartupBudgetCalculator stepId={stepNumber} />
+                ) : (
+                  <EarlyStartupBudgetCalculator stepId={stepNumber} />
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -290,6 +377,13 @@ export const WizardStep: React.FC = () => {
         <Button
           onClick={handleNext}
           disabled={!canProceed}
+          className={
+            themeColor === 'emerald' 
+              ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400'
+              : themeColor === 'blue'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400'
+                : ''
+          }
         >
           {isLastStep ? (
             <>
@@ -305,12 +399,27 @@ export const WizardStep: React.FC = () => {
         </Button>
       </div>
 
-      {/* Help Text - 개발/디버깅 모드에서는 숨김 */}
-      {/* {!isCompleted && stepNumber !== 6 && (
-        <div className="mt-4 text-center text-sm text-gray-500">
-          필수 항목(*)을 모두 입력하면 다음 단계로 진행할 수 있습니다.
+      {/* 진행 상태 표시 */}
+      <div className="mt-6">
+        <div className="flex justify-center gap-2">
+          {activeSteps.map((s) => (
+            <div
+              key={s.id}
+              className={`w-2 h-2 rounded-full transition-all ${
+                s.id === stepNumber
+                  ? themeColor === 'emerald' 
+                    ? 'w-6 bg-emerald-500' 
+                    : themeColor === 'blue'
+                      ? 'w-6 bg-blue-500'
+                      : 'w-6 bg-primary-500'
+                  : s.id < stepNumber
+                    ? 'bg-gray-400'
+                    : 'bg-gray-200'
+              }`}
+            />
+          ))}
         </div>
-      )} */}
+      </div>
     </div>
   );
 };

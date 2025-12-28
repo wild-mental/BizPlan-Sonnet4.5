@@ -30,8 +30,9 @@ import { useProjectStore } from '../stores/useProjectStore';
 import { useWizardStore } from '../stores/useWizardStore';
 import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
+import { Button } from '../components/ui';
 import { Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
+import { TEMPLATE_THEMES } from '../constants/templateThemes';
 
 /**
  * ProjectCreate 컴포넌트
@@ -51,7 +52,7 @@ import { Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
 export const ProjectCreate: React.FC = () => {
   const navigate = useNavigate();
   const { createProject } = useProjectStore();
-  const { resetWizard } = useWizardStore();
+  const { resetWizard, loadTemplateQuestions } = useWizardStore();
   // Local state
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
   const [error, setError] = useState('');
@@ -63,7 +64,8 @@ export const ProjectCreate: React.FC = () => {
    * 1. 템플릿 선택 여부 검증
    * 2. useProjectStore.createProject() 호출 (임시 이름으로 생성)
    * 3. useWizardStore.resetWizard() 호출
-   * 4. /wizard/1 경로로 이동
+   * 4. 템플릿별 질문 로드 (예비창업/초기창업 차별화)
+   * 5. /wizard/1 경로로 이동
    * 
    * @param {React.FormEvent} e - 폼 제출 이벤트
    */
@@ -79,6 +81,9 @@ export const ProjectCreate: React.FC = () => {
     const templateName = templates.find(t => t.id === selectedTemplate)?.name || '새 프로젝트';
     createProject(templateName, selectedTemplate);
     resetWizard();
+    
+    // 템플릿별 질문 로드 (예비창업패키지/초기창업패키지 차별화)
+    loadTemplateQuestions(selectedTemplate);
     
     // Navigate to wizard
     navigate('/wizard/1');
@@ -144,15 +149,25 @@ export const ProjectCreate: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {templates.map((template) => {
                   const isDisabled = template.id === 'bank-loan';
+                  const theme = TEMPLATE_THEMES[template.id];
+                  const isSelected = selectedTemplate === template.id;
+                  
+                  // 선택된 템플릿의 테마 색상 적용
+                  const selectedStyles = template.id === 'pre-startup'
+                    ? 'ring-2 ring-emerald-500 bg-emerald-500/10 border border-emerald-500/30'
+                    : template.id === 'early-startup'
+                      ? 'ring-2 ring-blue-500 bg-blue-500/10 border border-blue-500/30'
+                      : 'ring-2 ring-amber-500 bg-amber-500/10 border border-amber-500/30';
+                  
                   return (
                     <div
                       key={template.id}
                       className={`rounded-xl p-5 transition-all ${
                         isDisabled
                           ? 'opacity-50 cursor-not-allowed bg-white/5 border border-white/10'
-                          : selectedTemplate === template.id
-                            ? 'cursor-pointer ring-2 ring-emerald-500 bg-emerald-500/10 border border-emerald-500/30'
-                            : 'cursor-pointer bg-white/5 border border-white/10 hover:border-emerald-500/50 hover:bg-white/10'
+                          : isSelected
+                            ? `cursor-pointer ${selectedStyles}`
+                            : 'cursor-pointer bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10'
                       }`}
                       onClick={() => {
                         if (!isDisabled) {
@@ -167,22 +182,70 @@ export const ProjectCreate: React.FC = () => {
                             오픈예정
                           </div>
                         )}
+                        {/* 템플릿 뱃지 */}
+                        {!isDisabled && theme && (
+                          <div className={`absolute top-0 right-0 px-2 py-0.5 text-xs font-medium rounded-full ${
+                            template.id === 'pre-startup' 
+                              ? 'bg-emerald-500/20 text-emerald-400' 
+                              : 'bg-blue-500/20 text-blue-400'
+                          }`}>
+                            {theme.badge}
+                          </div>
+                        )}
                         <div className="text-4xl mb-3">{template.icon}</div>
                         <h3 className={`text-base font-semibold mb-1 ${isDisabled ? 'text-white/50' : 'text-white'}`}>
                           {template.name}
                         </h3>
-                        <p className={`text-xs mb-4 ${isDisabled ? 'text-white/30' : 'text-white/60'}`}>
+                        <p className={`text-xs mb-2 ${isDisabled ? 'text-white/30' : 'text-white/60'}`}>
                           {template.description}
                         </p>
+                        {/* 핵심 목표 표시 */}
+                        {!isDisabled && theme && (
+                          <p className={`text-xs mb-4 ${
+                            template.id === 'pre-startup' 
+                              ? 'text-emerald-400/80' 
+                              : 'text-blue-400/80'
+                          }`}>
+                            📌 {theme.goal.split(' ').slice(0, 5).join(' ')}...
+                          </p>
+                        )}
                       </div>
                       <ul className="space-y-1.5">
                         {template.features.map((feature, index) => (
                           <li key={index} className={`flex items-start gap-2 text-xs ${isDisabled ? 'text-white/30' : 'text-white/70'}`}>
-                            <span className={`mt-0.5 ${isDisabled ? 'text-white/30' : 'text-emerald-400'}`}>✓</span>
+                            <span className={`mt-0.5 ${
+                              isDisabled 
+                                ? 'text-white/30' 
+                                : template.id === 'pre-startup'
+                                  ? 'text-emerald-400'
+                                  : template.id === 'early-startup'
+                                    ? 'text-blue-400'
+                                    : 'text-amber-400'
+                            }`}>✓</span>
                             <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
+                      {/* 포커스 영역 표시 */}
+                      {!isDisabled && theme && (
+                        <div className="mt-4 pt-3 border-t border-white/10">
+                          <p className="text-xs text-white/40 mb-2">핵심 평가 영역</p>
+                          <div className="flex flex-wrap gap-1">
+                            {theme.focusAreas.map((area, i) => (
+                              <span 
+                                key={i} 
+                                className={`text-xs px-2 py-0.5 rounded-full ${
+                                  template.id === 'pre-startup'
+                                    ? 'bg-emerald-500/10 text-emerald-300'
+                                    : 'bg-blue-500/10 text-blue-300'
+                                }`}
+                              >
+                                {area}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

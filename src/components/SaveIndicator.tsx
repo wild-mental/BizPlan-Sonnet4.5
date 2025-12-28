@@ -25,6 +25,11 @@ import React from 'react';
 import { useProjectStore } from '../stores/useProjectStore';
 import { Check, Cloud, AlertCircle } from 'lucide-react';
 
+interface SaveIndicatorProps {
+  /** 추가 CSS 클래스 */
+  className?: string;
+}
+
 /**
  * SaveIndicator 컴포넌트
  * 
@@ -42,7 +47,7 @@ import { Check, Cloud, AlertCircle } from 'lucide-react';
  * 
  * @returns {JSX.Element | null} 저장 상태 표시 UI (idle일 경우 null)
  */
-export const SaveIndicator: React.FC = () => {
+export const SaveIndicator: React.FC<SaveIndicatorProps> = ({ className = '' }) => {
   const { saveStatus } = useProjectStore();
 
   // idle 상태일 때는 아무것도 표시하지 않음
@@ -53,17 +58,17 @@ export const SaveIndicator: React.FC = () => {
     saving: {
       icon: Cloud,
       text: '저장 중...',
-      className: 'text-gray-600',
+      colorClass: 'text-gray-600',
     },
     saved: {
       icon: Check,
       text: '저장됨',
-      className: 'text-green-600',
+      colorClass: 'text-green-600',
     },
     error: {
       icon: AlertCircle,
       text: '저장 실패',
-      className: 'text-red-600',
+      colorClass: 'text-red-600',
     },
   };
 
@@ -71,7 +76,7 @@ export const SaveIndicator: React.FC = () => {
   const Icon = indicator.icon;
 
   return (
-    <div className={`flex items-center gap-2 text-sm ${indicator.className}`}>
+    <div className={`flex items-center gap-2 text-sm ${indicator.colorClass} ${className}`}>
       <Icon className="h-4 w-4" />
       <span>{indicator.text}</span>
     </div>
