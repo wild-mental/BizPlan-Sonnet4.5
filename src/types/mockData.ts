@@ -58,7 +58,7 @@ export const templates: Template[] = [
   },
   {
     id: 'bank-loan',
-    name: '은행용 대출',
+    name: '정책자금 및 은행 대출',
     description: '금융기관 대출 심사를 위한 표준 사업계획서',
     icon: '🏦',
     features: [
