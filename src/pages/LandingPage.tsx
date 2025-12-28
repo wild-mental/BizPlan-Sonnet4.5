@@ -80,7 +80,7 @@ const pricingPlans = [
     price: '1,499,000', 
     originalPrice: 1499000,
     period: '2026 상반기 시즌', 
-    features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, '1:1 원격 컨설팅', '우선 지원'], 
+    features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, { text: '1:1 원격 컨설팅', note: '3회 제공' }, '우선 지원'], 
     cta: '프리미엄 시작', 
     popular: false 
   },
