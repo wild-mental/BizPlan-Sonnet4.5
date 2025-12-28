@@ -93,16 +93,25 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   /**
    * 질문 답변 변경 핸들러
-   * - item-name 입력 시 프로젝트명도 함께 업데이트
    * 
    * @param {string} questionId - 질문 ID
    * @param {any} value - 입력된 값
    */
   const handleChange = (questionId: string, value: any) => {
     updateStepData(stepId, questionId, value);
-    
-    // 아이템명 입력 시 프로젝트명 자동 업데이트
-    if (questionId === 'item-name' && typeof value === 'string') {
+  };
+
+  /**
+   * 포커스 해제 핸들러
+   * - item-name 필드에서 포커스가 해제될 때 프로젝트명 업데이트
+   * - 매 키 입력마다 업데이트하면 리렌더링으로 포커스가 해제되는 문제 방지
+   * 
+   * @param {string} questionId - 질문 ID
+   * @param {string} value - 현재 값
+   */
+  const handleBlur = (questionId: string, value: string) => {
+    // 아이템명 입력 완료 시 프로젝트명 자동 업데이트
+    if (questionId === 'item-name') {
       updateProject({ name: value });
     }
   };
@@ -148,6 +157,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               placeholder={question.placeholder}
               value={value}
               onChange={(e) => handleChange(question.id, e.target.value)}
+              onBlur={(e) => handleBlur(question.id, e.target.value)}
               required={question.required}
               helperText={question.description}
             />
