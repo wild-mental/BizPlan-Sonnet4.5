@@ -117,11 +117,11 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             theme={theme}
           />
         )}
-        {/* 주의사항이 있는 경우 */}
+        {/* 주의사항이 있는 경우 - 라이트 테마 */}
         {isExtended && (question as ExtendedQuestion).warnings && (
           <div className="mt-2">
             {(question as ExtendedQuestion).warnings!.map((warning, idx) => (
-              <p key={idx} className="text-xs text-amber-400/70 flex items-start gap-1">
+              <p key={idx} className="text-xs text-amber-700 flex items-start gap-1">
                 <span>⚠️</span>
                 <span>{warning}</span>
               </p>

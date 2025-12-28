@@ -286,32 +286,32 @@ export const WizardStep: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* 템플릿 정보 배지 */}
+      {/* 템플릿 정보 배지 - 라이트 테마 */}
       {theme && (
         <div className="mb-4">
           <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${
             themeColor === 'emerald' 
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
               : themeColor === 'blue'
-                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                : 'bg-amber-100 text-amber-800 border border-amber-300'
           }`}>
             <span>{theme.icon}</span>
             <span className="font-medium">{theme.name}</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white/60">{theme.badge}</span>
+            <span className="text-gray-400">|</span>
+            <span className="text-gray-600">{theme.badge}</span>
           </div>
         </div>
       )}
 
-      {/* Step Header */}
+      {/* Step Header - 라이트 테마 */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-4xl">{step.icon}</span>
           <div>
             <div className={`text-sm font-medium ${
-              themeColor === 'emerald' ? 'text-emerald-400' 
-              : themeColor === 'blue' ? 'text-blue-400' 
+              themeColor === 'emerald' ? 'text-emerald-700' 
+              : themeColor === 'blue' ? 'text-blue-700' 
               : 'text-gray-500'
             }`}>
               Step {step.id} / {activeSteps.length}
@@ -319,7 +319,7 @@ export const WizardStep: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900">{step.title}</h1>
           </div>
         </div>
-        <p className="text-gray-600 mt-2">{step.description}</p>
+        <p className="text-gray-700 mt-2">{step.description}</p>
         
         {/* 템플릿 비교 가이드 (1단계에서만 표시) */}
         {stepNumber === 1 && templateType && templateType !== 'bank-loan' && (
@@ -399,7 +399,7 @@ export const WizardStep: React.FC = () => {
         </Button>
       </div>
 
-      {/* 진행 상태 표시 */}
+      {/* 진행 상태 표시 - 라이트 테마 */}
       <div className="mt-6">
         <div className="flex justify-center gap-2">
           {activeSteps.map((s) => (
@@ -408,13 +408,17 @@ export const WizardStep: React.FC = () => {
               className={`w-2 h-2 rounded-full transition-all ${
                 s.id === stepNumber
                   ? themeColor === 'emerald' 
-                    ? 'w-6 bg-emerald-500' 
+                    ? 'w-6 bg-emerald-600' 
                     : themeColor === 'blue'
-                      ? 'w-6 bg-blue-500'
-                      : 'w-6 bg-primary-500'
+                      ? 'w-6 bg-blue-600'
+                      : 'w-6 bg-primary-600'
                   : s.id < stepNumber
-                    ? 'bg-gray-400'
-                    : 'bg-gray-200'
+                    ? themeColor === 'emerald'
+                      ? 'bg-emerald-300'
+                      : themeColor === 'blue'
+                        ? 'bg-blue-300'
+                        : 'bg-gray-400'
+                    : 'bg-gray-300'
               }`}
             />
           ))}

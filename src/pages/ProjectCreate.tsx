@@ -206,7 +206,7 @@ export const ProjectCreate: React.FC = () => {
                               ? 'text-emerald-400/80' 
                               : 'text-blue-400/80'
                           }`}>
-                            📌 {theme.goal.split(' ').slice(0, 5).join(' ')}...
+                            📌 {theme.goal}
                           </p>
                         )}
                       </div>

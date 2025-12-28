@@ -35,39 +35,39 @@ interface GuideBoxProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-// 테마별 스타일 정의
+// 테마별 스타일 정의 (라이트 테마용)
 const themeStyles = {
   emerald: {
-    container: 'bg-emerald-950/30 border-emerald-500/30',
-    header: 'text-emerald-400',
-    icon: 'text-emerald-400',
-    tip: 'text-emerald-300',
-    example: 'text-emerald-200/80 border-emerald-500/20',
-    warning: 'bg-amber-950/30 border-amber-500/30 text-amber-300',
+    container: 'bg-emerald-50 border-emerald-200',
+    header: 'text-emerald-800',
+    icon: 'text-emerald-600',
+    tip: 'text-emerald-700',
+    example: 'text-emerald-600 border-emerald-200',
+    warning: 'bg-amber-50 border-amber-200 text-amber-700',
   },
   blue: {
-    container: 'bg-blue-950/30 border-blue-500/30',
-    header: 'text-blue-400',
-    icon: 'text-blue-400',
-    tip: 'text-blue-300',
-    example: 'text-blue-200/80 border-blue-500/20',
-    warning: 'bg-amber-950/30 border-amber-500/30 text-amber-300',
+    container: 'bg-blue-50 border-blue-200',
+    header: 'text-blue-800',
+    icon: 'text-blue-600',
+    tip: 'text-blue-700',
+    example: 'text-blue-600 border-blue-200',
+    warning: 'bg-amber-50 border-amber-200 text-amber-700',
   },
   amber: {
-    container: 'bg-amber-950/30 border-amber-500/30',
-    header: 'text-amber-400',
-    icon: 'text-amber-400',
-    tip: 'text-amber-300',
-    example: 'text-amber-200/80 border-amber-500/20',
-    warning: 'bg-red-950/30 border-red-500/30 text-red-300',
+    container: 'bg-amber-50 border-amber-200',
+    header: 'text-amber-800',
+    icon: 'text-amber-600',
+    tip: 'text-amber-700',
+    example: 'text-amber-600 border-amber-200',
+    warning: 'bg-red-50 border-red-200 text-red-700',
   },
   purple: {
-    container: 'bg-purple-950/30 border-purple-500/30',
-    header: 'text-purple-400',
-    icon: 'text-purple-400',
-    tip: 'text-purple-300',
-    example: 'text-purple-200/80 border-purple-500/20',
-    warning: 'bg-amber-950/30 border-amber-500/30 text-amber-300',
+    container: 'bg-purple-50 border-purple-200',
+    header: 'text-purple-800',
+    icon: 'text-purple-600',
+    tip: 'text-purple-700',
+    example: 'text-purple-600 border-purple-200',
+    warning: 'bg-amber-50 border-amber-200 text-amber-700',
   },
 };
 
@@ -227,7 +227,7 @@ interface InlineGuideProps {
 }
 
 /**
- * InlineGuide - 질문 하단에 표시되는 인라인 가이드
+ * InlineGuide - 질문 하단에 표시되는 인라인 가이드 (라이트 테마)
  * 
  * @example
  * <InlineGuide 
@@ -241,11 +241,11 @@ export const InlineGuide: React.FC<InlineGuideProps> = ({
   theme = 'gray',
 }) => {
   const colorStyles = {
-    emerald: 'text-emerald-400/70',
-    blue: 'text-blue-400/70',
-    amber: 'text-amber-400/70',
-    purple: 'text-purple-400/70',
-    gray: 'text-white/50',
+    emerald: 'text-emerald-600',
+    blue: 'text-blue-600',
+    amber: 'text-amber-600',
+    purple: 'text-purple-600',
+    gray: 'text-gray-500',
   };
 
   return (
@@ -266,7 +266,7 @@ interface TemplateComparisonProps {
 }
 
 /**
- * TemplateComparisonGuide - 템플릿별 핵심 차이점 표시
+ * TemplateComparisonGuide - 템플릿별 핵심 차이점 표시 (라이트 테마)
  */
 export const TemplateComparisonGuide: React.FC<TemplateComparisonProps> = ({
   selectedTemplate,
@@ -292,9 +292,9 @@ export const TemplateComparisonGuide: React.FC<TemplateComparisonProps> = ({
 
   const current = comparison[selectedTemplate];
   const colorClass = current.color === 'emerald' 
-    ? 'border-emerald-500/30 bg-emerald-950/20' 
-    : 'border-blue-500/30 bg-blue-950/20';
-  const textClass = current.color === 'emerald' ? 'text-emerald-400' : 'text-blue-400';
+    ? 'border-emerald-300 bg-emerald-50' 
+    : 'border-blue-300 bg-blue-50';
+  const textClass = current.color === 'emerald' ? 'text-emerald-800' : 'text-blue-800';
 
   return (
     <div className={`border ${colorClass} rounded-xl p-4`}>
@@ -303,20 +303,20 @@ export const TemplateComparisonGuide: React.FC<TemplateComparisonProps> = ({
       </h4>
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div>
-          <p className="text-white/50 text-xs">핵심 목표</p>
-          <p className="text-white/80">{current.goal}</p>
+          <p className="text-gray-500 text-xs">핵심 목표</p>
+          <p className="text-gray-800">{current.goal}</p>
         </div>
         <div>
-          <p className="text-white/50 text-xs">평가 초점</p>
-          <p className="text-white/80">{current.focus}</p>
+          <p className="text-gray-500 text-xs">평가 초점</p>
+          <p className="text-gray-800">{current.focus}</p>
         </div>
         <div>
-          <p className="text-white/50 text-xs">자금 구조</p>
-          <p className="text-white/80">{current.budget}</p>
+          <p className="text-gray-500 text-xs">자금 구조</p>
+          <p className="text-gray-800">{current.budget}</p>
         </div>
         <div>
-          <p className="text-white/50 text-xs">성장 전략</p>
-          <p className="text-white/80">{current.strategy}</p>
+          <p className="text-gray-500 text-xs">성장 전략</p>
+          <p className="text-gray-800">{current.strategy}</p>
         </div>
       </div>
     </div>
