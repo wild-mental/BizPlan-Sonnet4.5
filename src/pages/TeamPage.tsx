@@ -315,7 +315,7 @@ export const TeamPage: React.FC = () => {
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">MakersRound AI Team</h2>
             <p className="text-white/60 max-w-2xl mx-auto">
-              세계 최고 수준의 AI 연구진이 M.A.K.E.R.S 멀티에이전트 시스템을 구축했습니다
+              탄탄한 전문성을 갖춘 AI 연구진이 M.A.K.E.R.S 멀티에이전트 시스템을 구축했습니다
             </p>
           </div>
 
