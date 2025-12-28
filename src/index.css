@@ -13,6 +13,16 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  .break-keep {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 /* ===== GLASSMORPHISM ===== */
