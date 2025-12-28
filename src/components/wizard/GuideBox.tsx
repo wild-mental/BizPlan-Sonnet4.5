@@ -104,7 +104,7 @@ const sizeStyles = {
  *     '대표자 역량이 핵심 평가 요소입니다',
  *   ]}
  *   examples={['게토레이(범주:음료)와 같이 명칭과 범주를 명확히 정의']}
- *   warnings={['개인정보는 OOO으로 마스킹됩니다']}
+ *   warnings={['접수규정에 따라 개인정보는 AI가 자동으로 마스킹합니다']}
  *   theme="emerald"
  *   collapsible
  * />

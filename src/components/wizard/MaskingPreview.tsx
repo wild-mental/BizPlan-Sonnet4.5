@@ -184,8 +184,8 @@ export const MaskingPreview: React.FC<MaskingPreviewProps> = ({
 
           {/* 안내 메시지 */}
           <div className="bg-white/5 rounded-lg p-3 text-xs text-white/50">
-            💡 정부지원사업 양식 제출 시 개인정보(이름, 학교, 연락처 등)는 자동으로 "OOO" 형태로 
-            마스킹되어 제출됩니다.
+            💡 정부지원사업 접수규정에 따라 개인정보(이름, 학교, 연락처 등)는 AI가 자동으로 
+            "OOO" 형태로 마스킹하여 제출 양식에 반영합니다.
           </div>
         </div>
       )}

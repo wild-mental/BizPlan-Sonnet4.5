@@ -63,7 +63,7 @@ export const PRE_STARTUP_QUESTIONS: ExtendedWizardStep[] = [
         '협약 기간 내 완료 가능한 현실적인 목표를 설정하세요',
       ],
       warnings: [
-        '개인정보(이름, 학교 등 식별 정보)는 "OOO" 처리가 필요합니다',
+        '접수규정에 따라 개인정보(이름, 학교 등)는 "OOO" 처리가 필요합니다. AI가 자동으로 마스킹하여 제출 양식에 반영합니다.',
       ],
     },
     questions: [
@@ -92,7 +92,7 @@ export const PRE_STARTUP_QUESTIONS: ExtendedWizardStep[] = [
         description: '현재 팀원 구성과 역할',
         placeholder: '• 대표자(OOO): 서비스 기획 및 사업 총괄, 에듀테크 분야 5년 경력\n• 공동창업자(OOO): 기술 개발 총괄, AI/ML 3년 경력\n• 예정 채용: 프론트엔드 개발자 1명 (3개월 내)',
         guide: '대표자 역량이 핵심 평가 요소입니다. 경력과 전문성을 강조하세요.',
-        warnings: ['이름은 OOO으로 마스킹 처리됩니다'],
+        warnings: ['접수규정에 따라 이름은 AI가 자동으로 OOO 마스킹 처리합니다'],
         required: true,
       },
       {
@@ -280,7 +280,7 @@ export const PRE_STARTUP_QUESTIONS: ExtendedWizardStep[] = [
         '부족한 역량을 어떻게 보완할지 구체적인 채용/협력 계획을 제시하세요',
       ],
       warnings: [
-        '개인정보(이름, 학교 등)는 OOO으로 마스킹됩니다',
+        '접수규정에 따라 개인정보(이름, 학교 등)는 "OOO" 처리가 필요합니다. AI가 자동으로 마스킹하여 제출 양식에 반영합니다.',
       ],
     },
     questions: [
@@ -374,7 +374,7 @@ export const EARLY_STARTUP_QUESTIONS: ExtendedWizardStep[] = [
         description: '법인명, 설립일, 업력 등 기본 정보',
         placeholder: '【법인명】 주식회사 런에이아이 (LearnAI Inc.)\n【설립일】 2023년 6월 15일 (업력 1년 6개월)\n【대표자】 OOO\n【주소】 서울특별시 강남구 테헤란로 OOO\n【업종】 소프트웨어 개발 및 공급업',
         guide: '설립일 기준 업력이 초기창업패키지 지원 자격(3년 이내)에 해당해야 합니다.',
-        warnings: ['대표자명 등 식별 정보는 OOO으로 마스킹됩니다'],
+        warnings: ['접수규정에 따라 대표자명 등 식별 정보는 AI가 자동으로 OOO 마스킹 처리합니다'],
         required: true,
       },
       {
