@@ -31,7 +31,7 @@ import { useWizardStore } from '../stores/useWizardStore';
 import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
-import { Rocket, Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
+import { Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
 
 /**
  * ProjectCreate 컴포넌트
@@ -96,9 +96,6 @@ export const ProjectCreate: React.FC = () => {
               <span className="text-emerald-400 text-sm font-medium">무료 데모 체험</span>
             </div>
             
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl mb-4 shadow-lg shadow-emerald-500/25">
-              <Rocket className="w-8 h-8 text-white" />
-            </div>
             <h1 className="text-4xl font-bold text-white mb-4">
               사업계획서 작성 데모
             </h1>
