@@ -118,9 +118,7 @@ export const DemoHeader: React.FC<DemoHeaderProps> = ({
                 <div 
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                     isCurrentStep
-                      ? demoType === 'evaluation'
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-purple-500/20 text-purple-400'
+                      ? 'bg-purple-500/20 text-purple-400'
                       : isPassed
                         ? isDark ? 'text-white/60' : 'text-gray-600'
                         : isDark ? 'text-white/30' : 'text-gray-400'
@@ -150,16 +148,12 @@ export const DemoHeader: React.FC<DemoHeaderProps> = ({
           >
             <div className={`relative w-10 h-6 rounded-full transition-all duration-300 ${
               isPlaying 
-                ? demoType === 'evaluation' 
-                  ? 'bg-emerald-500/30' 
-                  : 'bg-purple-500/30'
+                ? 'bg-purple-500/30'
                 : isDark ? 'bg-white/10 hover:bg-white/15' : 'bg-gray-200 hover:bg-gray-300'
             }`}>
               <div className={`absolute top-1 w-4 h-4 rounded-full transition-all duration-300 flex items-center justify-center ${
                 isPlaying 
-                  ? demoType === 'evaluation'
-                    ? 'left-5 bg-emerald-400'
-                    : 'left-5 bg-purple-400'
+                  ? 'left-5 bg-purple-400'
                   : `left-1 ${isDark ? 'bg-white/60' : 'bg-gray-500'}`
               }`}>
                 {isPlaying ? (
@@ -174,11 +168,7 @@ export const DemoHeader: React.FC<DemoHeaderProps> = ({
           {/* 회원가입 버튼 */}
           <Link
             to="/signup"
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              demoType === 'evaluation'
-                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:opacity-90'
-                : 'bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90'
-            }`}
+            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90"
           >
             회원가입
           </Link>

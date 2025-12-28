@@ -4,13 +4,13 @@
  */
 
 // 프로모션 기간 정의
-export const PROMO_START_DATE = '2025-12-28T00:00:00+09:00';
-export const PHASE_A_END = '2026-01-03T23:59:59+09:00'; // 30% 할인 마감
-export const PHASE_B_END = '2026-03-01T23:59:59+09:00'; // 10% 할인 마감 (접수 시작일 예상, 동적 업데이트 필요)
+export const PROMO_START_DATE = '2024-12-29T00:00:00+09:00';
+export const PHASE_A_END = '2025-01-04T23:59:59+09:00'; // 30% 할인 마감 (연말연시 특별)
+export const PHASE_B_END = '2025-01-11T23:59:59+09:00'; // 10% 할인 마감 (얼리버드 특가)
 
 // 할인율 정의
 export const DISCOUNT_RATE_PHASE_A = 30; // 연말연시 특별
-export const DISCOUNT_RATE_PHASE_B = 10; // 공고 전 얼리버드
+export const DISCOUNT_RATE_PHASE_B = 10; // 얼리버드 특가
 
 // 요금제 정가
 export const PRICING = {

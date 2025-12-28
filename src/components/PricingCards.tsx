@@ -75,7 +75,7 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className={`w-5 h-5 ${promoStatus.isPhaseB ? 'text-emerald-400' : 'text-white/40'}`} />
                   <span className={`font-bold ${promoStatus.isPhaseB ? 'text-emerald-400' : 'text-white/40'}`}>
-                    공고 전 얼리버드 10% 할인
+                    얼리버드 특가 10% 할인
                   </span>
                   {promoStatus.isPhaseB && (
                     <span className="ml-auto text-xs bg-emerald-500 px-2 py-0.5 rounded-full">진행 중</span>

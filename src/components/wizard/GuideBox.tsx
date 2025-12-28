@@ -313,6 +313,11 @@ export const TemplateComparisonGuide: React.FC<TemplateComparisonProps> = ({
         <div>
           <p className="text-gray-500 text-xs">자금 구조</p>
           <p className="text-gray-800">{current.budget}</p>
+          {selectedTemplate === 'pre-startup' && (
+            <p className="text-gray-500 text-xs mt-1">
+              ※ 선정 기업 평균 지원금액 5천만 원, 현실적 범위에서 예산 작성
+            </p>
+          )}
         </div>
         <div>
           <p className="text-gray-500 text-xs">성장 전략</p>

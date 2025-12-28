@@ -32,7 +32,7 @@ import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
 import { Button } from '../components/ui';
 import { DemoHeader } from '../components/DemoHeader';
-import { Sparkles, FileText, BarChart3, Check, Info } from 'lucide-react';
+import { Sparkles, FileText, BarChart3 } from 'lucide-react';
 import { TEMPLATE_THEMES } from '../constants/templateThemes';
 
 /**
@@ -107,58 +107,28 @@ export const ProjectCreate: React.FC = () => {
         subtitle="사업계획서 작성"
       />
 
-      <div className="container mx-auto px-4 py-12 pt-24">
+      <div className="container mx-auto px-4 py-8 pt-20">
         <div className="max-w-4xl mx-auto">
           {/* Page Title */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-5">
             {/* Demo Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-full mb-4">
               <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400 text-sm font-medium">무료 데모 체험</span>
+              <span className="text-emerald-400 text-sm font-medium">무료 작성 체험</span>
             </div>
             
-            <h1 className="text-4xl font-bold text-white mb-4">
+            <h1 className="text-3xl font-bold text-white mb-2">
               사업계획서 작성 데모
             </h1>
-            <p className="text-lg text-white/60">
+            <p className="text-base text-white/60">
               AI가 도와주는 전문가급 사업계획서 작성 과정을 체험해보세요
             </p>
           </div>
 
-          {/* Demo 범위 안내 */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8">
-            <div className="flex items-start gap-3 mb-4">
-              <Info className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-white font-semibold mb-1">데모에서 체험할 수 있는 기능</h3>
-                <p className="text-white/50 text-sm">기본 요금제의 핵심 기능을 무료로 체험해보세요</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>사업계획서 핵심 질문 리스트</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>AI 기반 사업계획서 자동 생성</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>재무 시뮬레이션 체험</span>
-              </div>
-            </div>
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <p className="text-white/40 text-xs">
-                * HWP/PDF 다운로드는 2026년 정부지원사업 양식 통합공고 후 제공됩니다
-              </p>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Template Selection */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-5">
+              <h2 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-emerald-400" />
                 지원사업 템플릿 선택
               </h2>
@@ -178,7 +148,7 @@ export const ProjectCreate: React.FC = () => {
                   return (
                     <div
                       key={template.id}
-                      className={`rounded-xl p-5 transition-all ${
+                      className={`rounded-xl p-4 transition-all ${
                         isDisabled
                           ? 'opacity-50 cursor-not-allowed bg-white/5 border border-white/10'
                           : isSelected
@@ -208,7 +178,7 @@ export const ProjectCreate: React.FC = () => {
                             {theme.badge}
                           </div>
                         )}
-                        <div className="text-4xl mb-3">{template.icon}</div>
+                        <div className="text-3xl mb-2">{template.icon}</div>
                         <h3 className={`text-base font-semibold mb-1 ${isDisabled ? 'text-white/50' : 'text-white'}`}>
                           {template.name}
                         </h3>
@@ -275,6 +245,28 @@ export const ProjectCreate: React.FC = () => {
               </div>
             )}
 
+            {/* Demo 범위 안내 */}
+            <div className="max-w-xl mx-auto p-4 rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-emerald-500/20 text-center">
+              <div className="text-base font-semibold text-white mb-2">🎁 무료 데모 체험 범위</div>
+              <div className="flex flex-wrap justify-center gap-2 mb-3">
+                <span className="px-3 py-1.5 rounded-lg bg-white/10 text-emerald-400 font-medium text-sm">✓ 핵심 질문 리스트</span>
+                <span className="px-3 py-1.5 rounded-lg bg-white/10 text-emerald-400 font-medium text-sm">✓ AI 자동 생성</span>
+                <span className="px-3 py-1.5 rounded-lg bg-white/10 text-emerald-400 font-medium text-sm">✓ 재무 시뮬레이션</span>
+              </div>
+              <div className="pt-2 border-t border-white/10">
+                <div className="text-xs text-white/40 mb-1.5">🔒 유료 요금제 추가 기능</div>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  <span className="px-2.5 py-1 rounded-lg bg-white/5 text-white/40 text-xs">HWP/PDF 다운로드</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white/5 text-white/40 text-xs">공공기관 양식 적용</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white/5 text-white/40 text-xs">AI기반 재작성 루프</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white/5 text-white/40 text-xs">전문 컨설턴트 피드백</span>
+                </div>
+              </div>
+              <p className="text-white/30 text-xs mt-1 pt-2">
+                * HWP/PDF 다운로드는 2026년 정부지원사업 양식 통합공고 후 제공됩니다
+              </p>
+            </div>
+
             {/* Submit Button */}
             <div className="flex justify-center">
               <Button 
@@ -289,41 +281,41 @@ export const ProjectCreate: React.FC = () => {
           </form>
 
           {/* Features */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-2xl">🤖</span>
+          <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-xl">🤖</span>
               </div>
-              <h3 className="font-semibold text-white mb-1">AI 자동 작성</h3>
-              <p className="text-sm text-white/60">
-                입력한 내용을 바탕으로 AI가 전문적인 사업계획서를 생성합니다
+              <h3 className="font-semibold text-white text-sm mb-1">AI 자동 작성</h3>
+              <p className="text-xs text-white/60">
+                AI가 전문적인 사업계획서를 생성
               </p>
             </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-xl font-bold text-purple-400">PSST</span>
+            <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-sm font-bold text-purple-400">PSST</span>
               </div>
-              <h3 className="font-semibold text-white mb-1">PSST 프레임워크</h3>
-              <p className="text-sm text-white/60">
-                Problem · Solution · Scale-up · Team 구조로 체계적 작성
+              <h3 className="font-semibold text-white text-sm mb-1">PSST 프레임워크</h3>
+              <p className="text-xs text-white/60">
+                체계적인 사업계획서 구조
               </p>
             </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <BarChart3 className="w-6 h-6 text-emerald-400" />
+            <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <BarChart3 className="w-5 h-5 text-emerald-400" />
               </div>
-              <h3 className="font-semibold text-white mb-1">재무 시뮬레이션</h3>
-              <p className="text-sm text-white/60">
-                실시간 차트로 손익분기점과 수익성을 한눈에 확인하세요
+              <h3 className="font-semibold text-white text-sm mb-1">재무 시뮬레이션</h3>
+              <p className="text-xs text-white/60">
+                손익분기점과 수익성 확인
               </p>
             </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-2xl">🎯</span>
+            <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-xl">🎯</span>
               </div>
-              <h3 className="font-semibold text-white mb-1">PMF 진단</h3>
-              <p className="text-sm text-white/60">
-                제품-시장 적합성을 진단하고 개선 방향을 제시합니다
+              <h3 className="font-semibold text-white text-sm mb-1">PMF 진단</h3>
+              <p className="text-xs text-white/60">
+                제품-시장 적합성 진단
               </p>
             </div>
           </div>

@@ -86,22 +86,22 @@ export const InputSection: React.FC = () => {
   const progress = ((activeArea + 1) / EVALUATION_AREAS.length) * 100;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 text-slate-900 py-12">
       <div className="container mx-auto px-4">
         {/* 헤더 */}
         <div className="max-w-3xl mx-auto mb-8">
           <button
             onClick={() => setStep('intro')}
-            className="flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             소개로 돌아가기
           </button>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-slate-800">
             사업계획서 정보 입력
           </h1>
-          <p className="text-white/60 mb-6">
+          <p className="text-slate-500 mb-6">
             각 영역별 핵심 질문에 답변해 주세요. 입력 내용이 상세할수록 정확한 평가가 가능합니다.
           </p>
           
@@ -109,14 +109,14 @@ export const InputSection: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleUseSample}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-lg transition-all bg-white shadow-sm"
             >
               <FileText className="w-4 h-4" />
               샘플 데이터로 채우기
             </button>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-lg transition-all bg-white shadow-sm"
             >
               <Upload className="w-4 h-4" />
               파일 업로드
@@ -134,12 +134,12 @@ export const InputSection: React.FC = () => {
         {/* 진행률 표시 */}
         <div className="max-w-3xl mx-auto mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-white/60">진행률</span>
-            <span className="text-sm text-emerald-400">{activeArea + 1} / {EVALUATION_AREAS.length}</span>
+            <span className="text-sm text-slate-500">진행률</span>
+            <span className="text-sm text-purple-600 font-medium">{activeArea + 1} / {EVALUATION_AREAS.length}</span>
           </div>
-          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -152,10 +152,10 @@ export const InputSection: React.FC = () => {
               <button
                 key={area.code}
                 onClick={() => setActiveArea(index)}
-                className={`flex-shrink-0 px-4 py-2 rounded-lg font-semibold transition-all ${
+                className={`flex-shrink-0 px-4 py-2 rounded-lg font-semibold transition-all shadow-sm ${
                   index === activeArea
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                    : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200'
                 }`}
               >
                 <span className="text-lg mr-2">{area.code}</span>
@@ -167,27 +167,26 @@ export const InputSection: React.FC = () => {
 
         {/* 입력 폼 */}
         <div className="max-w-3xl mx-auto">
-          <div className="glass-card rounded-2xl p-6 md:p-8 border border-white/10 mb-6">
+          <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-lg mb-6">
             {/* 영역 헤더 */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-6 mb-6">
               <img
                 src={currentArea.image}
                 alt={currentArea.korean}
-                className="w-16 h-16 rounded-xl object-cover"
+                className="w-40 h-40 rounded-2xl object-cover shadow-xl border-2 border-purple-200"
               />
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-emerald-400">{currentArea.code}</span>
-                  <span className="text-white/60">{currentArea.name}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-4xl font-bold text-purple-600">{currentArea.code}</span>
+                  <span className="text-slate-500 text-xl">{currentArea.name}</span>
                 </div>
-                <h2 className="text-xl font-bold">{currentArea.korean}</h2>
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">{currentArea.korean}</h2>
+                {/* 핵심 질문 (Tagline) */}
+                <p className="text-slate-600 font-medium italic text-sm">
+                  "{currentArea.tagline}"
+                </p>
               </div>
             </div>
-
-            {/* 핵심 질문 (Tagline) */}
-            <p className="text-white/90 font-medium mb-4 italic">
-              "{currentArea.tagline}"
-            </p>
 
             {/* PSST 시각화 그래픽 */}
             <div className="flex items-center justify-center gap-1 mb-4">
@@ -206,22 +205,22 @@ export const InputSection: React.FC = () => {
                     key={idx}
                     className={`flex flex-col items-center px-4 py-2 rounded-lg transition-all ${
                       isPrimary 
-                        ? 'bg-emerald-500/20 border border-emerald-500/40' 
+                        ? 'bg-teal-100 border-2 border-teal-400' 
                         : isSecondary 
-                          ? 'bg-blue-500/20 border border-blue-500/40'
-                          : 'bg-slate-950 border border-slate-800'
+                          ? 'bg-purple-100 border-2 border-purple-400'
+                          : 'bg-slate-100 border border-slate-200'
                     }`}
                     title={psst.name}
                   >
                     <span className={`text-xl font-bold ${
-                      isPrimary ? 'text-emerald-400' : isSecondary ? 'text-blue-400' : 'text-slate-700'
+                      isPrimary ? 'text-teal-700' : isSecondary ? 'text-purple-600' : 'text-slate-400'
                     }`}>
                       {psst.code}
                     </span>
                     {/* 활성화된 영역만 풀네임 표시 */}
                     {isActive && (
-                      <span className={`text-[10px] mt-0.5 ${
-                        isPrimary ? 'text-emerald-400/70' : 'text-blue-400/70'
+                      <span className={`text-[10px] mt-0.5 font-medium ${
+                        isPrimary ? 'text-teal-600' : 'text-purple-500'
                       }`}>
                         {psst.name}
                       </span>
@@ -231,31 +230,31 @@ export const InputSection: React.FC = () => {
               })}
               <div className="ml-4 flex items-center gap-3 text-[10px]">
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-white/50">핵심</span>
+                  <span className="w-3 h-3 bg-teal-500 rounded-full border-2 border-teal-300" />
+                  <span className="text-slate-600 font-medium">핵심</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full" />
-                  <span className="text-white/50">보조</span>
+                  <span className="w-3 h-3 bg-purple-500 rounded-full border-2 border-purple-300" />
+                  <span className="text-slate-600 font-medium">보조</span>
                 </span>
               </div>
             </div>
 
             {/* PSST 커버리지 정보 */}
-            <div className={`grid gap-4 mb-6 pb-6 border-b border-white/10 ${
+            <div className={`grid gap-4 mb-6 pb-6 border-b border-slate-200 ${
               currentArea.secondaryCoverage.area ? 'md:grid-cols-2' : 'md:grid-cols-1'
             }`}>
               {/* 핵심 평가 영역 */}
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
+              <div className="bg-teal-50 border-l-4 border-teal-500 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-xs font-semibold text-emerald-400">핵심 평가 영역</span>
+                  <span className="w-3 h-3 bg-teal-500 rounded-full" />
+                  <span className="text-xs font-bold text-teal-700">핵심 평가 영역</span>
                 </div>
-                <p className="text-sm text-white/80 font-medium mb-2">{currentArea.primaryCoverage.area}</p>
+                <p className="text-sm text-slate-700 font-medium mb-2">{currentArea.primaryCoverage.area}</p>
                 <ul className="space-y-1">
                   {currentArea.primaryCoverage.items.map((item, idx) => (
-                    <li key={idx} className="text-xs text-white/60 flex items-start gap-1.5">
-                      <span className="text-emerald-400 mt-0.5">•</span>
+                    <li key={idx} className="text-xs text-slate-600 flex items-start gap-1.5">
+                      <span className="text-teal-500 mt-0.5">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -264,16 +263,16 @@ export const InputSection: React.FC = () => {
 
               {/* 보조 평가 영역 */}
               {currentArea.secondaryCoverage.area && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <div className="bg-purple-50 border-l-4 border-purple-400 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full" />
-                    <span className="text-xs font-semibold text-blue-400">보조 평가 영역</span>
+                    <span className="w-3 h-3 bg-purple-500 rounded-full" />
+                    <span className="text-xs font-bold text-purple-700">보조 평가 영역</span>
                   </div>
-                  <p className="text-sm text-white/80 font-medium mb-2">{currentArea.secondaryCoverage.area}</p>
+                  <p className="text-sm text-slate-700 font-medium mb-2">{currentArea.secondaryCoverage.area}</p>
                   <ul className="space-y-1">
                     {currentArea.secondaryCoverage.items.map((item, idx) => (
-                      <li key={idx} className="text-xs text-white/60 flex items-start gap-1.5">
-                        <span className="text-blue-400 mt-0.5">•</span>
+                      <li key={idx} className="text-xs text-slate-600 flex items-start gap-1.5">
+                        <span className="text-purple-500 mt-0.5">•</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -286,17 +285,17 @@ export const InputSection: React.FC = () => {
             <div className="space-y-6">
               {currentArea.questions.map((question, idx) => (
                 <div key={idx}>
-                  <label className="block text-sm font-medium text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     {question}
                   </label>
                   <textarea
                     value={getCurrentValue(idx)}
                     onChange={(e) => handleInputChange(idx, e.target.value)}
                     placeholder="여기에 답변을 입력해 주세요..."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                     rows={3}
                   />
-                  <p className="text-xs text-white/40 mt-1">
+                  <p className="text-xs text-slate-400 mt-1">
                     구체적으로 작성할수록 높은 점수를 받을 수 있습니다.
                   </p>
                 </div>
@@ -311,8 +310,8 @@ export const InputSection: React.FC = () => {
               disabled={activeArea === 0}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
                 activeArea === 0
-                  ? 'bg-white/5 text-white/30 cursor-not-allowed'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 shadow-sm'
               }`}
             >
               <ArrowLeft className="w-5 h-5" />
@@ -322,7 +321,7 @@ export const InputSection: React.FC = () => {
             {activeArea === EVALUATION_AREAS.length - 1 ? (
               <button
                 onClick={handleStartEvaluation}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 rounded-lg font-bold shadow-lg shadow-emerald-500/25 transition-all group"
+                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg font-bold shadow-lg shadow-purple-500/25 transition-all group"
               >
                 <Sparkles className="w-5 h-5" />
                 AI 심사 시작
@@ -330,7 +329,7 @@ export const InputSection: React.FC = () => {
             ) : (
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg font-medium transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-purple-100 text-purple-600 hover:bg-purple-200 rounded-lg font-medium transition-all"
               >
                 다음
                 <ArrowRight className="w-5 h-5" />

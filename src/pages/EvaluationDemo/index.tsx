@@ -43,14 +43,17 @@ export const EvaluationDemoPage: React.FC = () => {
     }
   };
 
+  // IntroSection만 다크 테마, 나머지는 라이트 테마
+  const isIntroStep = currentStep === 'intro';
+  
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className={`min-h-screen ${isIntroStep ? 'bg-slate-950 text-white' : 'bg-gradient-to-br from-slate-50 via-white to-purple-50 text-slate-900'}`}>
       {/* 통합 데모 헤더 */}
       <DemoHeader
         demoType="evaluation"
         currentStep={currentStep}
         steps={evaluationSteps}
-        theme="dark"
+        theme={isIntroStep ? "dark" : "light"}
         subtitle="AI 심사위원단 평가"
       />
 

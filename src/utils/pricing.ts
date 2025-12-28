@@ -104,7 +104,7 @@ export const getPromotionStatus = () => {
     isActive: phase !== 'ENDED',
     isPhaseA: phase === 'A',
     isPhaseB: phase === 'B',
-    phaseLabel: phase === 'A' ? '연말연시 특별' : phase === 'B' ? '공고 전 얼리버드' : '프로모션 종료',
+    phaseLabel: phase === 'A' ? '연말연시 특별' : phase === 'B' ? '얼리버드 특가' : '프로모션 종료',
     badgeLabel: phase === 'A' ? '🔥 30% OFF' : phase === 'B' ? '✨ 10% OFF' : '',
   };
 };
