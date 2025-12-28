@@ -29,6 +29,7 @@ const ceoProfile = {
   role: 'CEO & Founder',
   sub: 'AI 연구자 / 10년차 아키텍트 / 비즈니스 전략가 / 글로벌 사업개발(Biz-Dev)',
   company: 'Makers World',
+  image: '/assets/profiles/pbj-ceo-profile-251004-warm-shirt-notie.png',
   career: [
     '현) 메이커스월드 주식회사 대표',
     '현) 모두의연구소 현직자 AI 서비스 개발과정 - 최신 AI 트렌드 교육',
@@ -259,58 +260,52 @@ export const TeamPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <div className="glass-card rounded-3xl p-8 md:p-12 border border-amber-500/20">
-              <div className="flex flex-col gap-8">
-                {/* Profile Header */}
-                <div className="text-center">
-                  <h3 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
-                    {ceoProfile.name}
-                  </h3>
-                  <p className="text-amber-400 font-semibold text-xl mb-4">{ceoProfile.role}</p>
-                  <p className="text-white/70 text-sm max-w-2xl mx-auto leading-relaxed">
-                    {ceoProfile.sub}
-                  </p>
+              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                {/* Profile Image */}
+                <div className="flex-shrink-0">
+                  <div className="w-36 h-36 md:w-44 md:h-44 rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
+                    <img 
+                      src={ceoProfile.image} 
+                      alt={ceoProfile.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
                 </div>
 
-                {/* Career & Achievements Grid */}
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* Profile Info */}
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-1">{ceoProfile.name}</h3>
+                  <p className="text-amber-400 font-medium mb-1">{ceoProfile.role}</p>
+                  <p className="text-white/60 text-sm mb-4">{ceoProfile.sub}</p>
+
                   {/* Career */}
-                  <div className="bg-white/5 rounded-2xl p-6">
-                    <h4 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
-                      <Award className="w-4 h-4" />
-                      경력
-                    </h4>
-                    <ul className="space-y-2">
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white/80 mb-2">경력</h4>
+                    <ul className="space-y-1">
                       {ceoProfile.career.map((item, i) => (
-                        <li key={i} className="text-sm text-white/70 flex items-start gap-2">
-                          <span className="text-amber-400 mt-1 flex-shrink-0">•</span>
-                          <span>{item}</span>
+                        <li key={i} className="text-sm text-white/60 flex items-start gap-2">
+                          <span className="text-amber-400 mt-1">•</span>
+                          {item}
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {/* Achievements */}
-                  <div className="bg-white/5 rounded-2xl p-6">
-                    <h4 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      주요 성과
-                    </h4>
+                  <div className="mb-6">
+                    <h4 className="text-sm font-semibold text-white/80 mb-2">주요 성과</h4>
                     <div className="flex flex-wrap gap-2">
                       {ceoProfile.achievements.map((item, i) => (
-                        <span key={i} className="text-sm px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
+                        <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
-                </div>
 
-                {/* Quote */}
-                <div className="text-center pt-4">
-                  <blockquote className="text-lg md:text-xl italic text-white/80 max-w-3xl mx-auto relative">
-                    <span className="text-4xl text-amber-500/30 absolute -top-4 -left-2">"</span>
-                    {ceoProfile.quote.replace(/"/g, '')}
-                    <span className="text-4xl text-amber-500/30 absolute -bottom-6 -right-2">"</span>
+                  {/* Quote */}
+                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4">
+                    {ceoProfile.quote}
                   </blockquote>
                 </div>
               </div>
