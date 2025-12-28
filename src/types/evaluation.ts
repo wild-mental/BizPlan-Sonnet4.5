@@ -72,13 +72,12 @@ export const EVALUATION_AREAS: EvaluationAreaInfo[] = [
         '대표자의 보유 역량 (개발, 사업화, 경영 능력 등)',
         '팀원 역량 및 추가 인력 채용 계획',
         '업무 파트너(협력 기업/기관) 현황 및 활용 방안',
+        '현재 팀 구성 현황 (직위, 담당 업무, 경력 등)',
       ],
     },
     secondaryCoverage: {
-      area: '[0. 일반현황]',
-      items: [
-        '현재 팀 구성 현황 (직위, 담당 업무, 경력 등)',
-      ],
+      area: '',
+      items: [],
     },
     questions: [
       '팀 구성원은 몇 명이고 어떤 역할을 담당하나요?',
@@ -98,13 +97,12 @@ export const EVALUATION_AREAS: EvaluationAreaInfo[] = [
       items: [
         '창업 아이템의 기술적 차별성 및 경쟁력 확보 전략',
         '핵심 기능 및 성능 구현 방법',
+        '창업 아이템의 핵심 기능·성능 및 고객 제공 혜택',
       ],
     },
     secondaryCoverage: {
-      area: '[0. 개요]',
-      items: [
-        '창업 아이템의 핵심 기능·성능 및 고객 제공 혜택',
-      ],
+      area: '',
+      items: [],
     },
     questions: [
       '핵심 기술의 차별점은 무엇인가요?',

@@ -189,13 +189,63 @@ export const InputSection: React.FC = () => {
               "{currentArea.tagline}"
             </p>
 
+            {/* PSST 시각화 그래픽 */}
+            <div className="flex items-center justify-center gap-1 mb-4">
+              <span className="text-xs text-white/40 mr-2">PSST</span>
+              {[
+                { code: 'P', name: 'Problem', num: '1', areas: ['[1. Problem]'] },
+                { code: 'S', name: 'Solution', num: '2', areas: ['[2. Solution]'] },
+                { code: 'S', name: 'Scale-up', num: '3', areas: ['[3. Scale-up]'] },
+                { code: 'T', name: 'Team', num: '4', areas: ['[4. Team]'] },
+              ].map((psst, idx) => {
+                const isPrimary = currentArea.primaryCoverage.area.includes(psst.areas[0]);
+                const isSecondary = currentArea.secondaryCoverage.area?.includes(psst.areas[0]);
+                const isActive = isPrimary || isSecondary;
+                
+                return (
+                  <div
+                    key={idx}
+                    className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
+                      isPrimary 
+                        ? 'bg-emerald-500/20 border border-emerald-500/40' 
+                        : isSecondary 
+                          ? 'bg-blue-500/20 border border-blue-500/40'
+                          : 'bg-white/5 border border-white/10'
+                    }`}
+                    title={psst.name}
+                  >
+                    <span className={`text-lg font-bold ${
+                      isPrimary ? 'text-emerald-400' : isSecondary ? 'text-blue-400' : 'text-white/30'
+                    }`}>
+                      {psst.code}
+                    </span>
+                    <span className={`text-[10px] ${isActive ? 'text-white/60' : 'text-white/30'}`}>
+                      {psst.num}
+                    </span>
+                  </div>
+                );
+              })}
+              <div className="ml-3 flex items-center gap-3 text-[10px]">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+                  <span className="text-white/50">핵심</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full" />
+                  <span className="text-white/50">보조</span>
+                </span>
+              </div>
+            </div>
+
             {/* PSST 커버리지 정보 */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6 pb-6 border-b border-white/10">
-              {/* 주 담당 영역 */}
+            <div className={`grid gap-4 mb-6 pb-6 border-b border-white/10 ${
+              currentArea.secondaryCoverage.area ? 'md:grid-cols-2' : 'md:grid-cols-1'
+            }`}>
+              {/* 핵심 평가 영역 */}
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-xs font-semibold text-emerald-400">주 담당 (Primary)</span>
+                  <span className="text-xs font-semibold text-emerald-400">핵심 평가 영역</span>
                 </div>
                 <p className="text-sm text-white/80 font-medium mb-2">{currentArea.primaryCoverage.area}</p>
                 <ul className="space-y-1">
@@ -208,12 +258,12 @@ export const InputSection: React.FC = () => {
                 </ul>
               </div>
 
-              {/* 교차 지원 영역 */}
+              {/* 보조 평가 영역 */}
               {currentArea.secondaryCoverage.area && (
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="w-2 h-2 bg-blue-400 rounded-full" />
-                    <span className="text-xs font-semibold text-blue-400">교차 지원 (Secondary)</span>
+                    <span className="text-xs font-semibold text-blue-400">보조 평가 영역</span>
                   </div>
                   <p className="text-sm text-white/80 font-medium mb-2">{currentArea.secondaryCoverage.area}</p>
                   <ul className="space-y-1">
