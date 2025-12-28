@@ -1800,10 +1800,10 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-12 border-t border-white/10" >
+      <footer className="py-12 border-t border-white/10 select-none">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center pointer-events-none">
               <Rocket className="w-5 h-5" />
             </div>
             <span className="font-bold text-lg">Makers Round</span>
