@@ -8,16 +8,16 @@ import { z } from 'zod';
 // 한국 휴대폰 번호 정규식
 const koreanPhoneRegex = /^01[016789]-?\d{3,4}-?\d{4}$/;
 
-// 사업 분야 카테고리
+// 사업 분야 카테고리 (전문가 도메인 기반)
 export const businessCategories = [
-  'SaaS/소프트웨어',
-  'E-Commerce/이커머스',
-  'FinTech/금융',
-  'HealthTech/헬스케어',
-  'EdTech/교육',
-  'FoodTech/식품',
-  '제조/하드웨어',
-  '기타',
+  'SaaS 온라인 서비스',
+  '온오프라인 교육사업',
+  '글로벌 유통사업',
+  '레저 관광업',
+  '뷰티 코스메틱',
+  'SNS 콘텐츠 수익화',
+  '멀티 채널 마케팅',
+  'IT Infra 보안 & AI 안전',
 ] as const;
 
 // 요금제 타입
