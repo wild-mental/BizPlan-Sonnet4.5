@@ -80,7 +80,7 @@ const pricingPlans = [
     price: '1,499,000', 
     originalPrice: 1499000,
     period: '2026 상반기 시즌', 
-    features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, { text: '1:1 원격 컨설팅', note: '3회 제공' }, '우선 지원'], 
+    features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, { text: '1:1 원격 컨설팅', note: '회당 1시간, 최대 3회 제공' }, '우선 지원'], 
     cta: '프리미엄 시작', 
     popular: false 
   },
@@ -1566,7 +1566,8 @@ export const LandingPage: React.FC = () => {
                 goal: '5천만 원 지원금을 위한 전문가 수준 사업계획서 완성',
                 color: 'slate',
                 gradient: 'from-slate-500 to-zinc-600',
-                borderColor: 'border-slate-500/30'
+                borderColor: 'border-slate-500/30',
+                buttonText: '기본 요금제로 데모 체험'
               },
               {
                 tier: '플러스',
@@ -1579,7 +1580,8 @@ export const LandingPage: React.FC = () => {
                 goal: '코드 한 줄 짜기 전, 데이터로 철저히 검증하고 PMF 찾기',
                 color: 'blue',
                 gradient: 'from-blue-500 to-indigo-600',
-                borderColor: 'border-blue-500/30'
+                borderColor: 'border-blue-500/30',
+                buttonText: '플러스 요금제 사전등록'
               },
               {
                 tier: '프로',
@@ -1592,7 +1594,8 @@ export const LandingPage: React.FC = () => {
                 goal: '은행 대출 심사 통과하여 운영 자금 확보',
                 color: 'purple',
                 gradient: 'from-purple-500 to-violet-600',
-                borderColor: 'border-purple-500/30'
+                borderColor: 'border-purple-500/30',
+                buttonText: '프로 요금제 사전등록'
               },
               {
                 tier: '프리미엄',
@@ -1605,7 +1608,8 @@ export const LandingPage: React.FC = () => {
                 goal: '5억 원 투자 유치를 위한 방어 가능한 IR Deck 완성',
                 color: 'amber',
                 gradient: 'from-amber-500 to-orange-600',
-                borderColor: 'border-amber-500/30'
+                borderColor: 'border-amber-500/30',
+                buttonText: '프리미엄 요금제 사전등록'
               },
             ].map((persona, i) => (
               <div
@@ -1656,7 +1660,7 @@ export const LandingPage: React.FC = () => {
                   onClick={() => handlePlanSelect(persona.tier)}
                   className={`w-full mt-5 py-3 rounded-xl bg-gradient-to-r ${persona.gradient} text-white font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2`}
                 >
-                  {persona.tier} 요금제로 데모 체험
+                  {persona.buttonText}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
