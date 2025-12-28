@@ -10,24 +10,18 @@
  */
 
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
-  ArrowRight,
   Rocket,
   Sparkles,
   Brain,
-  Code,
-  Cpu,
   Users,
   Award,
-  Linkedin,
-  Mail,
-  Star,
   Check,
   Zap
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { PricingCards } from '../components/PricingCards';
 
 /** CEO 프로필 */
 const ceoProfile = {
@@ -224,24 +218,12 @@ const domainConsultants = [
   },
 ];
 
-/** 요금제 데이터 */
-const pricingPlans = [
-  { name: '기본', price: '무료', period: '', color: 'emerald', features: ['사업계획서 자동 생성', 'HWP/PDF 다운로드', '기본 템플릿 3종'] },
-  { name: '플러스', price: '29,000', period: '월', color: 'blue', features: ['기본 기능 전체', 'M.A.K.E.R.S AI 평가', '6개 영역 점수 리포트'] },
-  { name: '프로', price: '79,000', period: '월', color: 'purple', popular: true, features: ['플러스 기능 전체', '80점 미달 시 재작성 루프', '무제한 수정'] },
-  { name: '프리미엄', price: '199,000', period: '월', color: 'amber', features: ['프로 기능 전체', '도메인 전문가 매칭', '1:1 원격 컨설팅'] },
-];
+// 요금제 데이터는 PricingCards 컴포넌트에서 관리
 
 /**
  * TeamPage 컴포넌트
  */
 export const TeamPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handlePlanSelect = (planName: string) => {
-    navigate(`/signup?plan=${encodeURIComponent(planName)}`);
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Header */}
@@ -260,7 +242,7 @@ export const TeamPage: React.FC = () => {
 
           {/* Back Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => window.history.back()}
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -499,40 +481,9 @@ export const TeamPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-            {pricingPlans.map((plan, i) => (
-              <div
-                key={i}
-                className={`glass-card rounded-2xl p-6 hover-lift relative ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
-                    가장 인기
-                  </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">{plan.price === '무료' ? '무료' : `₩${plan.price}`}</span>
-                  {plan.period && <span className="text-white/60">/{plan.period}</span>}
-                </div>
-                <ul className="space-y-2 mb-6">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-white/70">
-                      <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() => handlePlanSelect(plan.name)}
-                  className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-600 to-blue-600' : 'bg-white/10 hover:bg-white/20'}`}
-                >
-                  {plan.name} 요금제로 시작
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            ))}
+          {/* Pricing Cards (공통 컴포넌트) */}
+          <div className="mb-12">
+            <PricingCards showTimetable={true} showDemoButtons={true} />
           </div>
 
           {/* Bottom Note */}
