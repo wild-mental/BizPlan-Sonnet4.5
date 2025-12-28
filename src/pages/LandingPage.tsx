@@ -3,10 +3,12 @@
  * M.A.K.E.R.S AI 심사위원단 시스템
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, PromotionBanner } from '../components/ui';
 import PreRegistrationSuccess from '../components/PreRegistrationSuccess';
+import { LandingHeader } from './LandingPage/sections/LandingHeader';
+import { HeroSection } from './LandingPage/sections/HeroSection';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
@@ -18,6 +20,30 @@ import { getPlanPricing, getPromotionStatus, formatPrice } from '../utils/pricin
 import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
 import { useMusicStore } from '../stores/useMusicStore';
 import type { PlanType } from '../utils/pricing';
+import { PROMO_START_DATE, PHASE_A_END, PHASE_B_END, SERVICE_OPEN_DATE } from '../constants/promotion';
+
+// 날짜 포맷팅 유틸리티 함수 (간단한 M/D 형식)
+const formatDateShort = (dateString: string): string => {
+  // ISO 문자열에서 날짜 부분만 추출하여 타임존 문제 방지
+  const dateMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateMatch) {
+    const month = parseInt(dateMatch[2], 10);
+    const day = parseInt(dateMatch[3], 10);
+    return `${month}/${day}`;
+  }
+  // 폴백: 기존 방식
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+};
+
+// Phase B 시작일 계산 (Phase A 종료일 다음 날)
+const getPhaseBStartDate = (): Date => {
+  const phaseAEnd = new Date(PHASE_A_END);
+  phaseAEnd.setDate(phaseAEnd.getDate() + 1);
+  return phaseAEnd;
+};
 
 // M.A.K.E.R.S 위원회 데이터
 const makersCommittee = [
@@ -69,8 +95,8 @@ const pricingPlans = [
   { 
     name: '프리미엄', 
     planKey: 'premium' as const,
-    price: '1,499,000', 
-    originalPrice: 1499000,
+    price: '1,199,000', 
+    originalPrice: 1199000,
     period: '2026 상반기 시즌', 
     features: ['프로 기능 전체', { text: '도메인 특화 전문가 매칭', note: '사업 도메인별 선착순 모집' }, { text: '1:1 원격 컨설팅', note: '회당 1시간, 최대 3회 제공' }, '우선 지원'], 
     cta: '프리미엄 시작', 
@@ -272,7 +298,7 @@ const heroFlipTexts = [
   { text: '정책자금지원 합격', color: 'text-blue-400' },
 ];
 
-export const LandingPage: React.FC = () => {
+export const LandingPage: React.FC = memo(() => {
   const navigate = useNavigate();
   const [activePersona, setActivePersona] = useState(0);
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
@@ -379,7 +405,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   // 전역 음악 상태 사용
-  const { isPlaying: isBgmPlaying, togglePlay: toggleBgm, initAudio } = useMusicStore();
+  const { initAudio } = useMusicStore();
   
   // 컴포넌트 마운트 시 Audio 초기화
   useEffect(() => {
@@ -449,216 +475,21 @@ export const LandingPage: React.FC = () => {
       />
       
       {/* ===== FIXED HEADER NAVIGATION ===== */}
-      <header
-        className={`fixed left-0 w-full z-50 transition-all duration-300 ${
-          isBannerVisible ? 'top-12 sm:top-10' : 'top-0'
-        } ${isScrolled
-          ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
-          : 'bg-transparent'
-          }`}
-      >
-        <nav className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
-          {/* Left - Logo */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow">
-              <Rocket className="w-5 h-5" />
-            </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="font-bold text-lg leading-tight">Makers Round</span>
-              <span className="text-white/40 text-xs hidden md:block">by Makers World</span>
-            </div>
-          </button>
+      <LandingHeader
+        isScrolled={isScrolled}
+        isBannerVisible={isBannerVisible}
+        scrollToSection={scrollToSection}
+        onCTAClick={handleCTAClick}
+        navLinks={navLinks}
+      />
 
-          {/* Center - Navigation Links */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link, i) => (
-              <button
-                key={i}
-                onClick={() => scrollToSection(link.href)}
-                className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Right - BGM Toggle + CTA Button */}
-          <div className="flex items-center gap-2 md:gap-3">
-            {/* BGM Toggle Switch */}
-            <button
-              onClick={toggleBgm}
-              className="relative flex items-center gap-2 group"
-              title={isBgmPlaying ? 'BGM 끄기' : 'BGM 켜기'}
-            >
-              {/* Label */}
-              <span className={`text-xs font-medium transition-colors hidden sm:block ${isBgmPlaying ? 'text-emerald-400' : 'text-white/50'}`}>
-                BGM
-              </span>
-
-              {/* Toggle Track */}
-              <div className={`relative w-14 h-7 rounded-full transition-all duration-300 ${isBgmPlaying
-                ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30'
-                : 'bg-white/10 hover:bg-white/15'
-                }`}>
-                {/* Toggle Knob */}
-                <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-300 ${isBgmPlaying ? 'left-8' : 'left-1'
-                  }`}>
-                  {isBgmPlaying ? (
-                    <Volume2 className="w-3 h-3 text-emerald-600" />
-                  ) : (
-                    <VolumeX className="w-3 h-3 text-slate-400" />
-                  )}
-                </div>
-
-                {/* Playing Indicator */}
-                {isBgmPlaying && (
-                  <div className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* CTA Button */}
-            <Button
-              onClick={handleCTAClick}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-5 py-2.5 text-sm font-semibold border-0 shadow-lg shadow-purple-500/20"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">사업계획서 작성</span>
-              <span className="sm:hidden">시작하기</span>
-            </Button>
-          </div>
-        </nav>
-      </header>
-      {/* ===== PRIMARY HERO SECTION - 정부지원금 ===== */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
-        {/* Hero Background Video - Full Viewport Width */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/assets/MakersRoundHeroVideo.mp4" type="video/mp4" />
-          </video>
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950" />
-        </div>
-
-        {/* Dynamic Background Effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-          {/* Animated gradient orbs */}
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-full blur-[120px] animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-[100px] animate-float-slow" />
-
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
-          {/* Radial glow from center */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-purple-500/10 via-transparent to-transparent" />
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Main Headline */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight animate-fade-in-up">
-              <span className="text-flip-container">
-                <span 
-                  key={heroFlipIndex}
-                  className={`text-flip-item ${heroFlipTexts[heroFlipIndex].color} ${isFlipping ? 'text-flip-out' : 'text-flip-in'}`}
-                >
-                  {heroFlipTexts[heroFlipIndex].text}
-                </span>
-              </span>
-              <br />
-              <span>사업계획서,</span>
-              <br />
-              <span className="text-gradient bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">최고의 </span>
-              <span className="relative inline-block">
-                <span className="text-gradient bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">AI 심사위원단</span>
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 8C50 2 100 2 150 6C200 10 250 8 298 4" stroke="url(#underline-gradient)" strokeWidth="3" strokeLinecap="round" />
-                  <defs>
-                    <linearGradient id="underline-gradient" x1="0" y1="0" x2="300" y2="0">
-                      <stop offset="0%" stopColor="#22d3ee" />
-                      <stop offset="50%" stopColor="#3b82f6" />
-                      <stop offset="100%" stopColor="#a855f7" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </span>
-              <span className="text-gradient bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent">과 함께</span>
-            </h1>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
-              <Button
-                size="lg"
-                onClick={handleCTAClick}
-                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-12 py-6 text-xl font-bold shadow-2xl shadow-emerald-500/25 border-0 group"
-              >
-                지금 바로 작성하기
-                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                size="lg"
-                onClick={() => navigate('/evaluation-demo')}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-12 py-6 text-xl font-bold shadow-2xl shadow-purple-500/25 border-0 group"
-              >
-                지금 바로 심사받기
-                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                size="lg"
-                onClick={() => scrollToElement('makers-section')}
-                className="bg-white/10 hover:bg-white/20 border border-white/20 px-12 py-6 text-xl font-bold shadow-2xl shadow-white/5 group"
-              >
-                심사 영역 알아보기
-                <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
-
-            {/* Subheadlines */}
-            <div className="space-y-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <p className="text-xl md:text-2xl text-white/80 flex items-center justify-center gap-3">
-                <Cpu className="w-6 h-6 text-cyan-400" />
-                <span>여섯가지 핵심 심사 영역별 <strong className="text-white">AI Multi-Agent</strong>가<br/>심사위원 관점의 완벽한 컨설팅을 제공합니다.</span>
-              </p>
-            </div>
-
-            {/* Key Benefits */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.7s' }}>
-              {[
-                { icon: Clock, title: '쉽고 빠른 작성', desc: '영역별 답변으로 사업계획서 자동 생성', color: 'emerald' },
-                { icon: Target, title: '합격률 극대화', desc: 'M.A.K.E.R.S 6가지 심사기준 사전 검증', color: 'cyan' },
-                { icon: FileText, title: '즉시 다운로드', desc: '바로 제출 가능한 HWP/PDF 양식', color: 'blue' },
-              ].map((item, i) => (
-                <div key={i} className={`glass-card rounded-2xl p-6 hover-lift border border-${item.color}-500/20 flex-1 w-full sm:w-auto`}>
-                  <div className={`w-12 h-12 rounded-xl bg-${item.color}-500/20 flex items-center justify-center mb-4 mx-auto`}>
-                    <item.icon className={`w-6 h-6 text-${item.color}-400`} />
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">{item.title}</h3>
-                  <p className="text-sm text-white/60">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-              <div className="w-8 h-12 rounded-full border-2 border-white/20 flex items-start justify-center p-2">
-                <div className="w-1.5 h-3 bg-white/40 rounded-full animate-pulse" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ===== PRIMARY HERO SECTION ===== */}
+      <HeroSection
+        heroFlipIndex={heroFlipIndex}
+        isFlipping={isFlipping}
+        onCTAClick={handleCTAClick}
+        scrollToElement={scrollToElement}
+      />
 
       {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
       <section id="problem-section" className="py-24 relative scroll-mt-[100px] overflow-hidden">
@@ -1269,20 +1100,25 @@ export const LandingPage: React.FC = () => {
                 
                 {/* 타임라인 */}
                 <div className="relative">
-                  {/* 배경 라인 */}
-                  <div className="absolute top-5 left-0 right-0 h-1 bg-white/10 rounded-full" />
+                  {/* 배경 라인 - Phase A, B 부분 */}
+                  <div className="absolute top-5 left-0 w-[75%] h-1 bg-white/10 rounded-l-full" />
+                  
+                  {/* 배경 라인 - 서비스 오픈 부분 (미세한 파란색) */}
+                  <div className="absolute top-5 right-0 w-[25%] h-1 bg-blue-400/20 rounded-r-full" />
                   
                   {/* 진행 상태 표시 */}
                   <div className={`absolute top-5 left-0 h-1 rounded-full transition-all duration-500 ${
                     getPromotionStatus().isPhaseA 
-                      ? 'w-1/2 bg-gradient-to-r from-rose-500 to-orange-500' 
-                      : 'w-full bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                      ? 'w-[40%] bg-gradient-to-r from-rose-500 to-orange-500' 
+                      : getPromotionStatus().isPhaseB
+                      ? 'w-[75%] bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                      : 'w-[75%] bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
                   }`} />
                   
                   {/* 기간 표시 */}
-                  <div className="relative flex justify-between">
+                  <div className="relative flex items-start">
                     {/* Phase A: 연말연시 특별 */}
-                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseA ? 'opacity-100' : 'opacity-50'}`}>
+                    <div className={`flex-[1.5] text-center ${getPromotionStatus().isPhaseA ? 'opacity-100' : 'opacity-50'}`}>
                       <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         getPromotionStatus().isPhaseA 
                           ? 'bg-gradient-to-r from-rose-500 to-orange-500 shadow-lg shadow-rose-500/30' 
@@ -1294,7 +1130,9 @@ export const LandingPage: React.FC = () => {
                       <div className={`text-xl font-bold ${getPromotionStatus().isPhaseA ? 'text-rose-400' : 'text-white/50'}`}>
                         30% 할인
                       </div>
-                      <div className="text-xs text-white/60">12/28 ~ 1/3</div>
+                      <div className="text-xs text-white/60">
+                        {formatDateShort(PROMO_START_DATE)} ~ {formatDateShort(PHASE_A_END)}
+                      </div>
                       {getPromotionStatus().isPhaseA && (
                         <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-rose-500/20 rounded-full text-xs text-rose-300 font-medium">
                           <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse" />
@@ -1304,7 +1142,7 @@ export const LandingPage: React.FC = () => {
                     </div>
                     
                     {/* Phase B: 얼리버드 특가 */}
-                    <div className={`flex-1 text-center ${getPromotionStatus().isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
+                    <div className={`flex-[1.5] text-center ${getPromotionStatus().isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
                       <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         getPromotionStatus().isPhaseB 
                           ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30' 
@@ -1316,13 +1154,29 @@ export const LandingPage: React.FC = () => {
                       <div className={`text-xl font-bold ${getPromotionStatus().isPhaseB ? 'text-emerald-400' : 'text-white/50'}`}>
                         10% 할인
                       </div>
-                      <div className="text-xs text-white/60">1/4 ~ 접수 시작일</div>
+                      <div className="text-xs text-white/60">
+                        {formatDateShort(getPhaseBStartDate().toISOString())} ~ {formatDateShort(PHASE_B_END)}
+                      </div>
                       {getPromotionStatus().isPhaseB && (
                         <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 rounded-full text-xs text-emerald-300 font-medium">
                           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                           진행 중
                         </div>
                       )}
+                    </div>
+                    
+                    {/* 서비스 오픈 */}
+                    <div className="flex-[1] text-center opacity-50">
+                      <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-1.5 bg-white/20">
+                        <Rocket className="w-4 h-4 text-white/50" />
+                      </div>
+                      <div className="text-xs font-bold text-white mb-0.5">🚀 서비스 오픈</div>
+                      <div className="text-sm font-bold text-white/50">
+                        정식 오픈
+                      </div>
+                      <div className="text-xs text-white/60">
+                        {formatDateShort(SERVICE_OPEN_DATE)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1344,7 +1198,8 @@ export const LandingPage: React.FC = () => {
               // 할인 정보 계산 (무료 요금제 제외)
               const promoStatus = getPromotionStatus();
               const planPricing = plan.planKey ? getPlanPricing(plan.planKey) : null;
-              const hasDiscount = planPricing && planPricing.isDiscounted;
+              // 프로모션이 활성화되어 있고, 요금제가 유료인 경우 할인 적용
+              const hasDiscount = planPricing && promoStatus.isActive && planPricing.isDiscounted;
               
               return (
                 <div key={i} className={`glass-card rounded-2xl p-6 hover-lift relative flex flex-col ${plan.popular ? 'border-2 border-purple-500 glow-purple' : 'border border-white/10'}`}>
@@ -1360,48 +1215,49 @@ export const LandingPage: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* 인기 배지 */}
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold">
-                      가장 인기
-                    </div>
-                  )}
-                  
-                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                  {/* 요금제명과 인기 배지 */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                    {plan.popular && (
+                      <div className="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold whitespace-nowrap">
+                        가장 인기
+                      </div>
+                    )}
+                  </div>
                   
                   {/* 가격 영역 */}
-                  <div className="mb-6">
+                  <div className="mb-6 min-w-0">
                     {plan.planKey === null ? (
-                      <div className="text-3xl font-bold text-white/50">₩0 <span className="text-lg">(무료 데모)</span></div>
+                      <div className="text-3xl font-bold text-white/50 break-words">₩0 <span className="text-lg">(무료 데모)</span></div>
                     ) : hasDiscount && planPricing ? (
                       <>
                         {/* 정가 (취소선) */}
-                        <div className="text-lg text-white/40 line-through">
+                        <div className="text-lg text-white/40 line-through break-words">
                           ₩{formatPrice(planPricing.originalPrice)}
                         </div>
                         {/* 할인가 */}
-                        <div className={`text-3xl font-bold ${
+                        <div className={`text-2xl sm:text-3xl font-bold break-words overflow-wrap-anywhere ${
                           promoStatus.isPhaseA ? 'text-rose-400' : 'text-emerald-400'
                         }`}>
                           ₩{formatPrice(planPricing.currentPrice)}
                         </div>
                         {/* 절약 금액 */}
-                        <div className={`text-sm font-medium mt-1 ${
+                        <div className={`text-sm font-medium mt-1 break-words ${
                           promoStatus.isPhaseA ? 'text-rose-300' : 'text-emerald-300'
                         }`}>
                           ₩{formatPrice(planPricing.savings)} 절약!
                         </div>
                         {/* Phase A 추가 절약 표시 */}
                         {promoStatus.isPhaseA && planPricing.extraSavingsVsPhaseB > 0 && (
-                          <div className="text-xs text-orange-300 mt-1">
+                          <div className="text-xs text-orange-300 mt-1 break-words">
                             연말 특가 추가 혜택 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)}
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-4xl font-bold">₩{plan.price}</div>
+                      <div className="text-2xl sm:text-3xl font-bold break-words overflow-wrap-anywhere">₩{plan.price}</div>
                     )}
-                    {plan.period && <div className="text-sm text-white/60 mt-2">{plan.period}</div>}
+                    {plan.period && <div className="text-sm text-white/60 mt-2 break-words">{plan.period}</div>}
                   </div>
                   
                   <ul className="space-y-3 mb-6 flex-1">
@@ -1468,6 +1324,18 @@ export const LandingPage: React.FC = () => {
                 </div>
               );
             })}
+          </div>
+
+          {/* 사전등록 프로세스 안내 */}
+          <div className="text-center mt-10 space-y-4">
+            <div className="max-w-2xl mx-auto glass-card rounded-xl p-4 border border-white/10">
+              <p className="text-white/90 text-sm font-medium mb-2">📧 사전등록 프로세스 안내</p>
+              <ul className="text-white/60 text-xs space-y-1">
+                <li>1. 사전등록 완료 시 할인코드가 포함된 이메일이 발송됩니다</li>
+                <li>2. 서비스 정식 오픈 후 할인코드로 결제를 진행합니다</li>
+                <li>3. <strong className="text-white/80">현재 단계에서는 결제가 발생하지 않습니다</strong></li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -1755,4 +1623,6 @@ export const LandingPage: React.FC = () => {
       {lastRegistration && <PreRegistrationSuccess />}
     </div>
   );
-};
+});
+
+LandingPage.displayName = 'LandingPage';

@@ -68,8 +68,8 @@ export const pricingPlans: PricingPlan[] = [
   { 
     name: '프리미엄', 
     planKey: 'premium',
-    price: '1,499,000', 
-    originalPrice: 1499000,
+    price: '1,199,000', 
+    originalPrice: 1199000,
     period: '2026 상반기 시즌', 
     features: [
       '프로 기능 전체', 
