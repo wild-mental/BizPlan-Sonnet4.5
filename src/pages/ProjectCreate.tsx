@@ -210,7 +210,7 @@ export const ProjectCreate: React.FC = () => {
           </form>
 
           {/* Features */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-2xl">🤖</span>
@@ -218,6 +218,15 @@ export const ProjectCreate: React.FC = () => {
               <h3 className="font-semibold text-white mb-1">AI 자동 작성</h3>
               <p className="text-sm text-white/60">
                 입력한 내용을 바탕으로 AI가 전문적인 사업계획서를 생성합니다
+              </p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-xl font-bold text-purple-400">PSST</span>
+              </div>
+              <h3 className="font-semibold text-white mb-1">PSST 프레임워크</h3>
+              <p className="text-sm text-white/60">
+                Problem · Solution · Scale-up · Team 구조로 체계적 작성
               </p>
             </div>
             <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10">
