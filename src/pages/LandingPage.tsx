@@ -34,7 +34,7 @@ const makersCommittee = [
   { letter: 'K', name: 'Key Technology', korean: '핵심기술', icon: Cpu, color: 'from-cyan-500 to-teal-600', bgColor: 'bg-cyan-500/20', borderColor: 'border-cyan-500/30', description: '기술의 혁신성, 차별화, 지식재산권, 기술 보호' },
   { letter: 'E', name: 'Economics', korean: '경제성', icon: BarChart3, color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-500/20', borderColor: 'border-emerald-500/30', description: '매출·손익 계획, 자금 조달, 투자 회수, 재무 건전성' },
   { letter: 'R', name: 'Realization', korean: '실현가능성', icon: Target, color: 'from-orange-500 to-amber-600', bgColor: 'bg-orange-500/20', borderColor: 'border-orange-500/30', description: '사업 추진 일정, 단계별 실행 계획, 리스크 관리' },
-  { letter: 'S', name: 'Social Value', korean: '사회적가치', icon: Heart, color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-500/20', borderColor: 'border-pink-500/30', description: '일자리 창출, 지역 균형, ESG, 정부 정책 방향' },
+  { letter: 'S', name: 'Social Impact', korean: '사회적가치', icon: Heart, color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-500/20', borderColor: 'border-pink-500/30', description: '일자리 창출, 지역 균형, ESG, 정부 정책 방향' },
 ];
 
 // 요금제 데이터 (할인가 정보 포함)
@@ -373,7 +373,7 @@ export const LandingPage: React.FC = () => {
     },
     {
       letter: 'S',
-      name: 'Social Value',
+      name: 'Social Impact',
       korean: '사회적가치 전문 AI',
       color: 'from-pink-500 to-rose-600',
       image: '/assets/juror-single/j6_social_tr.png',
@@ -734,7 +734,7 @@ export const LandingPage: React.FC = () => {
               reviews: [
                 { name: '이*우', role: '예비창업패키지 준비 / IT 플랫폼', content: '마감 3일 남기고 멘붕이었는데, \'Basic 기능\'으로 10분 만에 HWP 초안 뽑고 소름 돋았습니다. 줄 간격, 폰트 깨짐 없이 공공기관 양식 그대로 나오네요. 덕분에 내용 다듬는 데만 집중해서 마감 1시간 전에 여유 있게 제출했습니다.' },
                 { name: '박*현', role: '청년창업사관학교 지원 / 제조 스타트업', content: '솔직히 처음엔 짜증 났습니다. \'Pro 기능\' 쓰는데 점수가 72점이라며 계속 반려당했거든요. 근데 AI가 지적해 준 \'경쟁사 대비 차별점\'을 고치고 나니 비로소 글이 논리적으로 변하더군요. 결국 합격했습니다. 그 깐깐함이 신의 한 수였어요.' },
-                { name: '최*진', role: '초기창업패키지 / 에듀테크', content: 'Social Value 위원이 \'ESG 및 일자리 창출 효과\'를 구체적인 숫자로 제안해 줘서 놀랐습니다. 교육 사업이라 막연하게만 썼던 가치를 정량화하니 심사위원들이 보는 눈이 달라지는 게 느껴졌습니다.' },
+                { name: '최*진', role: '초기창업패키지 / 에듀테크', content: 'Social Impact 위원이 \'ESG 및 일자리 창출 효과\'를 구체적인 숫자로 제안해 줘서 놀랐습니다. 교육 사업이라 막연하게만 썼던 가치를 정량화하니 심사위원들이 보는 눈이 달라지는 게 느껴졌습니다.' },
                 { name: '김*수', role: '로컬 크리에이터 지원 / 관광업', content: '시장 분석이 제일 어려웠는데, Marketability 위원이 최신 관광 트렌드 통계를 긁어와서 근거로 넣어주니 신뢰도가 확 올라갔습니다. 혼자 구글링할 땐 안 나오던 자료들이라 너무 유용했습니다.' },
                 { name: '정*영', role: '예비 창업자 / 생활 소비재', content: '컨설팅 업체에 300만 원 부르는 거 보고 포기했다가 메이커스 라운드를 썼습니다. 비용은 1/10도 안 되는데 퀄리티는 훨씬 낫네요. 특히 \'실현 가능성\' 파트에서 구체적인 마일스톤 잡아주는 게 진짜 전문가 같았습니다.' },
                 { name: '오*민', role: 'R&D 과제 기획 / 헬스케어', content: '기술은 자신 있는데 사업계획서로 푸는 게 고역이었습니다. Key Technology 위원이 제 기술 용어를 심사위원이 이해하기 쉬운 비즈니스 언어로 번역해 줘서, 기술성 평가에서 만점을 받았습니다.' },
@@ -1808,7 +1808,7 @@ export const LandingPage: React.FC = () => {
             </div>
             <span className="font-bold text-lg">Makers Round</span>
           </div>
-          <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
+          <p className="text-white/40 text-sm">© 2020 Makers World®. M.A.K.E.R.S AI 심사위원단</p>
         </div>
       </footer>
 

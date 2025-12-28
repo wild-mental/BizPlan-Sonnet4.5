@@ -25,7 +25,7 @@ export const ScoreRadarChart: React.FC<ScoreRadarChartProps> = ({ scores }) => {
     { subject: '핵심기술', fullName: 'Key Technology', score: scores.K, fullMark: 100 },
     { subject: '경제성', fullName: 'Economics', score: scores.E, fullMark: 100 },
     { subject: '실현가능성', fullName: 'Realization', score: scores.R, fullMark: 100 },
-    { subject: '사회적가치', fullName: 'Social Value', score: scores.S, fullMark: 100 },
+    { subject: '사회적가치', fullName: 'Social Impact', score: scores.S, fullMark: 100 },
   ];
 
   // 커스텀 툴팁

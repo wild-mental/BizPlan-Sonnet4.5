@@ -80,7 +80,7 @@ export const EVALUATION_AREAS: EvaluationAreaInfo[] = [
   },
   {
     code: 'S',
-    name: 'Social Value',
+    name: 'Social Impact',
     korean: '사회적가치',
     description: 'ESG, 일자리 창출, 지역사회 기여',
     questions: [

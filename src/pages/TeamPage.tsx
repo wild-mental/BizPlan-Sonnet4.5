@@ -464,7 +464,7 @@ export const TeamPage: React.FC = () => {
             </div>
             <span className="font-bold">Makers Round</span>
           </div>
-          <p className="text-white/40 text-sm">© 2024 Makers World. M.A.K.E.R.S AI 심사위원단</p>
+          <p className="text-white/40 text-sm">© 2020 Makers World®. M.A.K.E.R.S AI 심사위원단</p>
         </div>
       </footer>
     </div>

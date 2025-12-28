@@ -146,7 +146,7 @@ public/assets/
 | **K** | Key Technology | 핵심기술 | cyan | 기술 혁신성, 차별화, 지식재산권, 기술 보호 |
 | **E** | Economics | 경제성 | emerald | 매출/손익 계획, 자금 조달, 투자 회수, 재무 건전성 |
 | **R** | Realization | 실현가능성 | orange | 사업 추진 일정, 단계별 실행 계획, 리스크 관리 |
-| **S** | Social Value | 사회적가치 | pink | 일자리 창출, 지역 균형, ESG, 정부 정책 방향 |
+| **S** | Social Impact | 사회적가치 | pink | 일자리 창출, 지역 균형, ESG, 정부 정책 방향 |
 
 ### AI 심사위원 상세 카드
 

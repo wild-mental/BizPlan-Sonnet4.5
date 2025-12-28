@@ -25,7 +25,7 @@
 | K | Key Technology | 핵심기술 | 기술 혁신성, 차별화, 지식재산권 |
 | E | Economics | 경제성 | 매출/손익 계획, 자금 조달, 재무 건전성 |
 | R | Realization | 실현가능성 | 사업화 전략, 로드맵, 마일스톤 |
-| S | Social Value | 사회적가치 | ESG, 일자리 창출, 지역사회 기여 |
+| S | Social Impact | 사회적가치 | ESG, 일자리 창출, 지역사회 기여 |
 
 ### 2.2 데모 체험 범위 (무료 vs 유료)
 
