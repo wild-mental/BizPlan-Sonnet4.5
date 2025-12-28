@@ -12,7 +12,7 @@
  * <Spinner size="sm" className="text-white" />
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '../../lib/utils';
 
 interface SpinnerProps {
@@ -32,7 +32,7 @@ interface SpinnerProps {
  * @param {SpinnerProps} props - 스피너 속성
  * @returns {JSX.Element} 로딩 스피너
  */
-export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className }) => {
+export const Spinner: React.FC<SpinnerProps> = memo(({ size = 'md', className }) => {
   const sizes = {
     sm: 'h-4 w-4',
     md: 'h-8 w-8',
@@ -61,5 +61,7 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className }) => {
       />
     </svg>
   );
-};
+});
+
+Spinner.displayName = 'Spinner';
 

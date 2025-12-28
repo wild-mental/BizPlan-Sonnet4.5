@@ -14,7 +14,7 @@
  * </Button>
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '../../lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -39,7 +39,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  * @param {ButtonProps} props - 버튼 속성
  * @returns {JSX.Element} 버튼 엘리먼트
  */
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = memo(({
   variant = 'primary',
   size = 'md',
   isLoading = false,
@@ -95,5 +95,7 @@ export const Button: React.FC<ButtonProps> = ({
       {children}
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 

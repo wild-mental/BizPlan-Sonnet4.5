@@ -21,7 +21,7 @@
  * - error: 경고 아이콘 + "저장 실패"
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { useProjectStore } from '../stores/useProjectStore';
 import { Check, Cloud, AlertCircle } from 'lucide-react';
 
@@ -47,7 +47,7 @@ interface SaveIndicatorProps {
  * 
  * @returns {JSX.Element | null} 저장 상태 표시 UI (idle일 경우 null)
  */
-export const SaveIndicator: React.FC<SaveIndicatorProps> = ({ className = '' }) => {
+export const SaveIndicator: React.FC<SaveIndicatorProps> = memo(({ className = '' }) => {
   const { saveStatus } = useProjectStore();
 
   // idle 상태일 때는 아무것도 표시하지 않음
@@ -81,5 +81,7 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({ className = '' }) 
       <span>{indicator.text}</span>
     </div>
   );
-};
+});
+
+SaveIndicator.displayName = 'SaveIndicator';
 

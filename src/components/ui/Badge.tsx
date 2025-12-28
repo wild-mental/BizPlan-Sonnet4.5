@@ -13,7 +13,7 @@
  * <Badge variant="info">새로운</Badge>
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '../../lib/utils';
 
 interface BadgeProps {
@@ -35,7 +35,7 @@ interface BadgeProps {
  * @param {BadgeProps} props - 배지 속성
  * @returns {JSX.Element} 배지 엘리먼트
  */
-export const Badge: React.FC<BadgeProps> = ({ 
+export const Badge: React.FC<BadgeProps> = memo(({ 
   children, 
   variant = 'default',
   className 
@@ -59,5 +59,7 @@ export const Badge: React.FC<BadgeProps> = ({
       {children}
     </span>
   );
-};
+});
+
+Badge.displayName = 'Badge';
 

@@ -38,12 +38,13 @@
  * - usePMFStore: PMF 설문 및 분석 데이터
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { usePMFStore } from '../../stores/usePMFStore';
 import { pmfQuestions } from '../../types/mockData';
 import { Button, Badge, Card, CardHeader, CardTitle, CardContent } from '../ui';
 import { Progress } from '../ui';
 import { CheckCircle2, AlertCircle, TrendingUp, Target } from 'lucide-react';
+import { PMF_SURVEY, UI_CONSTANTS } from '../../constants';
 
 /**
  * PMFSurvey 컴포넌트
@@ -66,7 +67,7 @@ import { CheckCircle2, AlertCircle, TrendingUp, Target } from 'lucide-react';
  * 
  * @returns {JSX.Element} PMF 설문 또는 결과 화면
  */
-export const PMFSurvey: React.FC = () => {
+export const PMFSurvey: React.FC = memo(() => {
   const { answers, report, updateAnswer, generateReport } = usePMFStore();
   const [showReport, setShowReport] = useState(false);
 
@@ -76,22 +77,25 @@ export const PMFSurvey: React.FC = () => {
    * @param {string} questionId - 질문 ID
    * @param {number} value - 선택한 점수 (1-4)
    */
-  const handleAnswerChange = (questionId: string, value: number) => {
+  const handleAnswerChange = useCallback((questionId: string, value: number) => {
     updateAnswer(questionId, value);
-  };
+  }, [updateAnswer]);
 
   /**
    * 진단 결과 생성 및 표시
    * - generateReport()로 점수 계산 및 분석
    * - 결과 화면으로 전환
    */
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     generateReport();
     setShowReport(true);
-  };
+  }, [generateReport]);
 
   // 모든 질문에 답변했는지 확인
-  const isAllAnswered = answers.length === pmfQuestions.length;
+  const isAllAnswered = useMemo(
+    () => answers.length === PMF_SURVEY.QUESTION_COUNT,
+    [answers.length]
+  );
 
   if (showReport && report) {
     return (
@@ -130,7 +134,7 @@ export const PMFSurvey: React.FC = () => {
 
         {/* Progress Bar */}
         <div>
-          <Progress value={report.score} max={100} className="h-3" />
+          <Progress value={report.score} max={UI_CONSTANTS.PROGRESS_MAX} className="h-3" />
         </div>
 
         {/* Risks */}
@@ -277,5 +281,7 @@ export const PMFSurvey: React.FC = () => {
       )}
     </div>
   );
-};
+});
+
+PMFSurvey.displayName = 'PMFSurvey';
 
