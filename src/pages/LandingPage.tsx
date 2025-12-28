@@ -89,7 +89,7 @@ const pricingPlans = [
 // 페르소나 데이터
 const personas = [
   { id: 'kim', name: '김예비', role: '예비창업패키지 지원자', icon: User, problem: '마감이 일주일 남았는데 시장 분석과 재무 추정을 어떻게 채워야 할지 막막합니다.', goal: '5천만 원 지원금을 위한 전문가 수준 사업계획서 완성', emotion: '불안, 초조', color: 'blue', badge: '가장 많이 사용' },
-  { id: 'choi', name: '최민혁', role: '재창업가 (CTO 출신)', icon: Brain, problem: '첫 창업 때 시장 수요 없음으로 실패. 이번엔 데이터로 검증하고 싶습니다.', goal: '코드 한 줄 짜기 전 PMF 철저히 검증', emotion: '신중함, 분석적', color: 'purple', badge: 'PMF 진단 추천' },
+  { id: 'choi', name: '최민혁', role: '재창업가 (엔지니어 출신)', icon: Brain, problem: '첫 창업 때 시장 수요 없음으로 실패. 이번엔 데이터로 검증하고 싶습니다.', goal: '코드 한 줄 짜기 전 PMF 철저히 검증', emotion: '신중함, 분석적', color: 'purple', badge: 'PMF 진단 추천' },
   { id: 'park', name: '박사장', role: '소상공인 (카페)', icon: Coffee, problem: '은행에서 상권 분석과 추정 손익이 포함된 사업계획서를 요구합니다.', goal: '은행 대출 심사 통과하여 운영 자금 확보', emotion: '답답함', color: 'amber', badge: '소상공인 추천' },
   { id: 'han', name: '한서윤', role: '시드 투자 유치 CEO', icon: Briefcase, problem: 'IR Deck을 만들었지만 TAM-SAM-SOM 근거가 부족합니다.', goal: '5억 원 시드 투자 유치를 위한 IR Deck 완성', emotion: '압박감', color: 'emerald', badge: '투자유치 추천' },
   { id: 'lee', name: '이지은', role: '대학생 창업동아리', icon: GraduationCap, problem: '팀원 모두 BM, CAC, LTV 같은 용어를 모릅니다.', goal: '창업경진대회 1등을 위한 완성도 높은 사업계획서', emotion: '열정적, 막연함', color: 'rose', badge: '학생 추천' },
@@ -1573,7 +1573,7 @@ export const LandingPage: React.FC = () => {
                 tier: '플러스',
                 tierDesc: '심사위원회 평가 추천',
                 name: '최민혁',
-                role: '재창업가 (CTO 출신)',
+                role: '재창업가 (엔지니어 출신)',
                 avatar: '🧑‍💻',
                 problem: '첫 창업 때 시장 수요 없음으로 실패. 기술력만 믿고 2년간 개발했는데 아무도 원하지 않았습니다.',
                 emotion: '신중함, 분석적',
