@@ -146,23 +146,25 @@ export const Layout: React.FC = () => {
               >
                 MakersRound
               </Link>
-              {currentProject && (
+              {/* 템플릿 이름 (전체 이름) */}
+              {theme && (
                 <>
-                  <span className={theme ? 'text-white/50' : 'text-gray-300'}>/</span>
-                  <span className={cn(
-                    'font-medium',
-                    theme ? 'text-white/80' : 'text-gray-700'
-                  )}>
-                    {currentProject.name}
+                  <span className="text-white/50">/</span>
+                  <span className="text-white/90 font-medium flex items-center gap-1.5">
+                    <span>{theme.icon}</span>
+                    <span>{theme.name}</span>
                   </span>
                 </>
               )}
-              {theme && (
+              {/* 프로젝트명 (사용자 입력 아이템명) - 입력된 경우에만 표시 */}
+              {currentProject?.name && (
                 <>
-                  <span className="text-white/50">|</span>
-                  <span className="text-white/80 text-sm flex items-center gap-1">
-                    <span>{theme.icon}</span>
-                    <span>{theme.shortName}</span>
+                  <span className={theme ? 'text-white/50' : 'text-gray-300'}>|</span>
+                  <span className={cn(
+                    'text-sm',
+                    theme ? 'text-white/70' : 'text-gray-600'
+                  )}>
+                    {currentProject.name}
                   </span>
                 </>
               )}

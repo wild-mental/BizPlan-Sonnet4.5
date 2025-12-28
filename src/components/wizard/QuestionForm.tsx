@@ -34,6 +34,7 @@
 
 import React from 'react';
 import { useWizardStore } from '../../stores/useWizardStore';
+import { useProjectStore } from '../../stores/useProjectStore';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { Question } from '../../types';
 import { ExtendedQuestion, GuideBox as GuideBoxType } from '../../types/templateQuestions';
@@ -84,6 +85,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   theme = 'emerald',
 }) => {
   const { updateStepData, getStepData } = useWizardStore();
+  const { updateProject } = useProjectStore();
   const stepData = getStepData(stepId);
 
   // 자동 저장: 데이터 변경 후 1초(1000ms) 대기 후 저장
@@ -91,12 +93,18 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   /**
    * 질문 답변 변경 핸들러
+   * - item-name 입력 시 프로젝트명도 함께 업데이트
    * 
    * @param {string} questionId - 질문 ID
    * @param {any} value - 입력된 값
    */
   const handleChange = (questionId: string, value: any) => {
     updateStepData(stepId, questionId, value);
+    
+    // 아이템명 입력 시 프로젝트명 자동 업데이트
+    if (questionId === 'item-name' && typeof value === 'string') {
+      updateProject({ name: value });
+    }
   };
 
   /**

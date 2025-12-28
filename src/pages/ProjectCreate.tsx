@@ -77,9 +77,8 @@ export const ProjectCreate: React.FC = () => {
       return;
     }
 
-    // Create new project with template name as temporary project name
-    const templateName = templates.find(t => t.id === selectedTemplate)?.name || '새 프로젝트';
-    createProject(templateName, selectedTemplate);
+    // Create new project with empty name (will be filled when user enters item-name)
+    createProject('', selectedTemplate);
     resetWizard();
     
     // 템플릿별 질문 로드 (예비창업패키지/초기창업패키지 차별화)
