@@ -44,7 +44,7 @@ const ceoProfile = {
     '국가 주도 SW 비즈니스 컨설팅',
     'Global SW/HW 융합 비즈니스 확장 전략',
   ],
-  quote: '"앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다. AI 연구자의 시선으로 설계하고, 전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."',
+  quote: '"앞서가는 AI 활용이 곧 비즈니스의 경쟁력이 되는 시대입니다.\nAI 연구자의 시선으로 설계하고,\n전문 컨설턴트의 경험으로 여러분의 비즈니스 성공을 돕겠습니다."',
 };
 
 /** AI 개발진 프로필 */
@@ -263,7 +263,7 @@ export const TeamPage: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
                 {/* Profile Image */}
                 <div className="flex-shrink-0">
-                  <div className="w-36 h-36 md:w-44 md:h-44 rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
+                  <div className="w-44 h-44 md:w-56 md:h-56 rounded-2xl overflow-hidden shadow-2xl shadow-amber-500/20 border-2 border-amber-500/30">
                     <img 
                       src={ceoProfile.image} 
                       alt={ceoProfile.name}
@@ -304,7 +304,7 @@ export const TeamPage: React.FC = () => {
                   </div>
 
                   {/* Quote */}
-                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4">
+                  <blockquote className="text-lg italic text-white/80 border-l-4 border-amber-500 pl-4 whitespace-pre-line">
                     {ceoProfile.quote}
                   </blockquote>
                 </div>
