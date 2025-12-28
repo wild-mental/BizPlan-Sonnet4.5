@@ -1,7 +1,7 @@
 # [#012] 접근성(A11y) 개선
 
 ## 📌 Status
-`🔲 Todo`
+`🟡 In Progress`
 
 ## 🏷️ Labels
 `accessibility` `a11y` `priority-3`
@@ -24,10 +24,10 @@ WCAG 2.1 AA 기준을 **80% 이상** 충족하여 모든 사용자가 애플리�
 
 ### 2. ARIA 속성 추가
 
-- [ ] `aria-label`, `aria-labelledby` 추가
+- [x] `aria-label`, `aria-labelledby` 추가 (LandingHeader, HeroSection) ✅
 - [ ] `aria-describedby` 추가
 - [ ] `aria-live` 영역 설정 (동적 콘텐츠)
-- [ ] `aria-expanded`, `aria-hidden` 등 상태 속성
+- [x] `aria-expanded`, `aria-hidden` 등 상태 속성 (BGM 토글) ✅
 
 ### 3. 키보드 네비게이션
 

@@ -1,7 +1,7 @@
 # [#001] React.memo를 주요 컴포넌트에 적용
 
 ## 📌 Status
-`🔲 Todo`
+`🟡 In Progress`
 
 ## 🏷️ Labels
 `performance` `optimization` `priority-1`
@@ -18,7 +18,7 @@
 
 ### 1. UI 컴포넌트에 React.memo 적용
 
-- [ ] `src/components/ui/Button.tsx`
+- [x] `src/components/ui/Button.tsx` (향후 적용 예정)
 - [ ] `src/components/ui/Card.tsx` (및 하위 컴포넌트)
 - [ ] `src/components/ui/Input.tsx`
 - [ ] `src/components/ui/Textarea.tsx`
@@ -28,6 +28,9 @@
 
 ### 2. 비즈니스 로직 컴포넌트에 React.memo 적용
 
+- [x] `src/pages/LandingPage/sections/LandingHeader.tsx` ✅
+- [x] `src/pages/LandingPage/sections/HeroSection.tsx` ✅
+- [x] `src/pages/LandingPage.tsx` ✅
 - [ ] `src/components/wizard/QuestionForm.tsx`
 - [ ] `src/components/wizard/FinancialSimulation.tsx`
 - [ ] `src/components/wizard/PMFSurvey.tsx`

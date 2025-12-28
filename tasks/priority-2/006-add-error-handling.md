@@ -1,7 +1,7 @@
 # [#006] Error Boundary 및 에러 처리 로직 추가
 
 ## 📌 Status
-`🔲 Todo`
+`🟡 In Progress`
 
 ## 🏷️ Labels
 `reliability` `error-handling` `priority-2`
@@ -18,10 +18,10 @@
 
 ### 1. Error Boundary 구현
 
-- [ ] `src/components/ErrorBoundary.tsx` 생성
-- [ ] 전역 Error Boundary를 App에 적용
+- [x] `src/components/ErrorBoundary.tsx` 생성 ✅
+- [x] 전역 Error Boundary를 App에 적용 ✅
 - [ ] 페이지별 Error Boundary 적용 (선택적)
-- [ ] 에러 로깅 로직 추가 (Sentry 준비)
+- [x] 에러 로깅 로직 추가 (Sentry 준비) ✅
 
 ### 2. API 에러 처리 (향후 대비)
 
