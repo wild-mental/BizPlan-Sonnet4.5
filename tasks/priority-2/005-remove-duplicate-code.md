@@ -1,7 +1,7 @@
 # [#005] 중복 코드 제거 및 공통 컴포넌트 추출
 
 ## 📌 Status
-`🔲 Todo`
+`🟡 In Progress`
 
 ## 🏷️ Labels
 `refactoring` `code-quality` `priority-2`
@@ -16,11 +16,12 @@
 
 ## 📋 Tasks
 
-### 1. FeatureIcon 컴포넌트 생성
+### 1. GlassCard 컴포넌트 생성 (완료)
 
-- [ ] 반복되는 아이콘 컨테이너를 컴포넌트로 추출
-- [ ] `src/components/ui/FeatureIcon.tsx` 생성
-- [ ] ProjectCreate에서 사용
+- [x] 반복되는 glass-card 스타일을 컴포넌트로 추출 ✅
+- [x] `src/components/ui/GlassCard.tsx` 생성 ✅
+- [x] 패딩 옵션 (sm, md, lg) 제공 ✅
+- [x] 호버 효과 옵션 지원 ✅
 
 ### 2. StepIndicator 컴포넌트 생성
 

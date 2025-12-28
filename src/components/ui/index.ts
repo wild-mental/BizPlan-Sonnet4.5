@@ -6,4 +6,5 @@ export { Badge } from './Badge';
 export { Progress } from './Progress';
 export { Spinner } from './Spinner';
 export { PromotionBanner } from './PromotionBanner';
+export { GlassCard } from './GlassCard';
 

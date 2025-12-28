@@ -4,9 +4,10 @@
  */
 
 // 프로모션 기간 정의
-export const PROMO_START_DATE = '2024-12-29T00:00:00+09:00';
-export const PHASE_A_END = '2025-01-04T23:59:59+09:00'; // 30% 할인 마감 (연말연시 특별)
-export const PHASE_B_END = '2025-01-11T23:59:59+09:00'; // 10% 할인 마감 (얼리버드 특가)
+export const PROMO_START_DATE = '2025-12-29T00:00:00+09:00';
+export const PHASE_A_END = '2026-01-04T23:59:59+09:00'; // 30% 할인 마감 (연말연시 특별)
+export const PHASE_B_END = '2026-01-11T23:59:59+09:00'; // 10% 할인 마감 (얼리버드 특가)
+export const SERVICE_OPEN_DATE = '2026-01-12T00:00:00+09:00'; // 서비스 정식 오픈
 
 // 할인율 정의
 export const DISCOUNT_RATE_PHASE_A = 30; // 연말연시 특별
@@ -32,11 +33,11 @@ export const PRICING = {
   },
   premium: {
     name: '프리미엄',
-    original: 1499000,
-    discount30: 1049300,
-    discount10: 1349100,
-    savings30: 449700,
-    savings10: 149900,
+    original: 1199000,
+    discount30: 839300,
+    discount10: 1079100,
+    savings30: 359700,
+    savings10: 119900,
   },
 } as const;
 

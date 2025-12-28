@@ -44,7 +44,7 @@
  * - useBusinessPlanStore: 생성된 사업계획서 데이터
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
@@ -106,16 +106,31 @@ export const WizardStep: React.FC = () => {
   const stepNumber = parseInt(stepId || '1', 10);
   
   // 템플릿별 질문이 있으면 사용, 없으면 기본 질문 사용
-  const activeSteps = getActiveSteps();
-  const step = activeSteps.find((s) => s.id === stepNumber);
+  const activeSteps = useMemo(() => getActiveSteps(), [getActiveSteps]);
+  const step = useMemo(
+    () => activeSteps.find((s) => s.id === stepNumber),
+    [activeSteps, stepNumber]
+  );
   
   // 확장된 단계인지 확인 (가이드 박스가 있는지)
-  const extendedStep = step as ExtendedWizardStep | undefined;
-  const hasGuideBox = extendedStep?.guideBox !== undefined;
+  const extendedStep = useMemo(
+    () => step as ExtendedWizardStep | undefined,
+    [step]
+  );
+  const hasGuideBox = useMemo(
+    () => extendedStep?.guideBox !== undefined,
+    [extendedStep]
+  );
   
   // 현재 템플릿 테마 가져오기
-  const theme = templateType ? TEMPLATE_THEMES[templateType] : null;
-  const themeColor = theme?.primaryColor || 'emerald';
+  const theme = useMemo(
+    () => templateType ? TEMPLATE_THEMES[templateType] : null,
+    [templateType]
+  );
+  const themeColor = useMemo(
+    () => theme?.primaryColor || 'emerald',
+    [theme]
+  );
 
   /**
    * URL 파라미터와 Store 상태 동기화
@@ -142,28 +157,11 @@ export const WizardStep: React.FC = () => {
   }
 
   /**
-   * 다음 단계로 이동 또는 AI 사업계획서 생성
-   * 
-   * 처리 순서:
-   * 1. 마지막 단계가 아니면 → 다음 단계 번호로 이동
-   * 2. 마지막 단계이면 → 백엔드 API 호출하여 AI 사업계획서 생성
-   */
-  const handleNext = () => {
-    if (stepNumber < steps.length) {
-      goToNextStep();
-      navigate(`/wizard/${stepNumber + 1}`);
-    } else {
-      // 마지막 단계: AI 사업계획서 생성 (백엔드 API 호출)
-      handleGenerateBusinessPlan();
-    }
-  };
-
-  /**
    * AI 사업계획서 생성 및 결과 페이지 이동
    * - 백엔드 API (POST /api/v1/business-plan/generate) 호출
    * - 생성 완료 후 결과 페이지로 이동
    */
-  const handleGenerateBusinessPlan = async () => {
+  const handleGenerateBusinessPlan = useCallback(async () => {
     setIsGenerating(true);
     setGenerationError(null);
     setLoading(true);
@@ -204,18 +202,35 @@ export const WizardStep: React.FC = () => {
       // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
       navigate('/business-plan');
     }
-  };
+  }, [getAllDataWithDefaults, setGeneratedPlan, setLoading, setError, navigate]);
+
+  /**
+   * 다음 단계로 이동 또는 AI 사업계획서 생성
+   * 
+   * 처리 순서:
+   * 1. 마지막 단계가 아니면 → 다음 단계 번호로 이동
+   * 2. 마지막 단계이면 → 백엔드 API 호출하여 AI 사업계획서 생성
+   */
+  const handleNext = useCallback(() => {
+    if (stepNumber < steps.length) {
+      goToNextStep();
+      navigate(`/wizard/${stepNumber + 1}`);
+    } else {
+      // 마지막 단계: AI 사업계획서 생성 (백엔드 API 호출)
+      handleGenerateBusinessPlan();
+    }
+  }, [stepNumber, steps.length, goToNextStep, navigate, handleGenerateBusinessPlan]);
 
   /**
    * 이전 단계로 이동
    * - 첫 단계가 아니면 이전 단계 번호로 이동
    */
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (stepNumber > 1) {
       goToPreviousStep();
       navigate(`/wizard/${stepNumber - 1}`);
     }
-  };
+  }, [stepNumber, goToPreviousStep, navigate]);
 
   const isCompleted = isStepCompleted(stepNumber);
   // [개발/디버깅 모드] 단계 완료 여부와 관계없이 항상 다음 버튼 활성화

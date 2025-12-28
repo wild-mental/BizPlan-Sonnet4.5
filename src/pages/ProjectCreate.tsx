@@ -24,7 +24,7 @@
  * - useWizardStore: 마법사 진행 상태 관리
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectStore } from '../stores/useProjectStore';
 import { useWizardStore } from '../stores/useWizardStore';
@@ -59,6 +59,14 @@ export const ProjectCreate: React.FC = () => {
   const [error, setError] = useState('');
 
   /**
+   * 템플릿 선택 핸들러
+   */
+  const handleTemplateSelect = useCallback((template: TemplateType) => {
+    setSelectedTemplate(template);
+    setError('');
+  }, []);
+
+  /**
    * 폼 제출 핸들러
    * 
    * 처리 순서:
@@ -70,7 +78,7 @@ export const ProjectCreate: React.FC = () => {
    * 
    * @param {React.FormEvent} e - 폼 제출 이벤트
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedTemplate) {
@@ -87,7 +95,7 @@ export const ProjectCreate: React.FC = () => {
     
     // Navigate to wizard
     navigate('/wizard/1');
-  };
+  }, [selectedTemplate, createProject, resetWizard, loadTemplateQuestions, navigate]);
 
   // 작성 데모 단계 정의
   const demoSteps = [
@@ -157,8 +165,7 @@ export const ProjectCreate: React.FC = () => {
                       }`}
                       onClick={() => {
                         if (!isDisabled) {
-                          setSelectedTemplate(template.id);
-                          setError('');
+                          handleTemplateSelect(template.id);
                         }
                       }}
                     >

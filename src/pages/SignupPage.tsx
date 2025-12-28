@@ -56,7 +56,7 @@ const planDisplayInfo: Record<PricingPlanType, { color: string; badge: string; p
   '기본': { color: 'emerald', badge: '무료', price: '무료' },
   '플러스': { color: 'blue', badge: '인기', price: '₩399,000', planKey: 'plus' },
   '프로': { color: 'purple', badge: '추천', price: '₩799,000', planKey: 'pro' },
-  '프리미엄': { color: 'amber', badge: 'VIP', price: '₩1,499,000', planKey: 'premium' },
+  '프리미엄': { color: 'amber', badge: 'VIP', price: '₩1,199,000', planKey: 'premium' },
 };
 
 /** 한글 요금제명 → API 키 변환 */

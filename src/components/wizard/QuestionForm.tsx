@@ -32,7 +32,7 @@
  * - useWizardStore: 질문 답변 데이터
  */
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { useWizardStore } from '../../stores/useWizardStore';
 import { useProjectStore } from '../../stores/useProjectStore';
 import { useAutoSave } from '../../hooks/useAutoSave';
@@ -137,7 +137,7 @@ const QuestionWrapper: React.FC<QuestionWrapperProps> = ({
  * @param {QuestionFormProps} props - 컴포넌트 props
  * @returns {JSX.Element} 질문 폼
  */
-export const QuestionForm: React.FC<QuestionFormProps> = ({ 
+export const QuestionForm: React.FC<QuestionFormProps> = memo(({ 
   questions, 
   stepId, 
   guideBox,
@@ -156,9 +156,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
    * @param {string} questionId - 질문 ID
    * @param {any} value - 입력된 값
    */
-  const handleChange = (questionId: string, value: any) => {
+  const handleChange = useCallback((questionId: string, value: any) => {
     updateStepData(stepId, questionId, value);
-  };
+  }, [stepId, updateStepData]);
 
   /**
    * 포커스 해제 핸들러
@@ -168,12 +168,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
    * @param {string} questionId - 질문 ID
    * @param {string} value - 현재 값
    */
-  const handleBlur = (questionId: string, value: string) => {
+  const handleBlur = useCallback((questionId: string, value: string) => {
     // 아이템명 입력 완료 시 프로젝트명 자동 업데이트
     if (questionId === 'item-name') {
       updateProject({ name: value });
     }
-  };
+  }, [updateProject]);
 
   /**
    * 개별 질문 렌더링
@@ -262,5 +262,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
       {questions.map((question) => renderQuestion(question))}
     </div>
   );
-};
+});
+
+QuestionForm.displayName = 'QuestionForm';
 

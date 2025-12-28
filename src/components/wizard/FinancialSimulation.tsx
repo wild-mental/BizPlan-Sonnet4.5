@@ -35,12 +35,13 @@
  * - useFinancialStore: 재무 계산 및 데이터 관리
  */
 
-import React from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useFinancialStore } from '../../stores/useFinancialStore';
 import { Input, Badge } from '../ui';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency, formatNumber } from '../../lib/utils';
 import { AlertCircle, TrendingUp, Target, DollarSign } from 'lucide-react';
+import { FINANCIAL_CONSTANTS } from '../../constants';
 
 /**
  * FinancialSimulation 컴포넌트
@@ -67,7 +68,7 @@ import { AlertCircle, TrendingUp, Target, DollarSign } from 'lucide-react';
  * 
  * @returns {JSX.Element} 재무 시뮬레이션 UI
  */
-export const FinancialSimulation: React.FC = () => {
+export const FinancialSimulation: React.FC = memo(() => {
   const { input, metrics, chartData, updateInput } = useFinancialStore();
 
   React.useEffect(() => {
@@ -83,12 +84,15 @@ export const FinancialSimulation: React.FC = () => {
    * @param {keyof typeof input} field - 변경할 필드명
    * @param {number} value - 새로운 값
    */
-  const handleInputChange = (field: keyof typeof input, value: number) => {
+  const handleInputChange = useCallback((field: keyof typeof input, value: number) => {
     updateInput({ [field]: value });
-  };
+  }, [updateInput]);
 
-  // LTV/CAC 비율이 3 미만이면 경고 표시 (건강한 비즈니스는 3 이상)
-  const ltvCacWarning = metrics && metrics.ltvCacRatio < 3;
+  // LTV/CAC 비율이 이상적인 비율 미만이면 경고 표시
+  const ltvCacWarning = useMemo(
+    () => metrics && metrics.ltvCacRatio < FINANCIAL_CONSTANTS.IDEAL_LTV_CAC_RATIO,
+    [metrics]
+  );
 
   return (
     <div className="space-y-8">
@@ -247,11 +251,13 @@ export const FinancialSimulation: React.FC = () => {
             </BarChart>
           </ResponsiveContainer>
           <p className="text-sm text-gray-600 mt-2 text-center">
-            이상적인 비율: LTV ≥ 3 × CAC
+            이상적인 비율: LTV ≥ {FINANCIAL_CONSTANTS.IDEAL_LTV_CAC_RATIO} × CAC
           </p>
         </div>
       )}
     </div>
   );
-};
+});
+
+FinancialSimulation.displayName = 'FinancialSimulation';
 

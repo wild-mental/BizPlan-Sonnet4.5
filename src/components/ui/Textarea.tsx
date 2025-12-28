@@ -18,7 +18,7 @@
  * />
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '../../lib/utils';
 
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -42,7 +42,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
  * @param {React.Ref<HTMLTextAreaElement>} ref - textarea element ref
  * @returns {JSX.Element} 텍스트 영역
  */
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+const TextareaComponent = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, helperText, className, ...props }, ref) => {
     return (
       <div className="w-full">
@@ -78,5 +78,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   }
 );
 
-Textarea.displayName = 'Textarea';
+TextareaComponent.displayName = 'Textarea';
+
+export const Textarea = memo(TextareaComponent);
 

@@ -5,32 +5,40 @@
 ## 📋 태스크 우선순위
 
 ### 🔥 Priority 1 - 즉시 적용 (1-3일)
-- [#001](./priority-1/001-add-react-memo.md) - React.memo를 주요 컴포넌트에 적용
+- [#001](./priority-1/001-add-react-memo.md) 🟡 - React.memo를 주요 컴포넌트에 적용
 - [#002](./priority-1/002-add-use-callback.md) - useCallback을 이벤트 핸들러에 적용
 - [#003](./priority-1/003-add-use-memo.md) - useMemo를 계산 비용이 높은 값에 적용
 - [#004](./priority-1/004-remove-magic-numbers.md) - 매직 넘버를 상수로 추출
 
 ### ⭐ Priority 2 - 중기 개선 (1-2주)
-- [#005](./priority-2/005-remove-duplicate-code.md) - 중복 코드 제거 및 공통 컴포넌트 추출
-- [#006](./priority-2/006-add-error-handling.md) - Error Boundary 및 에러 처리 로직 추가
+- [#005](./priority-2/005-remove-duplicate-code.md) 🟡 - 중복 코드 제거 및 공통 컴포넌트 추출
+- [#006](./priority-2/006-add-error-handling.md) 🟡 - Error Boundary 및 에러 처리 로직 추가
 - [#007](./priority-2/007-add-custom-hooks.md) - Custom Hook 추가로 공통 로직 추출
-- [#008](./priority-2/008-split-complex-components.md) - 복잡한 컴포넌트 분리
+- [#008](./priority-2/008-split-complex-components.md) 🟡 - 복잡한 컴포넌트 분리
 
 ### 📊 Priority 3 - 장기 개선 (1개월)
 - [#009](./priority-3/009-add-test-code.md) - 단위 테스트 및 통합 테스트 추가
 - [#010](./priority-3/010-add-code-splitting.md) - Code Splitting 및 Lazy Loading 적용
 - [#011](./priority-3/011-optimize-bundle.md) - 번들 크기 최적화
-- [#012](./priority-3/012-improve-accessibility.md) - 접근성(A11y) 개선
+- [#012](./priority-3/012-improve-accessibility.md) 🟡 - 접근성(A11y) 개선
 - [#013](./priority-3/013-optimize-zustand-selectors.md) - Zustand Selector 패턴 적용
 
 ## 📈 진행 상황
 
 | 우선순위 | 총 태스크 | 완료 | 진행 중 | 대기 중 |
 |---------|----------|------|---------|---------|
-| Priority 1 | 4 | 0 | 0 | 4 |
-| Priority 2 | 4 | 0 | 0 | 4 |
-| Priority 3 | 5 | 0 | 0 | 5 |
-| **합계** | **13** | **0** | **0** | **13** |
+| Priority 1 | 4 | 0 | 1 | 3 |
+| Priority 2 | 4 | 0 | 3 | 1 |
+| Priority 3 | 5 | 0 | 1 | 4 |
+| **합계** | **13** | **0** | **5** | **8** |
+
+### 🟡 진행 중인 태스크
+
+- [#001](./priority-1/001-add-react-memo.md) - React.memo를 주요 컴포넌트에 적용 (LandingHeader, HeroSection, LandingPage 완료)
+- [#005](./priority-2/005-remove-duplicate-code.md) - 중복 코드 제거 및 공통 컴포넌트 추출 (GlassCard 완료)
+- [#006](./priority-2/006-add-error-handling.md) - Error Boundary 및 에러 처리 로직 추가 (ErrorBoundary 생성 및 적용 완료)
+- [#008](./priority-2/008-split-complex-components.md) - 복잡한 컴포넌트 분리 (LandingPage 일부 섹션 분리 완료)
+- [#012](./priority-3/012-improve-accessibility.md) - 접근성(A11y) 개선 (aria-label 추가 완료)
 
 ## 🎯 예상 효과
 

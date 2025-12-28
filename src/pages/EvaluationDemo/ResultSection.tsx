@@ -2,7 +2,7 @@
  * 평가 결과 섹션
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, RefreshCw, Lock, TrendingUp, AlertTriangle, Lightbulb, Award, Sparkles } from 'lucide-react';
 import { EVALUATION_AREAS } from '../../types/evaluation';
 import { useEvaluationStore } from '../../stores/useEvaluationStore';
@@ -12,6 +12,14 @@ import PaidPlanSelector from '../../components/PaidPlanSelector';
 export const ResultSection: React.FC = () => {
   const { evaluationResult, resetEvaluation } = useEvaluationStore();
   const [showPricing, setShowPricing] = useState(false);
+
+  // showPricing이 변경될 때 스크롤을 최상단으로 이동
+  // 모든 Hooks는 early return 전에 호출되어야 함
+  useEffect(() => {
+    if (showPricing) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [showPricing]);
 
   if (!evaluationResult) {
     return (
@@ -60,6 +68,8 @@ export const ResultSection: React.FC = () => {
   // 요금제 보기 (유료 기능 클릭 시)
   const handleViewPricing = () => {
     setShowPricing(true);
+    // 스크롤을 최상단으로 이동
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

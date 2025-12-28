@@ -1,7 +1,7 @@
 # [#008] 복잡한 컴포넌트 분리
 
 ## 📌 Status
-`🔲 Todo`
+`🟡 In Progress`
 
 ## 🏷️ Labels
 `refactoring` `maintainability` `priority-2`
@@ -31,16 +31,23 @@
 - [ ] `PMFReport.tsx` - 진단 리포트
 - [ ] `PMFInsights.tsx` - 인사이트 및 권장사항
 
-### 3. BusinessPlanViewer 컴포넌트 분리
+### 3. LandingPage 컴포넌트 분리 (완료)
 
-- [ ] `SectionList.tsx` - 섹션 목록
-- [ ] `SectionContent.tsx` - 섹션 내용 표시
-- [ ] `GenerationControls.tsx` - 생성/재생성 컨트롤
+- [x] `LandingHeader.tsx` - 헤더 네비게이션 ✅
+- [x] `HeroSection.tsx` - 히어로 섹션 ✅
+- [ ] `TestimonialsSection.tsx` - 고객 시나리오 섹션 (향후)
+- [ ] `MakersSection.tsx` - AI 심사위원단 섹션 (향후)
+- [ ] `BusinessCategorySection.tsx` - 사업분야 섹션 (향후)
+- [ ] `PricingSection.tsx` - 요금제 섹션 (향후)
+- [ ] `SolutionStepsSection.tsx` - 단계별 솔루션 섹션 (향후)
+- [ ] `MakersWorldIntroSection.tsx` - 기업 소개 섹션 (향후)
+- [ ] `FinalCTASection.tsx` - 최종 CTA 섹션 (향후)
+- [ ] `Footer.tsx` - 푸터 (향후)
 
 ### 4. 디렉토리 구조 정리
 
-- [ ] 관련 컴포넌트들을 서브 디렉토리로 그룹화
-- [ ] index.ts 파일로 export 정리
+- [x] 관련 컴포넌트들을 서브 디렉토리로 그룹화 (`src/pages/LandingPage/sections/`) ✅
+- [ ] index.ts 파일로 export 정리 (향후)
 
 ## 💡 Implementation Example
 

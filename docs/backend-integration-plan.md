@@ -340,9 +340,9 @@ const signupSchema = z.object({
         "savings": 239700
       },
       "premium": {
-        "original": 1499000,
-        "discounted": 1049300,
-        "savings": 449700
+        "original": 1199000,
+        "discounted": 839300,
+        "savings": 359700
       }
     }
   }

@@ -33,6 +33,7 @@
 import { useEffect, useRef } from 'react';
 import { useProjectStore } from '../stores/useProjectStore';
 import { debounce } from '../lib/utils';
+import { TIMING } from '../constants';
 
 /**
  * useAutoSave Hook
@@ -50,7 +51,7 @@ import { debounce } from '../lib/utils';
  * @param {any} data - 저장할 데이터
  * @param {number} delay - Debounce 지연 시간 (기본 1000ms)
  */
-export const useAutoSave = (data: any, delay: number = 1000) => {
+export const useAutoSave = (data: any, delay: number = TIMING.AUTO_SAVE_DEBOUNCE) => {
   const { setSaveStatus } = useProjectStore();
   const previousDataRef = useRef<string | undefined>(undefined);
 
@@ -75,11 +76,11 @@ export const useAutoSave = (data: any, delay: number = 1000) => {
       setTimeout(() => {
         setSaveStatus('saved');
 
-        // 2초 후 idle 상태로 복귀
+        // 저장 완료 후 idle 상태로 복귀
         setTimeout(() => {
           setSaveStatus('idle');
-        }, 2000);
-      }, 500);
+        }, TIMING.SAVE_STATUS_IDLE_DELAY);
+      }, TIMING.SAVE_SIMULATION_DELAY);
     }, delay);
 
     debouncedSave();

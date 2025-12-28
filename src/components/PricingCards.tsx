@@ -10,6 +10,22 @@ import { Button } from './ui/Button';
 import { pricingPlans, PlanFeature } from '../constants/pricingPlans';
 import { getPromotionStatus, getPlanPricing, formatPrice } from '../utils/pricing';
 import { usePreRegistrationStore } from '../stores/usePreRegistrationStore';
+import { PROMO_START_DATE, PHASE_A_END, PHASE_B_END } from '../constants/promotion';
+
+// 날짜 포맷팅 유틸리티 함수 (간단한 M/D 형식)
+const formatDateShort = (dateString: string): string => {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+};
+
+// Phase B 시작일 계산 (Phase A 종료일 다음 날)
+const getPhaseBStartDate = (): Date => {
+  const phaseAEnd = new Date(PHASE_A_END);
+  phaseAEnd.setDate(phaseAEnd.getDate() + 1);
+  return phaseAEnd;
+};
 
 interface PricingCardsProps {
   /** 프로모션 타임테이블 표시 여부 */
@@ -67,7 +83,9 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
                     <span className="ml-auto text-xs bg-rose-500 px-2 py-0.5 rounded-full">진행 중</span>
                   )}
                 </div>
-                <p className={`text-sm ${promoStatus.isPhaseA ? 'text-white/70' : 'text-white/40'}`}>12/28 ~ 1/3</p>
+                <p className={`text-sm ${promoStatus.isPhaseA ? 'text-white/70' : 'text-white/40'}`}>
+                  {formatDateShort(PROMO_START_DATE)} ~ {formatDateShort(PHASE_A_END)}
+                </p>
               </div>
               
               {/* Phase B */}
@@ -81,7 +99,9 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
                     <span className="ml-auto text-xs bg-emerald-500 px-2 py-0.5 rounded-full">진행 중</span>
                   )}
                 </div>
-                <p className={`text-sm ${promoStatus.isPhaseB ? 'text-white/70' : 'text-white/40'}`}>1/4 ~ 접수 시작일</p>
+                <p className={`text-sm ${promoStatus.isPhaseB ? 'text-white/70' : 'text-white/40'}`}>
+                  {formatDateShort(getPhaseBStartDate().toISOString())} ~ {formatDateShort(PHASE_B_END)}
+                </p>
               </div>
             </div>
             
@@ -98,7 +118,8 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         {pricingPlans.map((plan, i) => {
           const planPricing = plan.planKey ? getPlanPricing(plan.planKey) : null;
-          const hasDiscount = planPricing && planPricing.isDiscounted;
+          // 프로모션이 활성화되어 있고, 요금제가 유료인 경우 할인 적용
+          const hasDiscount = planPricing && promoStatus.isActive && planPricing.isDiscounted;
           
           return (
             <div 
@@ -129,38 +150,38 @@ export const PricingCards: React.FC<PricingCardsProps> = ({
               <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
               
               {/* 가격 영역 */}
-              <div className="mb-6">
+              <div className="mb-6 min-w-0">
                 {plan.planKey === null ? (
-                  <div className="text-3xl font-bold text-white/50">₩0 <span className="text-lg">(무료 데모)</span></div>
+                  <div className="text-3xl font-bold text-white/50 break-words">₩0 <span className="text-lg">(무료 데모)</span></div>
                 ) : hasDiscount && planPricing ? (
                   <>
                     {/* 정가 (취소선) */}
-                    <div className="text-lg text-white/40 line-through">
+                    <div className="text-lg text-white/40 line-through break-words">
                       ₩{formatPrice(planPricing.originalPrice)}
                     </div>
                     {/* 할인가 */}
-                    <div className={`text-3xl font-bold ${
+                    <div className={`text-2xl sm:text-3xl font-bold break-words overflow-wrap-anywhere ${
                       promoStatus.isPhaseA ? 'text-rose-400' : 'text-emerald-400'
                     }`}>
                       ₩{formatPrice(planPricing.currentPrice)}
                     </div>
                     {/* 절약 금액 */}
-                    <div className={`text-sm font-medium mt-1 ${
+                    <div className={`text-sm font-medium mt-1 break-words ${
                       promoStatus.isPhaseA ? 'text-rose-300' : 'text-emerald-300'
                     }`}>
                       ₩{formatPrice(planPricing.savings)} 절약!
                     </div>
                     {/* Phase A 추가 절약 표시 */}
                     {promoStatus.isPhaseA && planPricing.extraSavingsVsPhaseB > 0 && (
-                      <div className="text-xs text-orange-300 mt-1">
+                      <div className="text-xs text-orange-300 mt-1 break-words">
                         연말 특가 추가 혜택 ₩{formatPrice(planPricing.extraSavingsVsPhaseB)}
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className="text-4xl font-bold">₩{plan.price}</div>
+                  <div className="text-2xl sm:text-3xl font-bold break-words overflow-wrap-anywhere">₩{plan.price}</div>
                 )}
-                {plan.period && <div className="text-sm text-white/60 mt-2">{plan.period}</div>}
+                {plan.period && <div className="text-sm text-white/60 mt-2 break-words">{plan.period}</div>}
               </div>
               
               {/* 기능 목록 */}

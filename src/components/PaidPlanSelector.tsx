@@ -5,9 +5,42 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Flame, Sparkles, Zap } from 'lucide-react';
+import { ArrowLeft, Check, Flame, Sparkles, Zap, Clock, Rocket } from 'lucide-react';
 import { getPlanPricing, getPromotionStatus, formatPrice } from '../utils/pricing';
 import type { PlanType } from '../utils/pricing';
+import { PHASE_A_END, PHASE_B_END, PROMO_START_DATE, SERVICE_OPEN_DATE, DISCOUNT_RATE_PHASE_A, DISCOUNT_RATE_PHASE_B } from '../constants/promotion';
+
+// 날짜 포맷팅 유틸리티 함수 (상세 형식)
+const formatDateRange = (dateString: string): string => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${year}.${month}.${day}`;
+};
+
+// 날짜 포맷팅 유틸리티 함수 (간단한 M/D 형식)
+const formatDateShort = (dateString: string): string => {
+  // ISO 문자열에서 날짜 부분만 추출하여 타임존 문제 방지
+  const dateMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateMatch) {
+    const month = parseInt(dateMatch[2], 10);
+    const day = parseInt(dateMatch[3], 10);
+    return `${month}/${day}`;
+  }
+  // 폴백: 기존 방식
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+};
+
+// Phase B 시작일 계산 (Phase A 종료일 다음 날)
+const getPhaseBStartDate = (): Date => {
+  const phaseAEnd = new Date(PHASE_A_END);
+  phaseAEnd.setDate(phaseAEnd.getDate() + 1);
+  return phaseAEnd;
+};
 
 // 유료 요금제 데이터
 const paidPlans: Array<{
@@ -50,7 +83,7 @@ const paidPlans: Array<{
   { 
     name: '프리미엄', 
     planKey: 'premium',
-    originalPrice: 1499000,
+    originalPrice: 1199000,
     period: '2026 상반기 시즌', 
     features: [
       '프로 기능 전체', 
@@ -102,28 +135,106 @@ export const PaidPlanSelector: React.FC<PaidPlanSelectorProps> = ({
 
         {/* 프로모션 배너 */}
         {promoStatus.isActive && (
-          <div className="max-w-3xl mx-auto mb-8">
-            <div className={`rounded-xl p-5 text-center ${
-              promoStatus.isPhaseA 
-                ? 'bg-gradient-to-r from-rose-100 to-orange-100 border border-rose-200' 
-                : 'bg-gradient-to-r from-purple-100 to-blue-100 border border-purple-200'
-            }`}>
-              <div className="flex items-center justify-center gap-2 mb-2">
-                {promoStatus.isPhaseA ? (
-                  <Flame className="w-5 h-5 text-rose-500" />
-                ) : (
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                )}
-                <span className={`font-bold text-lg ${promoStatus.isPhaseA ? 'text-rose-500' : 'text-purple-600'}`}>
-                  {promoStatus.isPhaseA ? '연말연시 특별 30% 할인' : '얼리버드 특가 10% 할인'}
-                </span>
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+              <h3 className="text-base font-bold text-center mb-4 flex items-center justify-center gap-2 text-slate-800">
+                <Clock className="w-4 h-4 text-purple-600" />
+                사전 등록 프로모션 일정
+              </h3>
+              
+              {/* 타임라인 */}
+              <div className="relative">
+                {/* 배경 라인 - Phase A, B 부분 */}
+                <div className="absolute top-5 left-0 w-[75%] h-1 bg-slate-200 rounded-l-full" />
+                
+                {/* 배경 라인 - 서비스 오픈 부분 (미세한 파란색) */}
+                <div className="absolute top-5 right-0 w-[25%] h-1 bg-blue-400/20 rounded-r-full" />
+                
+                {/* 진행 상태 표시 */}
+                <div className={`absolute top-5 left-0 h-1 rounded-full transition-all duration-500 ${
+                  promoStatus.isPhaseA 
+                    ? 'w-[40%] bg-gradient-to-r from-rose-500 to-orange-500' 
+                    : promoStatus.isPhaseB
+                    ? 'w-[75%] bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                    : 'w-[75%] bg-gradient-to-r from-rose-500 via-orange-500 to-emerald-500'
+                }`} />
+                
+                {/* 기간 표시 */}
+                <div className="relative flex items-start">
+                  {/* Phase A: 연말연시 특별 */}
+                  <div className={`flex-[1.5] text-center ${promoStatus.isPhaseA ? 'opacity-100' : 'opacity-50'}`}>
+                    <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      promoStatus.isPhaseA 
+                        ? 'bg-gradient-to-r from-rose-500 to-orange-500 shadow-lg shadow-rose-500/30' 
+                        : 'bg-slate-200'
+                    }`}>
+                      <Flame className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-sm font-bold text-slate-800 mb-0.5">🔥 연말연시 특별</div>
+                    <div className={`text-xl font-bold ${promoStatus.isPhaseA ? 'text-rose-500' : 'text-slate-400'}`}>
+                      {DISCOUNT_RATE_PHASE_A}% 할인
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {formatDateShort(PROMO_START_DATE)} ~ {formatDateShort(PHASE_A_END)}
+                    </div>
+                    {promoStatus.isPhaseA && (
+                      <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-rose-500/20 rounded-full text-xs text-rose-600 font-medium">
+                        <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse" />
+                        진행 중
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Phase B: 얼리버드 특가 */}
+                  <div className={`flex-[1.5] text-center ${promoStatus.isPhaseB ? 'opacity-100' : 'opacity-50'}`}>
+                    <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      promoStatus.isPhaseB 
+                        ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/30' 
+                        : 'bg-slate-200'
+                    }`}>
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-sm font-bold text-slate-800 mb-0.5">✨ 얼리버드 특가</div>
+                    <div className={`text-xl font-bold ${promoStatus.isPhaseB ? 'text-emerald-500' : 'text-slate-400'}`}>
+                      {DISCOUNT_RATE_PHASE_B}% 할인
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {formatDateShort(getPhaseBStartDate().toISOString())} ~ {formatDateShort(PHASE_B_END)}
+                    </div>
+                    {promoStatus.isPhaseB && (
+                      <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 rounded-full text-xs text-emerald-600 font-medium">
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                        진행 중
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 서비스 오픈 */}
+                  <div className="flex-[1] text-center opacity-50">
+                    <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-1.5 bg-slate-200">
+                      <Rocket className="w-4 h-4 text-slate-500" />
+                    </div>
+                    <div className="text-xs font-bold text-slate-800 mb-0.5">🚀 서비스 오픈</div>
+                    <div className="text-sm font-bold text-slate-400">
+                      정식 오픈
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {formatDateShort(SERVICE_OPEN_DATE)}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p className={`text-sm font-medium mb-2 ${promoStatus.isPhaseA ? 'text-rose-600' : 'text-purple-700'}`}>
-                {promoStatus.isPhaseA 
-                  ? '📅 프로모션 기간: 2024.12.29 ~ 2025.1.4'
-                  : '📅 프로모션 기간: 2025.1.5 ~ 2025.1.11'}
-              </p>
-              <p className="text-slate-600 text-sm">
+              
+              {/* 안내 메시지 */}
+              <div className="mt-3 text-center text-xs text-slate-500">
+                {promoStatus.isPhaseA ? (
+                  <span>연말연시 기간에 등록하면 <strong className="text-rose-600">추가 20% 절약</strong> 혜택!</span>
+                ) : (
+                  <span>정부지원사업 접수 시작일 전까지 사전 등록 시 할인 적용</span>
+                )}
+              </div>
+              
+              <p className="text-center text-xs text-slate-400 mt-2">
                 사전등록 시 할인코드가 이메일로 발송됩니다
               </p>
             </div>
@@ -134,7 +245,8 @@ export const PaidPlanSelector: React.FC<PaidPlanSelectorProps> = ({
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {paidPlans.map((plan) => {
             const planPricing = getPlanPricing(plan.planKey);
-            const hasDiscount = planPricing.isDiscounted;
+            // 프로모션이 활성화되어 있는 경우 할인 적용
+            const hasDiscount = promoStatus.isActive && planPricing.isDiscounted;
             
             return (
               <div 
@@ -157,37 +269,38 @@ export const PaidPlanSelector: React.FC<PaidPlanSelectorProps> = ({
                   </div>
                 )}
                 
-                {/* 인기 배지 */}
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold text-white">
-                    가장 인기
-                  </div>
-                )}
-                
-                <h3 className="text-xl font-bold mb-2 text-slate-800">{plan.name}</h3>
+                {/* 요금제명과 인기 배지 */}
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-bold text-slate-800">{plan.name}</h3>
+                  {plan.popular && (
+                    <div className="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-xs font-bold text-white whitespace-nowrap">
+                      가장 인기
+                    </div>
+                  )}
+                </div>
                 
                 {/* 가격 영역 */}
-                <div className="mb-6">
+                <div className="mb-6 min-w-0">
                   {hasDiscount ? (
                     <>
-                      <div className="text-lg text-slate-400 line-through">
+                      <div className="text-lg text-slate-400 line-through break-words">
                         ₩{formatPrice(planPricing.originalPrice)}
                       </div>
-                      <div className={`text-3xl font-bold ${
+                      <div className={`text-2xl sm:text-3xl font-bold break-words overflow-wrap-anywhere ${
                         promoStatus.isPhaseA ? 'text-rose-500' : 'text-purple-600'
                       }`}>
                         ₩{formatPrice(planPricing.currentPrice)}
                       </div>
-                      <div className={`text-sm font-medium mt-1 ${
+                      <div className={`text-sm font-medium mt-1 break-words ${
                         promoStatus.isPhaseA ? 'text-rose-400' : 'text-purple-500'
                       }`}>
                         ₩{formatPrice(planPricing.savings)} 절약!
                       </div>
                     </>
                   ) : (
-                    <div className="text-3xl font-bold text-slate-800">₩{formatPrice(plan.originalPrice)}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-slate-800 break-words overflow-wrap-anywhere">₩{formatPrice(plan.originalPrice)}</div>
                   )}
-                  <div className="text-sm text-slate-500 mt-2">{plan.period}</div>
+                  <div className="text-sm text-slate-500 mt-2 break-words">{plan.period}</div>
                 </div>
                 
                 {/* 기능 목록 */}

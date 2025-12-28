@@ -12,8 +12,9 @@
  * <Progress value={completedSteps} max={totalSteps} />
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '../../lib/utils';
+import { UI_CONSTANTS } from '../../constants';
 
 interface ProgressProps {
   /** 현재 진행 값 */
@@ -40,14 +41,14 @@ interface ProgressProps {
  * @param {ProgressProps} props - 진행률 속성
  * @returns {JSX.Element} 진행률 바
  */
-export const Progress: React.FC<ProgressProps> = ({ 
+export const Progress: React.FC<ProgressProps> = memo(({ 
   value, 
-  max = 100, 
+  max = UI_CONSTANTS.PROGRESS_MAX, 
   className,
   showLabel = false 
 }) => {
   // 퍼센트 계산 (0-100% 범위로 제한)
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+  const percentage = Math.min(Math.max((value / max) * UI_CONSTANTS.PROGRESS_MAX, UI_CONSTANTS.PROGRESS_MIN), UI_CONSTANTS.PROGRESS_MAX);
 
   return (
     <div className={cn('w-full', className)}>
@@ -64,5 +65,7 @@ export const Progress: React.FC<ProgressProps> = ({
       )}
     </div>
   );
-};
+});
+
+Progress.displayName = 'Progress';
 
