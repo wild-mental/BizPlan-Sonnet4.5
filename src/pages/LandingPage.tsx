@@ -1486,27 +1486,46 @@ export const LandingPage: React.FC = () => {
                   </ul>
                   
                   {/* CTA 버튼 */}
-                  <Button 
-                    onClick={() => handlePlanSelect(plan.name)} 
-                    className={`w-full ${
-                      hasDiscount && promoStatus.isPhaseA
-                        ? 'bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400'
-                        : plan.popular 
-                          ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
-                          : 'bg-white/10 hover:bg-white/20'
-                    }`}
-                  >
-                    {hasDiscount && promoStatus.isPhaseA ? (
-                      <>
-                        <Flame className="w-4 h-4 mr-1" />
-                        연말연시 특가 등록
-                      </>
-                    ) : hasDiscount ? (
-                      '사전 등록하기'
-                    ) : (
-                      plan.cta
-                    )}
-                  </Button>
+                  {plan.name === '기본' ? (
+                    // 무료 데모 전용: 두 개의 버튼이 있는 카드 영역
+                    <div className="bg-white/5 rounded-lg p-3 space-y-2">
+                      <p className="text-xs text-white/50 text-center mb-2">무료 데모 바로가기</p>
+                      <Button 
+                        onClick={() => navigate('/demo/write')} 
+                        className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-sm py-2"
+                      >
+                        사업계획서 작성 데모
+                      </Button>
+                      <Button 
+                        onClick={() => navigate('/demo/evaluation')} 
+                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-sm py-2"
+                      >
+                        AI 평가받기 데모
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      onClick={() => handlePlanSelect(plan.name)} 
+                      className={`w-full ${
+                        hasDiscount && promoStatus.isPhaseA
+                          ? 'bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400'
+                          : plan.popular 
+                            ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
+                            : 'bg-white/10 hover:bg-white/20'
+                      }`}
+                    >
+                      {hasDiscount && promoStatus.isPhaseA ? (
+                        <>
+                          <Flame className="w-4 h-4 mr-1" />
+                          연말연시 특가 등록
+                        </>
+                      ) : hasDiscount ? (
+                        '사전 등록하기'
+                      ) : (
+                        plan.cta
+                      )}
+                    </Button>
+                  )}
                 </div>
               );
             })}
