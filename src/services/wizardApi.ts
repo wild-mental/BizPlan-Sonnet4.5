@@ -51,13 +51,25 @@ export interface BudgetValidationResult {
 }
 
 export const wizardApi = {
+  /**
+   * Wizard 전체 데이터 조회
+   * GET /api/v1/projects/{projectId}/wizard
+   */
   get: (projectId: string) =>
     apiClient.get<ApiResponse<WizardData>>(`/projects/${projectId}/wizard`),
 
+  /**
+   * Wizard 데이터 저장
+   * PUT /api/v1/projects/{projectId}/wizard
+   */
   save: (projectId: string, data: SaveWizardRequest) =>
     apiClient.put<ApiResponse<{ lastSavedAt: string; progress: any }>>(`/projects/${projectId}/wizard`, data),
 
+  /**
+   * 자금 집행계획 검증
+   * POST /api/v1/projects/{projectId}/wizard/budget/validate
+   */
   validateBudget: (projectId: string, budgetData: any) =>
-    apiClient.post<ApiResponse<BudgetValidationResult>>(`/projects/${projectId}/budget/validate`, budgetData),
+    apiClient.post<ApiResponse<BudgetValidationResult>>(`/projects/${projectId}/wizard/budget/validate`, budgetData),
 };
 
