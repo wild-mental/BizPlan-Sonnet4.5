@@ -60,8 +60,10 @@ import { TEMPLATE_THEMES } from '../constants/templateThemes';
 import { ExtendedWizardStep } from '../types/templateQuestions';
 import { 
   generateBusinessPlan, 
-  buildBusinessPlanRequest 
+  buildBusinessPlanRequest,
+  fetchGeneratedBusinessPlan
 } from '../services/businessPlanApi';
+import { usePolling } from '../hooks/usePolling';
 
 /**
  * WizardStep 컴포넌트
@@ -102,6 +104,7 @@ export const WizardStep: React.FC = () => {
   // AI 사업계획서 생성 중 상태 (로컬 상태 + Store 상태 병행)
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
 
   const stepNumber = parseInt(stepId || '1', 10);
   
@@ -174,16 +177,22 @@ export const WizardStep: React.FC = () => {
     // API 요청 데이터 구성
     const requestData = buildBusinessPlanRequest(wizardData);
     
+    // 프로젝트 ID 확인
+    if (!currentProject?.id) {
+      setError('프로젝트 정보를 찾을 수 없습니다.');
+      setIsGenerating(false);
+      return;
+    }
+    
     try {
-      // 백엔드 API 호출
-      const response = await generateBusinessPlan(requestData);
+      // 백엔드 API 호출 (생성 요청만)
+      const response = await generateBusinessPlan(currentProject.id, requestData);
       
       if (response.success && response.data) {
-        // 성공: 생성된 사업계획서 저장 및 결과 페이지로 이동
-        console.log('=== AI 사업계획서 생성 성공 ===');
-        setGeneratedPlan(response.data);
-        setIsGenerating(false);
-        navigate('/business-plan');
+        // 생성 요청 성공: 폴링 시작
+        console.log('=== AI 사업계획서 생성 요청 성공 ===', response.data);
+        setGenerationId(response.data.generationId);
+        // 폴링은 usePolling 훅에서 처리
       } else {
         // 실패: 에러 메시지 저장 후 결과 페이지로 이동 (예제 문서 표시)
         const errorMessage = response.error?.message || '사업계획서 생성에 실패했습니다.';
@@ -202,7 +211,36 @@ export const WizardStep: React.FC = () => {
       // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
       navigate('/business-plan');
     }
-  }, [getAllDataWithDefaults, setGeneratedPlan, setLoading, setError, navigate]);
+  }, [getAllDataWithDefaults, setLoading, setError, navigate, currentProject]);
+
+  // 사업계획서 생성 상태 폴링
+  usePolling({
+    fetcher: async () => {
+      if (!currentProject?.id) throw new Error('프로젝트 ID가 없습니다');
+      return await fetchGeneratedBusinessPlan(currentProject.id);
+    },
+    interval: 2000,
+    enabled: isGenerating && !!currentProject?.id,
+    stopCondition: (data) => {
+      if (!data.success || !data.data) return false;
+      return data.data.status === 'generated' || data.data.status === 'exported';
+    },
+    onSuccess: async (data) => {
+      if (data.success && data.data && (data.data.status === 'generated' || data.data.status === 'exported')) {
+        console.log('=== AI 사업계획서 생성 완료 ===', data.data);
+        setGeneratedPlan(data.data);
+        setIsGenerating(false);
+        setGenerationId(null);
+        navigate('/business-plan');
+      }
+    },
+    onError: (error) => {
+      console.error('=== 사업계획서 폴링 에러 ===', error);
+      setError(error.message);
+      setIsGenerating(false);
+      setGenerationId(null);
+    },
+  });
 
   /**
    * 다음 단계로 이동 또는 AI 사업계획서 생성
