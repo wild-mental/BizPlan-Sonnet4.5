@@ -67,9 +67,9 @@ export const wizardApi = {
 
   /**
    * 자금 집행계획 검증
-   * POST /api/v1/projects/{projectId}/wizard/budget/validate
+   * POST /api/v1/projects/{projectId}/budget/validate
    */
   validateBudget: (projectId: string, budgetData: any) =>
-    apiClient.post<ApiResponse<BudgetValidationResult>>(`/projects/${projectId}/wizard/budget/validate`, budgetData),
+    apiClient.post<ApiResponse<BudgetValidationResult>>(`/projects/${projectId}/budget/validate`, budgetData),
 };
 

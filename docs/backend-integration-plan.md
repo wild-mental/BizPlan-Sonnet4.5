@@ -1055,22 +1055,37 @@ const signupSchema = z.object({
 
 **관련 프론트엔드**: `src/pages/BusinessPlanViewer.tsx`, `src/stores/useBusinessPlanStore.ts`
 
-#### POST `/api/v1/projects/{projectId}/business-plan/generate`
+#### POST `/api/v1/business-plan/generate`
 
 **Request Body:**
 
 ```json
 {
-  "outputFormat": "markdown",
-  "options": {
-    "maskPersonalInfo": true,
-    "includeFinancialTables": true,
-    "includeEsgSection": true,
-    "language": "ko"
+  "requestInfo": {
+    "templateType": "pre-startup",
+    "generatedAt": "2025-12-28T16:00:00.000Z",
+    "userId": "user-uuid-here",
+    "projectId": "project-uuid-here"
   },
-  "regenerateSections": []
+  "businessPlanData": {
+    "step1_problemRecognition": { ... },
+    "step2_marketAnalysis": { ... },
+    "step3_solutionFeasibility": { ... },
+    "step4_commercializationStrategy": { ... },
+    "step5_teamCapability": { ... },
+    "step6_financialPlan": { ... }
+  },
+  "generationOptions": {
+    "tone": "professional",
+    "targetLength": "detailed",
+    "outputFormat": "markdown",
+    "language": "ko",
+    "sections": ["executive_summary", "problem_analysis", ...]
+  }
 }
 ```
+
+**참고**: 상세 요청 스펙은 `AI_GENERATION_BE_API_SUBMIT.md` 문서 참조
 
 **Response (202 Accepted):**
 
@@ -1099,7 +1114,7 @@ const signupSchema = z.object({
 
 ### 7.2 사업계획서 조회
 
-#### GET `/api/v1/projects/{projectId}/business-plan`
+#### GET `/api/v1/business-plan/{businessPlanId}`
 
 **Response (200 OK):**
 
@@ -1151,7 +1166,9 @@ const signupSchema = z.object({
 
 ### 7.3 섹션 재생성
 
-#### POST `/api/v1/projects/{projectId}/business-plan/sections/{sectionId}/regenerate`
+#### POST `/api/v1/business-plan/{businessPlanId}/sections/{sectionId}/regenerate`
+
+**참고**: 현재 구현되지 않았을 수 있음. 백엔드 구현 상태 확인 필요.
 
 **Request Body:**
 
