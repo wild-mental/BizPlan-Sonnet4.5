@@ -49,6 +49,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useWizardStore } from '../stores/useWizardStore';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
 import { useProjectStore } from '../stores/useProjectStore';
+import { useAuthStore } from '../stores/useAuthStore';
 import { Button, Spinner } from '../components/ui';
 import { ChevronLeft, ChevronRight, Sparkles, AlertCircle, Info } from 'lucide-react';
 import { QuestionForm } from '../components/wizard/QuestionForm';
@@ -60,10 +61,8 @@ import { TEMPLATE_THEMES } from '../constants/templateThemes';
 import { ExtendedWizardStep } from '../types/templateQuestions';
 import { 
   generateBusinessPlan, 
-  buildBusinessPlanRequest,
-  fetchGeneratedBusinessPlan
+  buildBusinessPlanRequest
 } from '../services/businessPlanApi';
-import { usePolling } from '../hooks/usePolling';
 
 /**
  * WizardStep 컴포넌트
@@ -98,13 +97,14 @@ export const WizardStep: React.FC = () => {
     getAllDataWithDefaults,
     getActiveSteps,
   } = useWizardStore();
+  
+  const { user } = useAuthStore();
   const { setGeneratedPlan, setLoading, setError, isLoading, error } = useBusinessPlanStore();
   const { currentProject } = useProjectStore();
   
   // AI 사업계획서 생성 중 상태 (로컬 상태 + Store 상태 병행)
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
-  const [generationId, setGenerationId] = useState<string | null>(null);
 
   const stepNumber = parseInt(stepId || '1', 10);
   
@@ -174,31 +174,65 @@ export const WizardStep: React.FC = () => {
     console.log('=== AI 사업계획서 생성 요청 준비 ===');
     console.log('Wizard 데이터:', JSON.stringify(wizardData, null, 2));
     
-    // API 요청 데이터 구성
-    const requestData = buildBusinessPlanRequest(wizardData);
-    
-    // 프로젝트 ID 확인
+    // 프로젝트 ID 및 사용자 ID 확인
     if (!currentProject?.id) {
       setError('프로젝트 정보를 찾을 수 없습니다.');
       setIsGenerating(false);
       return;
     }
     
+    if (!user?.id) {
+      setError('사용자 정보를 찾을 수 없습니다. 로그인이 필요합니다.');
+      setIsGenerating(false);
+      return;
+    }
+    
+    // API 요청 데이터 구성 (백엔드 스펙에 맞게)
+    const requestData = buildBusinessPlanRequest(
+      wizardData,
+      currentProject.id,
+      user.id,
+      (templateType || 'pre-startup') as 'pre-startup' | 'early-startup' | 'bank-loan'
+    );
+    
     try {
-      // 백엔드 API 호출 (생성 요청만)
-      const response = await generateBusinessPlan(currentProject.id, requestData);
+      // 백엔드 API 호출 (POST /api/v1/business-plan/generate)
+      const response = await generateBusinessPlan(requestData);
       
       if (response.success && response.data) {
-        // 생성 요청 성공: 폴링 시작
-        console.log('=== AI 사업계획서 생성 요청 성공 ===', response.data);
-        setGenerationId(response.data.generationId);
-        // 폴링은 usePolling 훅에서 처리
+        // 생성 성공: 응답 데이터를 스토어에 저장
+        console.log('=== AI 사업계획서 생성 성공 ===', response.data);
+        
+        // 응답 데이터를 프론트엔드 형식으로 변환
+        const generatedData = {
+          id: response.data.businessPlanId,
+          projectId: response.data.projectId,
+          templateId: response.data.templateType,
+          version: 1,
+          status: 'generated' as const,
+          sections: response.data.sections,
+          metadata: {
+            totalWordCount: response.data.metadata.wordCount,
+            estimatedPages: Math.ceil(response.data.metadata.wordCount / 300),
+            generatedAt: response.data.generatedAt,
+            aiModel: response.data.metadata.modelUsed,
+          },
+        };
+        
+        // 스토어에 저장
+        setGeneratedPlan(generatedData);
+        setIsGenerating(false);
+        setLoading(false);
+        
+        // 결과 페이지로 이동
+        navigate('/business-plan');
       } else {
         // 실패: 에러 메시지 저장 후 결과 페이지로 이동 (예제 문서 표시)
         const errorMessage = response.error?.message || '사업계획서 생성에 실패했습니다.';
         console.error('=== AI 사업계획서 생성 실패 ===', response.error);
         setError(errorMessage);
         setIsGenerating(false);
+        setLoading(false);
         // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
         navigate('/business-plan');
       }
@@ -208,39 +242,11 @@ export const WizardStep: React.FC = () => {
       console.error('=== AI 사업계획서 생성 중 예외 발생 ===', err);
       setError(errorMessage);
       setIsGenerating(false);
+      setLoading(false);
       // 에러가 있어도 결과 페이지로 이동하여 예제 문서 + 에러 배너 표시
       navigate('/business-plan');
     }
-  }, [getAllDataWithDefaults, setLoading, setError, navigate, currentProject]);
-
-  // 사업계획서 생성 상태 폴링
-  usePolling({
-    fetcher: async () => {
-      if (!currentProject?.id) throw new Error('프로젝트 ID가 없습니다');
-      return await fetchGeneratedBusinessPlan(currentProject.id);
-    },
-    interval: 2000,
-    enabled: isGenerating && !!currentProject?.id,
-    stopCondition: (data) => {
-      if (!data.success || !data.data) return false;
-      return data.data.status === 'generated' || data.data.status === 'exported';
-    },
-    onSuccess: async (data) => {
-      if (data.success && data.data && (data.data.status === 'generated' || data.data.status === 'exported')) {
-        console.log('=== AI 사업계획서 생성 완료 ===', data.data);
-        setGeneratedPlan(data.data);
-        setIsGenerating(false);
-        setGenerationId(null);
-        navigate('/business-plan');
-      }
-    },
-    onError: (error) => {
-      console.error('=== 사업계획서 폴링 에러 ===', error);
-      setError(error.message);
-      setIsGenerating(false);
-      setGenerationId(null);
-    },
-  });
+  }, [getAllDataWithDefaults, setLoading, setError, navigate, currentProject, user, templateType, setGeneratedPlan]);
 
   /**
    * 다음 단계로 이동 또는 AI 사업계획서 생성
