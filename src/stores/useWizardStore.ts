@@ -45,6 +45,7 @@ import {
   ExtendedWizardStep, 
   getQuestionsForTemplate 
 } from '../types/templateQuestions';
+import { wizardApi, WizardData as ServerWizardData } from '../services/wizardApi';
 
 interface WizardState {
   /** 현재 마법사 단계 (1-7) */
@@ -59,6 +60,16 @@ interface WizardState {
   wizardData: WizardData;
   /** 사용자가 방문한 단계 목록 (6, 7단계 완료 조건에 사용) */
   visitedSteps: number[];
+  /** 프로젝트 ID (서버 동기화용) */
+  projectId: string | null;
+  /** 백엔드 동기화 상태 */
+  isLoading: boolean;
+  /** 동기화 중 여부 */
+  isSyncing: boolean;
+  /** 마지막 동기화 시간 */
+  lastSyncedAt: string | null;
+  /** 동기화 에러 */
+  syncError: string | null;
   
   /** 현재 단계 설정 */
   setCurrentStep: (step: number) => void;
@@ -86,6 +97,12 @@ interface WizardState {
   goToPreviousStep: () => void;
   /** 마법사 초기화 */
   resetWizard: () => void;
+  /** 프로젝트 ID 설정 */
+  setProjectId: (id: string) => void;
+  /** 서버에서 데이터 로드 */
+  loadFromServer: (projectId: string) => Promise<void>;
+  /** 서버로 데이터 동기화 */
+  syncToServer: () => Promise<void>;
 }
 
 /**
@@ -111,6 +128,11 @@ export const useWizardStore = create<WizardState>()(
       templateType: null,
       wizardData: {},
       visitedSteps: [],
+      projectId: null,
+      isLoading: false,
+      isSyncing: false,
+      lastSyncedAt: null,
+      syncError: null,
 
       /**
        * 현재 단계 설정
@@ -326,7 +348,76 @@ export const useWizardStore = create<WizardState>()(
           visitedSteps: [],
           templateType: null,
           extendedSteps: null,
+          projectId: null,
         });
+      },
+
+      /**
+       * 프로젝트 ID 설정
+       */
+      setProjectId: (id: string) => set({ projectId: id }),
+
+      /**
+       * 서버에서 데이터 로드
+       */
+      loadFromServer: async (projectId: string) => {
+        set({ isLoading: true, syncError: null });
+        try {
+          const response = await wizardApi.get(projectId);
+          if (response.data.success && response.data.data) {
+            const serverData = response.data.data;
+            
+            // 서버 데이터를 로컬 형식으로 변환
+            const wizardData: Record<number, Record<string, any>> = {};
+            serverData.steps.forEach((step) => {
+              if (step.data) {
+                wizardData[step.stepId] = step.data;
+              }
+            });
+
+            set({
+              projectId,
+              templateType: serverData.templateId as TemplateType,
+              currentStep: serverData.currentStep,
+              wizardData,
+              lastSyncedAt: serverData.lastSavedAt,
+              isLoading: false,
+            });
+          }
+        } catch (error: any) {
+          set({
+            syncError: error.response?.data?.error?.message || '데이터 로드 실패',
+            isLoading: false,
+          });
+        }
+      },
+
+      /**
+       * 서버로 데이터 동기화
+       */
+      syncToServer: async () => {
+        const { projectId, currentStep, wizardData } = get();
+        if (!projectId) return;
+
+        set({ isSyncing: true, syncError: null });
+        try {
+          const response = await wizardApi.save(projectId, {
+            currentStep,
+            stepData: wizardData[currentStep] || {},
+          });
+
+          if (response.data.success && response.data.data) {
+            set({
+              lastSyncedAt: response.data.data.lastSavedAt,
+              isSyncing: false,
+            });
+          }
+        } catch (error: any) {
+          set({
+            syncError: error.response?.data?.error?.message || '동기화 실패',
+            isSyncing: false,
+          });
+        }
       },
     }),
     {
@@ -338,6 +429,7 @@ export const useWizardStore = create<WizardState>()(
         wizardData: state.wizardData,
         visitedSteps: state.visitedSteps,
         templateType: state.templateType,
+        projectId: state.projectId,
         // steps, extendedSteps는 제외 - 항상 최신 정의에서 로드
       }),
       // 기존 localStorage에 저장된 이전 steps 데이터를 무시하고

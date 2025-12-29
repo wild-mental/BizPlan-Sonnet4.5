@@ -307,7 +307,9 @@ export const SignupPage: React.FC = () => {
     }
 
     try {
-      await socialLogin(provider, currentPlan);
+      // 소셜 로그인 토큰 (실제 구현에서는 소셜 제공자로부터 받아야 함)
+      const mockAccessToken = `mock-${provider}-token-${Date.now()}`;
+      await socialLogin(provider, mockAccessToken, currentPlan);
       navigate('/writing-demo');
     } catch {
       setErrors({ submit: '소셜 로그인 중 오류가 발생했습니다. 다시 시도해주세요.' });

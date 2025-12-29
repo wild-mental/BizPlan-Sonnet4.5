@@ -87,7 +87,7 @@ export const ProjectCreate: React.FC = () => {
     }
 
     // Create new project with empty name (will be filled when user enters item-name)
-    createProject('', selectedTemplate);
+    createProject({ name: '', templateId: selectedTemplate });
     resetWizard();
     
     // 템플릿별 질문 로드 (예비창업패키지/초기창업패키지 차별화)

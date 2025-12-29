@@ -6,12 +6,15 @@
  * - 현재 작업 중인 프로젝트 정보 저장
  * - 프로젝트 생성, 수정, 삭제
  * - 자동 저장 상태 관리
+ * - API 연동을 통한 프로젝트 관리
  * - localStorage에 자동 영속화
  * 
  * 호출 구조:
  * useProjectStore (이 Store)
  *   ├─> createProject() - ProjectCreate 페이지에서 호출
  *   ├─> updateProject() - 프로젝트 정보 수정 시 호출
+ *   ├─> fetchProjects() - 프로젝트 목록 조회
+ *   ├─> fetchProject() - 프로젝트 상세 조회
  *   ├─> setSaveStatus() - useAutoSave hook에서 호출
  *   └─> clearProject() - 프로젝트 초기화
  * 
@@ -27,18 +30,33 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Project, TemplateType, SaveStatus } from '../types';
+import { Project as LocalProject, TemplateType, SaveStatus } from '../types';
+import { projectApi, Project as ApiProject, CreateProjectRequest } from '../services/projectApi';
 
 interface ProjectState {
+  /** 프로젝트 목록 */
+  projects: ApiProject[];
   /** 현재 작업 중인 프로젝트 */
-  currentProject: Project | null;
+  currentProject: ApiProject | null;
   /** 저장 상태 ('idle' | 'saving' | 'saved' | 'error') */
   saveStatus: SaveStatus;
+  /** 로딩 상태 */
+  isLoading: boolean;
+  /** 에러 메시지 */
+  error: string | null;
   
+  /** 프로젝트 목록 조회 */
+  fetchProjects: () => Promise<void>;
+  /** 프로젝트 상세 조회 */
+  fetchProject: (id: string) => Promise<void>;
   /** 새 프로젝트 생성 */
-  createProject: (name: string, templateId: TemplateType) => void;
+  createProject: (data: CreateProjectRequest) => Promise<ApiProject>;
   /** 프로젝트 정보 업데이트 */
-  updateProject: (updates: Partial<Project>) => void;
+  updateProject: (id: string, data: Partial<CreateProjectRequest>) => Promise<void>;
+  /** 프로젝트 삭제 */
+  deleteProject: (id: string) => Promise<void>;
+  /** 현재 프로젝트 설정 */
+  setCurrentProject: (project: ApiProject | null) => void;
   /** 저장 상태 설정 */
   setSaveStatus: (status: SaveStatus) => void;
   /** 프로젝트 초기화 */
@@ -61,49 +79,124 @@ interface ProjectState {
  */
 export const useProjectStore = create<ProjectState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
+      projects: [],
       currentProject: null,
       saveStatus: 'idle',
+      isLoading: false,
+      error: null,
+
+      /**
+       * 프로젝트 목록 조회
+       */
+      fetchProjects: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await projectApi.getAll();
+          if (response.data.success && response.data.data) {
+            set({ projects: response.data.data, isLoading: false });
+          }
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '프로젝트 목록을 불러오는데 실패했습니다',
+            isLoading: false,
+          });
+        }
+      },
+
+      /**
+       * 프로젝트 상세 조회
+       */
+      fetchProject: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await projectApi.getById(id);
+          if (response.data.success && response.data.data) {
+            set({ currentProject: response.data.data, isLoading: false });
+          }
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '프로젝트를 불러오는데 실패했습니다',
+            isLoading: false,
+          });
+        }
+      },
 
       /**
        * 새 프로젝트 생성
-       * - 고유 ID 자동 생성 (타임스탬프 기반)
-       * - 생성/수정 시간 기록
+       * - API를 통한 프로젝트 생성
        * 
-       * @param {string} name - 프로젝트 이름
-       * @param {TemplateType} templateId - 선택한 템플릿 ID
+       * @param {CreateProjectRequest} data - 프로젝트 생성 데이터
+       * @returns {Promise<ApiProject>} 생성된 프로젝트
        */
-      createProject: (name: string, templateId: TemplateType) => {
-        const newProject: Project = {
-          id: `project-${Date.now()}`,
-          name,
-          templateId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          currentStep: 1,
-          isCompleted: false,
-        };
-        set({ currentProject: newProject });
+      createProject: async (data: CreateProjectRequest) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await projectApi.create(data);
+          if (response.data.success && response.data.data) {
+            const newProject = response.data.data;
+            set((state) => ({
+              projects: [...state.projects, newProject],
+              currentProject: newProject,
+              isLoading: false,
+            }));
+            return newProject;
+          }
+          throw new Error('프로젝트 생성 실패');
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '프로젝트 생성에 실패했습니다',
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
       /**
        * 프로젝트 정보 업데이트
-       * - 자동으로 updatedAt 갱신
+       * - API를 통한 프로젝트 수정
        * 
-       * @param {Partial<Project>} updates - 업데이트할 필드들
+       * @param {string} id - 프로젝트 ID
+       * @param {Partial<CreateProjectRequest>} data - 업데이트할 필드들
        */
-      updateProject: (updates: Partial<Project>) => {
-        set((state) => {
-          if (!state.currentProject) return state;
-          return {
-            currentProject: {
-              ...state.currentProject,
-              ...updates,
-              updatedAt: new Date().toISOString(),
-            },
-          };
-        });
+      updateProject: async (id: string, data: Partial<CreateProjectRequest>) => {
+        try {
+          const response = await projectApi.update(id, data);
+          if (response.data.success && response.data.data) {
+            set((state) => ({
+              projects: state.projects.map((p) =>
+                p.id === id ? response.data.data! : p
+              ),
+              currentProject:
+                state.currentProject?.id === id ? response.data.data : state.currentProject,
+            }));
+          }
+        } catch (error: any) {
+          set({ error: error.response?.data?.error?.message });
+          throw error;
+        }
       },
+
+      /**
+       * 프로젝트 삭제
+       */
+      deleteProject: async (id: string) => {
+        try {
+          await projectApi.delete(id);
+          set((state) => ({
+            projects: state.projects.filter((p) => p.id !== id),
+            currentProject: state.currentProject?.id === id ? null : state.currentProject,
+          }));
+        } catch (error: any) {
+          set({ error: error.response?.data?.error?.message });
+          throw error;
+        }
+      },
+
+      /**
+       * 현재 프로젝트 설정
+       */
+      setCurrentProject: (project) => set({ currentProject: project }),
 
       /**
        * 저장 상태 설정
@@ -126,6 +219,10 @@ export const useProjectStore = create<ProjectState>()(
     }),
     {
       name: 'project-storage',
+      partialize: (state) => ({
+        currentProject: state.currentProject,
+        saveStatus: state.saveStatus,
+      }),
     }
   )
 );

@@ -5,7 +5,7 @@
  * 사용자 인증 상태 관리를 위한 Zustand Store
  * - 로그인/회원가입 상태 관리
  * - 선택한 요금제 정보 저장
- * - 서버 호출 없이 브라우저 내 Mocking
+ * - API 연동을 통한 인증 처리
  * - localStorage에 자동 영속화
  * 
  * 호출 구조:
@@ -23,13 +23,14 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { authApi, User as ApiUser, SignupRequest } from '../services/authApi';
 
 /** 요금제 타입 */
 export type PricingPlanType = '기본' | '플러스' | '프로' | '프리미엄';
 
 /** 사용자 정보 */
 export interface User {
-  /** 사용자 ID (Mocked) */
+  /** 사용자 ID */
   id: string;
   /** 이메일 */
   email: string;
@@ -40,9 +41,9 @@ export interface User {
   /** 소셜 로그인 제공자 (있는 경우) */
   socialProvider?: 'google' | 'kakao' | 'naver';
   /** 마케팅 수신 동의 여부 */
-  marketingConsent: boolean;
+  marketingConsent?: boolean;
   /** 가입 시간 (ISO 문자열) */
-  createdAt: string;
+  createdAt?: string;
 }
 
 /** 회원가입 데이터 */
@@ -55,6 +56,9 @@ export interface SignupData {
   privacyAgreed: boolean;
   marketingConsent: boolean;
   socialProvider?: 'google' | 'kakao' | 'naver';
+  phone?: string;
+  businessCategory?: string;
+  promotionCode?: string;
 }
 
 interface AuthState {
@@ -62,23 +66,35 @@ interface AuthState {
   user: User | null;
   /** 인증 상태 */
   isAuthenticated: boolean;
+  /** 액세스 토큰 */
+  accessToken: string | null;
+  /** 리프레시 토큰 */
+  refreshToken: string | null;
   /** 선택된 요금제 (회원가입 전 임시 저장) */
   selectedPlan: PricingPlanType | null;
   /** 로딩 상태 */
   isLoading: boolean;
+  /** 에러 메시지 */
+  error: string | null;
   
-  /** 회원가입 (Mocked) */
-  signup: (data: SignupData) => Promise<User>;
-  /** 소셜 로그인 (Mocked) */
-  socialLogin: (provider: 'google' | 'kakao' | 'naver', plan: PricingPlanType) => Promise<User>;
-  /** 로그인 (Mocked) */
-  login: (email: string, password: string) => Promise<User>;
+  /** 회원가입 */
+  signup: (data: SignupData) => Promise<void>;
+  /** 소셜 로그인 */
+  socialLogin: (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType) => Promise<void>;
+  /** 로그인 */
+  login: (email: string, password: string) => Promise<void>;
   /** 로그아웃 */
-  logout: () => void;
+  logout: () => Promise<void>;
+  /** 토큰 설정 */
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  /** 프로필 로드 */
+  loadProfile: () => Promise<void>;
   /** 요금제 선택 (회원가입 전) */
   setSelectedPlan: (plan: PricingPlanType) => void;
   /** 선택 초기화 */
   clearSelectedPlan: () => void;
+  /** 에러 초기화 */
+  clearError: () => void;
 }
 
 /**
@@ -100,146 +116,187 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       isAuthenticated: false,
+      accessToken: null,
+      refreshToken: null,
       selectedPlan: null,
       isLoading: false,
+      error: null,
 
       /**
-       * 회원가입 (Mocked)
-       * - 실제 서버 호출 없이 브라우저 내에서 처리
-       * - 입력된 정보로 User 객체 생성
+       * 회원가입
+       * - API를 통한 회원가입 처리
        * 
        * @param {SignupData} data - 회원가입 데이터
-       * @returns {Promise<User>} 생성된 사용자 정보
        */
-      signup: async (data: SignupData): Promise<User> => {
-        set({ isLoading: true });
-        
-        // Mocked delay (실제 서버 호출 시뮬레이션)
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          email: data.email,
-          name: data.name,
-          plan: data.plan,
-          socialProvider: data.socialProvider,
-          marketingConsent: data.marketingConsent,
-          createdAt: new Date().toISOString(),
-        };
-        
-        set({
-          user: newUser,
-          isAuthenticated: true,
-          selectedPlan: null,
-          isLoading: false,
-        });
-        
-        console.log('[Mocked] 회원가입 완료:', newUser);
-        return newUser;
+      signup: async (data: SignupData) => {
+        set({ isLoading: true, error: null });
+        try {
+          const request: SignupRequest = {
+            email: data.email,
+            password: data.password,
+            name: data.name,
+            plan: data.plan,
+            phone: data.phone,
+            businessCategory: data.businessCategory,
+            termsAgreed: data.termsAgreed,
+            privacyAgreed: data.privacyAgreed,
+            marketingConsent: data.marketingConsent,
+            promotionCode: data.promotionCode,
+            socialProvider: data.socialProvider,
+          };
+          
+          const response = await authApi.signup(request);
+          if (response.data.success && response.data.data) {
+            const { user, tokens } = response.data.data;
+            set({
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                plan: user.plan as PricingPlanType,
+                socialProvider: user.provider as 'google' | 'kakao' | 'naver' | undefined,
+                marketingConsent: data.marketingConsent,
+              },
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              isAuthenticated: true,
+              selectedPlan: null,
+              isLoading: false,
+            });
+          }
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '회원가입에 실패했습니다',
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
       /**
-       * 소셜 로그인 (Mocked)
-       * - 소셜 제공자 정보로 사용자 생성
+       * 소셜 로그인
+       * - 소셜 제공자 정보로 로그인
        * 
        * @param {'google' | 'kakao' | 'naver'} provider - 소셜 로그인 제공자
+       * @param {string} token - 소셜 로그인 토큰
        * @param {PricingPlanType} plan - 선택한 요금제
-       * @returns {Promise<User>} 생성된 사용자 정보
        */
-      socialLogin: async (provider: 'google' | 'kakao' | 'naver', plan: PricingPlanType): Promise<User> => {
-        set({ isLoading: true });
-        
-        // Mocked delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // 소셜 로그인 시 가상의 사용자 정보 생성
-        const mockEmails: Record<string, string> = {
-          google: 'user@gmail.com',
-          kakao: 'user@kakao.com',
-          naver: 'user@naver.com',
-        };
-        
-        const mockNames: Record<string, string> = {
-          google: '구글 사용자',
-          kakao: '카카오 사용자',
-          naver: '네이버 사용자',
-        };
-        
-        const newUser: User = {
-          id: `user-${provider}-${Date.now()}`,
-          email: mockEmails[provider],
-          name: mockNames[provider],
-          plan: plan,
-          socialProvider: provider,
-          marketingConsent: false,
-          createdAt: new Date().toISOString(),
-        };
-        
-        set({
-          user: newUser,
-          isAuthenticated: true,
-          selectedPlan: null,
-          isLoading: false,
-        });
-        
-        console.log(`[Mocked] ${provider} 소셜 로그인 완료:`, newUser);
-        return newUser;
+      socialLogin: async (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.socialLogin(provider, token, plan);
+          if (response.data.success && response.data.data) {
+            const { user, tokens } = response.data.data;
+            set({
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                plan: user.plan as PricingPlanType,
+                socialProvider: user.provider as 'google' | 'kakao' | 'naver' | undefined,
+              },
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              isAuthenticated: true,
+              selectedPlan: null,
+              isLoading: false,
+            });
+          }
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '소셜 로그인에 실패했습니다',
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
       /**
-       * 로그인 (Mocked)
+       * 로그인
        * - 이메일/비밀번호로 로그인
-       * - 저장된 사용자가 없으면 새로 생성
        * 
        * @param {string} email - 이메일
        * @param {string} password - 비밀번호
-       * @returns {Promise<User>} 사용자 정보
        */
-      login: async (email: string, password: string): Promise<User> => {
-        set({ isLoading: true });
-        
-        // Mocked delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // 기존 사용자가 있으면 그대로 반환 (이메일 확인)
-        const existingUser = get().user;
-        if (existingUser && existingUser.email === email) {
-          set({ isAuthenticated: true, isLoading: false });
-          console.log('[Mocked] 로그인 완료:', existingUser);
-          return existingUser;
+      login: async (email: string, password: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.login(email, password);
+          if (response.data.success && response.data.data) {
+            const { user, tokens } = response.data.data;
+            set({
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                plan: user.plan as PricingPlanType,
+                socialProvider: user.provider as 'google' | 'kakao' | 'naver' | undefined,
+              },
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          }
+        } catch (error: any) {
+          set({
+            error: error.response?.data?.error?.message || '로그인에 실패했습니다',
+            isLoading: false,
+          });
+          throw error;
         }
-        
-        // 없으면 기본 요금제로 새 사용자 생성
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          email,
-          name: email.split('@')[0],
-          plan: '기본',
-          marketingConsent: false,
-          createdAt: new Date().toISOString(),
-        };
-        
-        set({
-          user: newUser,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-        
-        console.log('[Mocked] 로그인 완료 (신규):', newUser);
-        return newUser;
       },
 
       /**
        * 로그아웃
        * - 사용자 정보 및 인증 상태 초기화
        */
-      logout: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-          selectedPlan: null,
-        });
-        console.log('[Mocked] 로그아웃 완료');
+      logout: async () => {
+        try {
+          await authApi.logout();
+        } finally {
+          set({
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+            isAuthenticated: false,
+            selectedPlan: null,
+          });
+        }
+      },
+
+      /**
+       * 토큰 설정
+       * - 토큰 갱신 시 사용
+       */
+      setTokens: (accessToken: string, refreshToken: string) => {
+        set({ accessToken, refreshToken });
+      },
+
+      /**
+       * 프로필 로드
+       * - 현재 사용자 프로필 정보 조회
+       */
+      loadProfile: async () => {
+        if (!get().accessToken) return;
+        try {
+          const response = await authApi.getProfile();
+          if (response.data.success && response.data.data) {
+            const user = response.data.data;
+            set({
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                plan: user.plan as PricingPlanType,
+                socialProvider: user.provider as 'google' | 'kakao' | 'naver' | undefined,
+              },
+            });
+          }
+        } catch {
+          // 토큰 만료 시 로그아웃 처리
+          get().logout();
+        }
       },
 
       /**
@@ -258,9 +315,23 @@ export const useAuthStore = create<AuthState>()(
       clearSelectedPlan: () => {
         set({ selectedPlan: null });
       },
+
+      /**
+       * 에러 초기화
+       */
+      clearError: () => {
+        set({ error: null });
+      },
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+        selectedPlan: state.selectedPlan,
+      }),
     }
   )
 );
