@@ -130,18 +130,19 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
     set({ isLoading: true, error: null });
     
     try {
+      // BusinessPlanInput을 EvaluationRequest 형식으로 변환
       const request: EvaluationRequest = {
         projectId,
         evaluationType,
         inputData: {
-          businessName: businessPlanInput.basic.businessName || '',
-          businessField: businessPlanInput.basic.businessField || '',
-          targetMarket: businessPlanInput.market.targetMarket || '',
-          problemStatement: businessPlanInput.problem.problemStatement || '',
-          solutionSummary: businessPlanInput.solution.solutionSummary || '',
-          differentiators: businessPlanInput.solution.differentiators || [],
-          teamExperience: businessPlanInput.team.teamExperience || '',
-          fundingGoal: businessPlanInput.finance.fundingGoal || 0,
+          businessName: businessPlanInput.marketability?.targetCustomer || '',
+          businessField: businessPlanInput.marketability?.marketSize || '',
+          targetMarket: businessPlanInput.marketability?.targetCustomer || '',
+          problemStatement: businessPlanInput.marketability?.targetCustomer || '',
+          solutionSummary: businessPlanInput.keyTechnology?.techDifferentiation || '',
+          differentiators: businessPlanInput.keyTechnology?.intellectualProperty ? [businessPlanInput.keyTechnology.intellectualProperty] : [],
+          teamExperience: businessPlanInput.ability?.teamComposition || '',
+          fundingGoal: 0, // BusinessPlanInput에 fundingGoal이 없으므로 기본값 사용
         },
       };
       

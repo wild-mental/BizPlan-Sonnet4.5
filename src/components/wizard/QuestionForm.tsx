@@ -144,11 +144,17 @@ export const QuestionForm: React.FC<QuestionFormProps> = memo(({
   theme = 'emerald',
 }) => {
   const { updateStepData, getStepData } = useWizardStore();
-  const { updateProject } = useProjectStore();
+  const { updateProject, currentProject } = useProjectStore();
   const stepData = getStepData(stepId);
 
   // 자동 저장: 데이터 변경 후 1초(1000ms) 대기 후 저장
-  useAutoSave(stepData, 1000);
+  useAutoSave({
+    projectId: currentProject?.id || '',
+    currentStep: stepId,
+    data: stepData,
+    debounceMs: 1000,
+    enabled: !!currentProject?.id,
+  });
 
   /**
    * 질문 답변 변경 핸들러
@@ -170,10 +176,10 @@ export const QuestionForm: React.FC<QuestionFormProps> = memo(({
    */
   const handleBlur = useCallback((questionId: string, value: string) => {
     // 아이템명 입력 완료 시 프로젝트명 자동 업데이트
-    if (questionId === 'item-name') {
-      updateProject({ name: value });
+    if (questionId === 'item-name' && currentProject?.id) {
+      updateProject(currentProject.id, { name: value });
     }
-  }, [updateProject]);
+  }, [updateProject, currentProject]);
 
   /**
    * 개별 질문 렌더링

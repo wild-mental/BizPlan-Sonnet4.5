@@ -87,7 +87,7 @@ export const handlers = [
 
   // 소셜 로그인
   http.post('/api/v1/auth/social/:provider', async ({ params, request }) => {
-    const { provider } = params
+    const { provider } = params as { provider: string }
     const body = await request.json() as any
     const userId = `user-${provider}-${Date.now()}`
     
@@ -105,8 +105,8 @@ export const handlers = [
     
     const user = {
       id: userId,
-      email: mockEmails[provider],
-      name: mockNames[provider],
+      email: mockEmails[provider] || 'user@example.com',
+      name: mockNames[provider] || '사용자',
       plan: body.plan,
       planEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       provider,

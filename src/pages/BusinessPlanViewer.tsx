@@ -209,8 +209,8 @@ export const BusinessPlanViewer: React.FC = () => {
   };
 
   // 생성일시 표시 (API 응답 또는 현재 시간)
-  const generatedDateTime = generatedData?.generatedAt 
-    ? new Date(generatedData.generatedAt)
+  const generatedDateTime = generatedData?.metadata?.generatedAt 
+    ? new Date(generatedData.metadata.generatedAt)
     : new Date();
   
   const formattedDate = generatedDateTime.toLocaleDateString('ko-KR', {
@@ -332,14 +332,18 @@ export const BusinessPlanViewer: React.FC = () => {
               </div>
               {generatedData?.metadata && (
                 <div className="mt-3 flex items-center gap-4 text-sm">
-                  <div className="px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200">
-                    <span className="text-purple-700 font-semibold">{generatedData.metadata.totalSections}</span>
-                    <span className="text-slate-500 ml-1">개 섹션</span>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200">
-                    <span className="text-blue-700 font-semibold">{generatedData.metadata.wordCount.toLocaleString()}</span>
-                    <span className="text-slate-500 ml-1">단어</span>
-                  </div>
+                  {generatedData.metadata.totalSections && (
+                    <div className="px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200">
+                      <span className="text-purple-700 font-semibold">{generatedData.metadata.totalSections}</span>
+                      <span className="text-slate-500 ml-1">개 섹션</span>
+                    </div>
+                  )}
+                  {generatedData.metadata.wordCount && (
+                    <div className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200">
+                      <span className="text-blue-700 font-semibold">{generatedData.metadata.wordCount.toLocaleString()}</span>
+                      <span className="text-slate-500 ml-1">단어</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

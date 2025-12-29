@@ -133,6 +133,12 @@ export interface GeneratedBusinessPlanData {
     estimatedPages: number;
     generatedAt: string;
     aiModel: string;
+    totalSections?: number;
+    wordCount?: number;
+  };
+  exportOptions?: {
+    availableFormats?: string[];
+    downloadUrls?: Record<string, string>;
   };
   financialSummary?: {
     totalBudget: number;
@@ -271,7 +277,8 @@ export function buildBusinessPlanRequest(
 export async function generateBusinessPlan(
   requestData: BusinessPlanGenerateRequest
 ): Promise<ApiResponse<BusinessPlanGenerateResponse>> {
-  return await businessPlanApi.generate(requestData);
+  const response = await businessPlanApi.generate(requestData);
+  return response.data;
 }
 
 /**
@@ -301,12 +308,18 @@ export async function fetchGeneratedBusinessPlan(
           estimatedPages: Math.ceil(plan.metadata.wordCount / 300),
           generatedAt: plan.generatedAt,
           aiModel: plan.metadata.modelUsed,
+          totalSections: plan.metadata.totalSections,
+          wordCount: plan.metadata.wordCount,
         },
+        exportOptions: plan.exportOptions,
       },
     };
   }
   
-  return response as ApiResponse<GeneratedBusinessPlanData>;
+  return {
+    success: false,
+    error: { code: 'FETCH_FAILED', message: '사업계획서를 불러오는데 실패했습니다' },
+  };
 }
 
 export const businessPlanApi = {
