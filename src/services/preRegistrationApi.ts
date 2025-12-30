@@ -5,7 +5,18 @@
 
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-const API_BASE = '/api/v1';
+// API Base URL 설정 (환경 변수 우선, 없으면 기본값)
+const getApiBaseUrl = (): string => {
+  // VITE_API_URL 또는 VITE_API_BASE_URL 환경 변수 사용
+  const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+  if (apiUrl) {
+    return apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+  }
+  // 기본값: Vite 프록시 사용 (개발 환경)
+  return '/api/v1';
+};
+
+const API_BASE = getApiBaseUrl();
 
 // API 요청 타입
 export interface PreRegistrationRequest {

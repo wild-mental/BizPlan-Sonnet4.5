@@ -28,9 +28,20 @@ export interface ApiResponse<T> {
   };
 }
 
+// API Base URL 설정 (환경 변수 우선, 없으면 기본값)
+const getApiBaseUrl = (): string => {
+  // VITE_API_URL 또는 VITE_API_BASE_URL 환경 변수 사용
+  const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+  if (apiUrl) {
+    return apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+  }
+  // 기본값: Vite 프록시 사용 (개발 환경)
+  return '/api/v1';
+};
+
 // Axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  baseURL: getApiBaseUrl(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -64,7 +75,7 @@ apiClient.interceptors.response.use(
         if (!refreshToken) throw new Error('No refresh token');
         
         const response = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
-          '/api/v1/auth/refresh',
+          `${getApiBaseUrl()}/auth/refresh`,
           { refreshToken }
         );
         
