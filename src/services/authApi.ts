@@ -82,5 +82,26 @@ export const authApi = {
 
   getProfile: () =>
     apiClient.get<ApiResponse<User>>('/auth/profile'),
+
+  // 이메일 인증
+  verifyEmail: (token: string) =>
+    apiClient.get<ApiResponse<null>>('/auth/verify-email', {
+      params: { token },
+    }),
+
+  resendVerificationEmail: (email: string) =>
+    apiClient.post<ApiResponse<null>>('/auth/verify-email/resend', null, {
+      params: { email },
+    }),
+
+  // 비밀번호 재설정
+  requestPasswordReset: (email: string) =>
+    apiClient.post<ApiResponse<null>>('/auth/password/reset-request', { email }),
+
+  confirmPasswordReset: (token: string, newPassword: string) =>
+    apiClient.post<ApiResponse<null>>('/auth/password/reset', {
+      token,
+      newPassword,
+    }),
 };
 

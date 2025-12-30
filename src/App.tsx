@@ -33,6 +33,9 @@ import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
 import { BusinessPlanViewer } from './pages/BusinessPlanViewer';
 import { EvaluationDemoPage } from './pages/EvaluationDemo';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 
 /**
  * App 컴포넌트
@@ -54,6 +57,13 @@ function App() {
 
           {/* 회원가입: 요금제 선택 후 가입 */}
           <Route path="/signup" element={<SignupPage />} />
+
+          {/* 이메일 인증 */}
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+
+          {/* 비밀번호 재설정 */}
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* 팀 소개 페이지 */}
           <Route path="/team" element={<TeamPage />} />
