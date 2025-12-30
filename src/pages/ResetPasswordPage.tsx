@@ -196,7 +196,7 @@ export const ResetPasswordPage: React.FC = () => {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={status === 'loading'}>
+          <Button type="submit" className="w-full">
             비밀번호 재설정
           </Button>
         </form>
