@@ -76,12 +76,12 @@ export interface EvaluationResult {
 
 export const evaluationApi = {
   create: (data: EvaluationRequest) =>
-    apiClient.post<ApiResponse<{ evaluationId: string; status: string }>>('/evaluations', data),
+    apiClient.post<ApiResponse<{ evaluationId: string; status: string }>>('/api/v1/evaluations', data),
 
   getStatus: (evaluationId: string) =>
-    apiClient.get<ApiResponse<EvaluationStatus>>(`/evaluations/${evaluationId}/status`),
+    apiClient.get<ApiResponse<EvaluationStatus>>(`/api/v1/evaluations/${evaluationId}/status`),
 
   getResult: (evaluationId: string) =>
-    apiClient.get<ApiResponse<EvaluationResult>>(`/evaluations/${evaluationId}/result`),
+    apiClient.get<ApiResponse<EvaluationResult>>(`/api/v1/evaluations/${evaluationId}/result`),
 };
 

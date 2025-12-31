@@ -328,24 +328,24 @@ export const businessPlanApi = {
    * POST /api/v1/business-plan/generate
    */
   generate: (data: BusinessPlanGenerateRequest) =>
-    apiClient.post<ApiResponse<BusinessPlanGenerateResponse>>('/business-plan/generate', data),
+    apiClient.post<ApiResponse<BusinessPlanGenerateResponse>>('/api/v1/business-plan/generate', data),
 
   /**
    * 사업계획서 조회
    * GET /api/v1/business-plan/{businessPlanId}
    */
   get: (businessPlanId: string) =>
-    apiClient.get<ApiResponse<BusinessPlanGenerateResponse>>(`/business-plan/${businessPlanId}`),
+    apiClient.get<ApiResponse<BusinessPlanGenerateResponse>>(`/api/v1/business-plan/${businessPlanId}`),
 
   /**
    * 섹션 재생성 (향후 구현)
    */
   regenerateSection: (projectId: string, sectionId: string, instruction?: string) =>
-    apiClient.post<ApiResponse<BusinessPlanSection>>(`/projects/${projectId}/business-plan/sections/${sectionId}/regenerate`, { instruction }),
+    apiClient.post<ApiResponse<BusinessPlanSection>>(`/api/v1/projects/${projectId}/business-plan/sections/${sectionId}/regenerate`, { instruction }),
 
   /**
    * 섹션 수정 (향후 구현)
    */
   updateSection: (projectId: string, sectionId: string, content: string) =>
-    apiClient.put<ApiResponse<BusinessPlanSection>>(`/projects/${projectId}/business-plan/sections/${sectionId}`, { content }),
+    apiClient.put<ApiResponse<BusinessPlanSection>>(`/api/v1/projects/${projectId}/business-plan/sections/${sectionId}`, { content }),
 };

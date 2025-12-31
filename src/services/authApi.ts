@@ -63,43 +63,43 @@ export interface SocialLoginResponse extends LoginResponse {
 // API 함수
 export const authApi = {
   signup: (data: SignupRequest) =>
-    apiClient.post<ApiResponse<SignupResponse>>('/auth/signup', data),
+    apiClient.post<ApiResponse<SignupResponse>>('/api/v1/auth/signup', data),
 
   login: (email: string, password: string) =>
-    apiClient.post<ApiResponse<LoginResponse>>('/auth/login', { email, password }),
+    apiClient.post<ApiResponse<LoginResponse>>('/api/v1/auth/login', { email, password }),
 
   socialLogin: (provider: 'google' | 'kakao' | 'naver', accessToken: string, plan: string) =>
     apiClient.post<ApiResponse<SocialLoginResponse>>(
-      `/auth/social/${provider}`,
+      `/api/v1/auth/social/${provider}`,
       { accessToken, plan }
     ),
 
   refresh: (refreshToken: string) =>
-    apiClient.post<ApiResponse<AuthTokens>>('/auth/refresh', { refreshToken }),
+    apiClient.post<ApiResponse<AuthTokens>>('/api/v1/auth/refresh', { refreshToken }),
 
   logout: () =>
-    apiClient.post<ApiResponse<null>>('/auth/logout'),
+    apiClient.post<ApiResponse<null>>('/api/v1/auth/logout'),
 
   getProfile: () =>
-    apiClient.get<ApiResponse<User>>('/auth/profile'),
+    apiClient.get<ApiResponse<User>>('/api/v1/auth/profile'),
 
   // 이메일 인증
   verifyEmail: (token: string) =>
-    apiClient.get<ApiResponse<null>>('/auth/verify-email', {
+    apiClient.get<ApiResponse<null>>('/api/v1/auth/verify-email', {
       params: { token },
     }),
 
   resendVerificationEmail: (email: string) =>
-    apiClient.post<ApiResponse<null>>('/auth/verify-email/resend', null, {
+    apiClient.post<ApiResponse<null>>('/api/v1/auth/verify-email/resend', null, {
       params: { email },
     }),
 
   // 비밀번호 재설정
   requestPasswordReset: (email: string) =>
-    apiClient.post<ApiResponse<null>>('/auth/password/reset-request', { email }),
+    apiClient.post<ApiResponse<null>>('/api/v1/auth/password/reset-request', { email }),
 
   confirmPasswordReset: (token: string, newPassword: string) =>
-    apiClient.post<ApiResponse<null>>('/auth/password/reset', {
+    apiClient.post<ApiResponse<null>>('/api/v1/auth/password/reset', {
       token,
       newPassword,
     }),
