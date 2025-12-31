@@ -36,18 +36,18 @@ export interface CreateProjectRequest {
 
 export const projectApi = {
   create: (data: CreateProjectRequest) =>
-    apiClient.post<ApiResponse<Project>>('/projects', data),
+    apiClient.post<ApiResponse<Project>>('/api/v1/projects', data),
 
   getAll: (params?: { page?: number; limit?: number; status?: string }) =>
-    apiClient.get<ApiResponse<Project[]>>('/projects', { params }),
+    apiClient.get<ApiResponse<Project[]>>('/api/v1/projects', { params }),
 
   getById: (id: string) =>
-    apiClient.get<ApiResponse<Project>>(`/projects/${id}`),
+    apiClient.get<ApiResponse<Project>>(`/api/v1/projects/${id}`),
 
   update: (id: string, data: Partial<CreateProjectRequest>) =>
-    apiClient.put<ApiResponse<Project>>(`/projects/${id}`, data),
+    apiClient.put<ApiResponse<Project>>(`/api/v1/projects/${id}`, data),
 
   delete: (id: string) =>
-    apiClient.delete<ApiResponse<null>>(`/projects/${id}`),
+    apiClient.delete<ApiResponse<null>>(`/api/v1/projects/${id}`),
 };
 

@@ -56,20 +56,20 @@ export const wizardApi = {
    * GET /api/v1/projects/{projectId}/wizard
    */
   get: (projectId: string) =>
-    apiClient.get<ApiResponse<WizardData>>(`/projects/${projectId}/wizard`),
+    apiClient.get<ApiResponse<WizardData>>(`/api/v1/projects/${projectId}/wizard`),
 
   /**
    * Wizard 데이터 저장
    * PUT /api/v1/projects/{projectId}/wizard
    */
   save: (projectId: string, data: SaveWizardRequest) =>
-    apiClient.put<ApiResponse<{ lastSavedAt: string; progress: any }>>(`/projects/${projectId}/wizard`, data),
+    apiClient.put<ApiResponse<{ lastSavedAt: string; progress: any }>>(`/api/v1/projects/${projectId}/wizard`, data),
 
   /**
    * 자금 집행계획 검증
    * POST /api/v1/projects/{projectId}/budget/validate
    */
   validateBudget: (projectId: string, budgetData: any) =>
-    apiClient.post<ApiResponse<BudgetValidationResult>>(`/projects/${projectId}/budget/validate`, budgetData),
+    apiClient.post<ApiResponse<BudgetValidationResult>>(`/api/v1/projects/${projectId}/budget/validate`, budgetData),
 };
 

@@ -34,13 +34,13 @@ export interface ExportStatus {
 
 export const exportApi = {
   create: (projectId: string, data: ExportRequest) =>
-    apiClient.post<ApiResponse<{ exportId: string; status: string }>>(`/projects/${projectId}/export`, data),
+    apiClient.post<ApiResponse<{ exportId: string; status: string }>>(`/api/v1/projects/${projectId}/export`, data),
 
   getStatus: (exportId: string) =>
-    apiClient.get<ApiResponse<ExportStatus>>(`/exports/${exportId}/status`),
+    apiClient.get<ApiResponse<ExportStatus>>(`/api/v1/exports/${exportId}/status`),
 
   download: async (exportId: string): Promise<Blob> => {
-    const response = await apiClient.get(`/exports/${exportId}/download`, {
+    const response = await apiClient.get(`/api/v1/exports/${exportId}/download`, {
       responseType: 'blob',
     });
     return response.data;
