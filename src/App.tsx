@@ -37,6 +37,7 @@ import { EvaluationDemoPage } from './pages/EvaluationDemo';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { AdminPage } from './pages/AdminPage';
 
 /**
  * App 컴포넌트
@@ -77,6 +78,9 @@ function App() {
 
           {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
           <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
+
+          {/* 어드민 페이지 */}
+          <Route path="/admin" element={<AdminPage />} />
 
           {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
           <Route element={<Layout />}>
