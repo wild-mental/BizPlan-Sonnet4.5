@@ -80,7 +80,7 @@ interface AuthState {
   /** 회원가입 */
   signup: (data: SignupData) => Promise<void>;
   /** 소셜 로그인 */
-  socialLogin: (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType) => Promise<void>;
+  socialLogin: (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType, termsAgreed?: boolean, privacyAgreed?: boolean, marketingConsent?: boolean) => Promise<void>;
   /** 로그인 */
   login: (email: string, password: string) => Promise<void>;
   /** 로그아웃 */

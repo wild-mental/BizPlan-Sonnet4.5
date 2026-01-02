@@ -98,12 +98,12 @@ export const AdminPage: React.FC = () => {
         adminApi.getStatistics(),
       ]);
 
-      if (usersResponse.data.success) {
+      if (usersResponse.data.success && usersResponse.data.data) {
         setUsers(usersResponse.data.data.users);
         setPagination(usersResponse.data.data.pagination);
       }
 
-      if (statsResponse.data.success) {
+      if (statsResponse.data.success && statsResponse.data.data) {
         setStatistics(statsResponse.data.data);
       }
     } catch (err: any) {
@@ -235,11 +235,11 @@ export const AdminPage: React.FC = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={statistics.byPlan}
+                    data={statistics.byPlan as any}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ plan, percentage }) => `${plan}: ${percentage.toFixed(1)}%`}
+                    label={(entry: any) => `${entry.plan}: ${entry.percentage.toFixed(1)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="count"
