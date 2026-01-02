@@ -38,25 +38,26 @@
 | 1 | **랜딩페이지** | `/` | `LandingPage` | 메인 랜딩페이지 (고객 유입) |
 | 2 | **팀 소개** | `/team` | `TeamPage` | MakersWorld 팀 소개 페이지 |
 | 3 | **회원가입** | `/signup` | `SignupPage` | 회원가입 (요금제 선택 통합) |
-| 4 | **이메일 인증** | `/verify-email` | `VerifyEmailPage` | 이메일 인증 처리 페이지 |
-| 5 | **비밀번호 찾기** | `/forgot-password` | `ForgotPasswordPage` | 비밀번호 재설정 요청 |
-| 6 | **비밀번호 재설정** | `/reset-password` | `ResetPasswordPage` | 비밀번호 재설정 처리 |
-| 7 | **작성 데모** | `/writing-demo` | `ProjectCreate` | 사업계획서 작성 데모 시작 |
-| 8 | **평가 데모** | `/evaluation-demo` | `EvaluationDemoPage` | AI 심사위원단 평가 체험 |
+| 4 | **로그인** | `/login` | `LoginPage` | 로그인 (이메일/소셜 로그인) |
+| 5 | **이메일 인증** | `/verify-email` | `VerifyEmailPage` | 이메일 인증 처리 페이지 |
+| 6 | **비밀번호 찾기** | `/forgot-password` | `ForgotPasswordPage` | 비밀번호 재설정 요청 |
+| 7 | **비밀번호 재설정** | `/reset-password` | `ResetPasswordPage` | 비밀번호 재설정 처리 |
+| 8 | **작성 데모** | `/writing-demo` | `ProjectCreate` | 사업계획서 작성 데모 시작 |
+| 9 | **평가 데모** | `/evaluation-demo` | `EvaluationDemoPage` | AI 심사위원단 평가 체험 |
 
 ### 인증 필요 페이지 (Layout 적용)
 
 | # | 페이지명 | 경로 | 컴포넌트 | 설명 |
 |---|---------|------|---------|------|
-| 9 | **마법사 1단계** | `/wizard/1` | `WizardStep` | 아이디어 개요 (사업 아이템명) |
-| 10 | **마법사 2단계** | `/wizard/2` | `WizardStep` | 문제 인식 (Problem) |
-| 11 | **마법사 3단계** | `/wizard/3` | `WizardStep` | 실현 가능성 (Solution) |
-| 12 | **마법사 4단계** | `/wizard/4` | `WizardStep` | 성장 전략 (Scale-up) |
-| 13 | **마법사 5단계** | `/wizard/5` | `WizardStep` | 팀 구성 (Team) |
-| 14 | **마법사 6단계** | `/wizard/6` | `WizardStep` | 재무 계획 (Financial) |
-| 15 | **사업계획서 뷰어** | `/business-plan` | `BusinessPlanViewer` | AI 생성 사업계획서 조회/편집 |
+| 10 | **마법사 1단계** | `/wizard/1` | `WizardStep` | 아이디어 개요 (사업 아이템명) |
+| 11 | **마법사 2단계** | `/wizard/2` | `WizardStep` | 문제 인식 (Problem) |
+| 12 | **마법사 3단계** | `/wizard/3` | `WizardStep` | 실현 가능성 (Solution) |
+| 13 | **마법사 4단계** | `/wizard/4` | `WizardStep` | 성장 전략 (Scale-up) |
+| 14 | **마법사 5단계** | `/wizard/5` | `WizardStep` | 팀 구성 (Team) |
+| 15 | **마법사 6단계** | `/wizard/6` | `WizardStep` | 재무 계획 (Financial) |
+| 16 | **사업계획서 뷰어** | `/business-plan` | `BusinessPlanViewer` | AI 생성 사업계획서 조회/편집 |
 
-**총 페이지 수**: 15개 (공개 8개 + 인증 필요 7개)
+**총 페이지 수**: 16개 (공개 9개 + 인증 필요 7개)
 
 ---
 
@@ -122,7 +123,44 @@
 
 ---
 
-### 3. 이메일 인증 (`/verify-email`)
+### 3. 로그인 (`/login`)
+
+**컴포넌트**: `LoginPage`  
+**파일 경로**: `src/pages/LoginPage.tsx`
+
+#### 주요 기능
+- 이메일/비밀번호 로그인 폼
+- 소셜 로그인 버튼 (Google, Kakao, Naver) - Mocked
+- 비밀번호 표시/숨김 토글
+- 비밀번호 찾기 링크
+- 회원가입 링크
+- 로그인 후 리다이렉트 지원
+
+#### URL 파라미터
+- `redirect`: 로그인 후 이동할 경로 (기본값: `/writing-demo`)
+
+#### 데이터 흐름
+1. 이메일/비밀번호 입력 또는 소셜 로그인 버튼 클릭
+2. 로그인 API 호출 (`POST /api/v1/auth/login` 또는 `/api/v1/auth/social/{provider}`)
+3. 로그인 성공 시 `useAuthStore`에 사용자 정보 및 토큰 저장
+4. `redirect` 파라미터가 있으면 해당 경로로, 없으면 `/writing-demo`로 이동
+
+#### 네비게이션
+- `/writing-demo` - 로그인 성공 후 기본 이동 경로
+- `/signup` - 회원가입 페이지
+- `/forgot-password` - 비밀번호 찾기 페이지
+- `?redirect={path}` - 로그인 후 원래 페이지로 돌아가기
+
+#### 스타일
+- SignupPage와 동일한 디자인 시스템
+- 좌측: 브랜딩 섹션 (로고, 가치 제안, 아이콘)
+- 우측: 로그인 폼
+- 다크 테마 (slate-950 배경)
+- 반응형 디자인
+
+---
+
+### 4. 이메일 인증 (`/verify-email`)
 
 **컴포넌트**: `VerifyEmailPage`  
 **파일 경로**: `src/pages/VerifyEmailPage.tsx`
@@ -143,7 +181,7 @@
 
 ---
 
-### 4. 비밀번호 찾기 (`/forgot-password`)
+### 5. 비밀번호 찾기 (`/forgot-password`)
 
 **컴포넌트**: `ForgotPasswordPage`  
 **파일 경로**: `src/pages/ForgotPasswordPage.tsx`
@@ -159,7 +197,7 @@
 
 ---
 
-### 5. 비밀번호 재설정 (`/reset-password`)
+### 6. 비밀번호 재설정 (`/reset-password`)
 
 **컴포넌트**: `ResetPasswordPage`  
 **파일 경로**: `src/pages/ResetPasswordPage.tsx`
@@ -591,6 +629,7 @@ graph LR
   {/* 공개 페이지 */}
   <Route path="/" element={<LandingPage />} />
   <Route path="/signup" element={<SignupPage />} />
+  <Route path="/login" element={<LoginPage />} />
   <Route path="/verify-email" element={<VerifyEmailPage />} />
   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
   <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -619,12 +658,13 @@ graph LR
 
 ## 구현 상태 요약
 
-### ✅ 완료된 페이지 (15개)
+### ✅ 완료된 페이지 (16개)
 
 | 페이지 | 상태 | 비고 |
 |--------|------|------|
 | 랜딩페이지 | ✅ 완료 | 모든 섹션 구현 완료 |
 | 회원가입 | ✅ 완료 | 프로모션 통합 완료 |
+| 로그인 | ✅ 완료 | 이메일/소셜 로그인 구현 |
 | 이메일 인증 | ✅ 완료 | 토큰 검증 구현 |
 | 비밀번호 찾기 | ✅ 완료 | 이메일 발송 구현 |
 | 비밀번호 재설정 | ✅ 완료 | 토큰 검증 구현 |
