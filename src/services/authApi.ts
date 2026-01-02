@@ -68,10 +68,16 @@ export const authApi = {
   login: (email: string, password: string) =>
     apiClient.post<ApiResponse<LoginResponse>>('/api/v1/auth/login', { email, password }),
 
-  socialLogin: (provider: 'google' | 'kakao' | 'naver', accessToken: string, plan: string) =>
+  socialLogin: (provider: 'google' | 'kakao' | 'naver', accessToken: string, plan: string, termsAgreed?: boolean, privacyAgreed?: boolean, marketingConsent?: boolean) =>
     apiClient.post<ApiResponse<SocialLoginResponse>>(
       `/api/v1/auth/social/${provider}`,
-      { accessToken, plan }
+      { 
+        accessToken, 
+        plan,
+        termsAgreed: termsAgreed ?? true,
+        privacyAgreed: privacyAgreed ?? true,
+        marketingConsent: marketingConsent ?? false
+      }
     ),
 
   refresh: (refreshToken: string) =>

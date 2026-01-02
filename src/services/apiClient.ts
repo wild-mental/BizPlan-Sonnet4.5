@@ -194,7 +194,7 @@ apiClient.interceptors.response.use(
       const hasToken = !!authStore.accessToken;
       
       if (import.meta.env.DEV) {
-        console.warn('🔒 [403 Forbidden] Authentication required. Redirecting to signup...');
+        console.warn('🔒 [403 Forbidden] Authentication required. Redirecting to login...');
         console.log('Auth state:', { isAuthenticated, hasToken });
       }
       
@@ -203,10 +203,10 @@ apiClient.interceptors.response.use(
         authStore.logout();
         // 현재 경로를 저장하여 로그인 후 돌아올 수 있도록 함
         const currentPath = window.location.pathname;
-        if (currentPath !== '/signup' && currentPath !== '/') {
-          window.location.href = `/signup?redirect=${encodeURIComponent(currentPath)}`;
+        if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/') {
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
         } else {
-          window.location.href = '/signup';
+          window.location.href = '/login';
         }
         return Promise.reject(error);
       }

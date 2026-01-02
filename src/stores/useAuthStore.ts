@@ -80,7 +80,7 @@ interface AuthState {
   /** 회원가입 */
   signup: (data: SignupData) => Promise<void>;
   /** 소셜 로그인 */
-  socialLogin: (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType) => Promise<void>;
+  socialLogin: (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType, termsAgreed?: boolean, privacyAgreed?: boolean, marketingConsent?: boolean) => Promise<void>;
   /** 로그인 */
   login: (email: string, password: string) => Promise<void>;
   /** 로그아웃 */
@@ -181,10 +181,10 @@ export const useAuthStore = create<AuthState>()(
        * @param {string} token - 소셜 로그인 토큰
        * @param {PricingPlanType} plan - 선택한 요금제
        */
-      socialLogin: async (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType) => {
+      socialLogin: async (provider: 'google' | 'kakao' | 'naver', token: string, plan: PricingPlanType, termsAgreed?: boolean, privacyAgreed?: boolean, marketingConsent?: boolean) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await authApi.socialLogin(provider, token, plan);
+          const response = await authApi.socialLogin(provider, token, plan, termsAgreed, privacyAgreed, marketingConsent);
           if (response.data.success && response.data.data) {
             const { user, tokens } = response.data.data;
             set({

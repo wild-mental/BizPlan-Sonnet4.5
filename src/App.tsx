@@ -28,6 +28,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LandingPage } from './pages/LandingPage';
 import { SignupPage } from './pages/SignupPage';
+import { LoginPage } from './pages/LoginPage';
 import { TeamPage } from './pages/TeamPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
@@ -36,6 +37,7 @@ import { EvaluationDemoPage } from './pages/EvaluationDemo';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { AdminPage } from './pages/AdminPage';
 
 /**
  * App 컴포넌트
@@ -58,6 +60,9 @@ function App() {
           {/* 회원가입: 요금제 선택 후 가입 */}
           <Route path="/signup" element={<SignupPage />} />
 
+          {/* 로그인 */}
+          <Route path="/login" element={<LoginPage />} />
+
           {/* 이메일 인증 */}
           <Route path="/verify-email" element={<VerifyEmailPage />} />
 
@@ -73,6 +78,9 @@ function App() {
 
           {/* AI 평가 데모: M.A.K.E.R.S 심사위원단 평가 체험 */}
           <Route path="/evaluation-demo" element={<EvaluationDemoPage />} />
+
+          {/* 어드민 페이지 */}
+          <Route path="/admin" element={<AdminPage />} />
 
           {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
           <Route element={<Layout />}>
