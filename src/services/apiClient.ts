@@ -187,6 +187,31 @@ apiClient.interceptors.response.use(
       }
     }
     
+    // 403 에러 시 인증 필요 - 로그인 페이지로 리다이렉트
+    if (error.response?.status === 403) {
+      const authStore = useAuthStore.getState();
+      const isAuthenticated = authStore.isAuthenticated;
+      const hasToken = !!authStore.accessToken;
+      
+      if (import.meta.env.DEV) {
+        console.warn('🔒 [403 Forbidden] Authentication required. Redirecting to signup...');
+        console.log('Auth state:', { isAuthenticated, hasToken });
+      }
+      
+      // 인증되지 않은 상태이거나 토큰이 없는 경우 로그인 페이지로 리다이렉트
+      if (!isAuthenticated || !hasToken) {
+        authStore.logout();
+        // 현재 경로를 저장하여 로그인 후 돌아올 수 있도록 함
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/signup' && currentPath !== '/') {
+          window.location.href = `/signup?redirect=${encodeURIComponent(currentPath)}`;
+        } else {
+          window.location.href = '/signup';
+        }
+        return Promise.reject(error);
+      }
+    }
+    
     return Promise.reject(error);
   }
 );
