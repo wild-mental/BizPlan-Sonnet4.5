@@ -28,6 +28,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LandingPage } from './pages/LandingPage';
 import { SignupPage } from './pages/SignupPage';
+import { LoginPage } from './pages/LoginPage';
 import { TeamPage } from './pages/TeamPage';
 import { ProjectCreate } from './pages/ProjectCreate';
 import { WizardStep } from './pages/WizardStep';
@@ -57,6 +58,9 @@ function App() {
 
           {/* 회원가입: 요금제 선택 후 가입 */}
           <Route path="/signup" element={<SignupPage />} />
+
+          {/* 로그인 */}
+          <Route path="/login" element={<LoginPage />} />
 
           {/* 이메일 인증 */}
           <Route path="/verify-email" element={<VerifyEmailPage />} />
