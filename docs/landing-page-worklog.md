@@ -2,7 +2,7 @@
 
 > 작성일: 2025-12-12
 > 작업자: Makers World Team
-> 프로젝트: BizPlan-Sonnet4.5 랜딩페이지 고도화
+> 프로젝트: MakersRound-Sonnet4.5 랜딩페이지 고도화
 
 ---
 

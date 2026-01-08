@@ -11,6 +11,8 @@
 
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { useAuthStore } from '../stores/useAuthStore';
+import { logFrontendRequest, logFrontendResponse, logFrontendError } from '../utils/apiLogger';
+import { getSessionRequestId } from '../utils/requestId';
 
 // API 응답 타입 정의
 export interface ApiResponse<T> {
@@ -66,36 +68,28 @@ apiClient.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
-    // 개발 환경: 백엔드 API 호출 로깅
-    if (import.meta.env.DEV) {
-      const method = config.method?.toUpperCase() || 'UNKNOWN';
-      const url = `${config.baseURL || ''}${config.url || ''}`;
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🔵 [API Request] ${method} ${url}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Method:', method);
-      console.log('URL:', url);
-      console.log('Headers:', {
-        ...config.headers,
-        Authorization: config.headers.Authorization ? 'Bearer ***' : undefined,
-      });
-      if (config.params) {
-        console.log('Query Params:', config.params);
-      }
-      if (config.data) {
-        console.log('Request Data:', config.data);
-      }
-      console.groupEnd();
+
+    // 세션 단위 Request ID(ULID)를 생성하여 모든 요청에 공통으로 포함
+    // ULID는 시간 정보를 포함하므로 정렬에 유리함
+    if (config.headers) {
+      const sessionRequestId = getSessionRequestId();
+      (config.headers as any)['X-Request-ID'] = sessionRequestId;
     }
+    
+    // 요청 시작 시간 저장 (응답 시 duration 계산용)
+    (config as any).metadata = {
+      startTime: Date.now(),
+    };
+    
+    // API 요청 로깅
+    logFrontendRequest(config);
     
     return config;
   },
   (error) => {
-    // 개발 환경: 요청 에러 로깅
-    if (import.meta.env.DEV) {
-      console.error('❌ [API Request Error]', error);
+    // 요청 에러 로깅
+    if (error.config) {
+      logFrontendError(error as AxiosError, (error.config as any).metadata?.startTime);
     }
     return Promise.reject(error);
   }
@@ -104,48 +98,23 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    // 개발 환경: 백엔드 API 응답 로깅
-    if (import.meta.env.DEV) {
-      const method = response.config.method?.toUpperCase() || 'UNKNOWN';
-      const url = `${response.config.baseURL || ''}${response.config.url || ''}`;
-      const status = response.status;
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🟢 [API Response] ${method} ${url} - ${status}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Status:', status);
-      console.log('Status Text:', response.statusText);
-      console.log('Response Data:', response.data);
-      if (response.headers) {
-        console.log('Response Headers:', response.headers);
-      }
-      console.groupEnd();
-    }
+    // 요청 시작 시간 가져오기
+    const startTime = (response.config as any).metadata?.startTime;
+    
+    // API 응답 로깅
+    logFrontendResponse(response, startTime);
     
     return response;
   },
   async (error: AxiosError<ApiResponse<unknown>>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     
-    // 개발 환경: 백엔드 API 에러 로깅
-    if (import.meta.env.DEV && originalRequest) {
-      const method = originalRequest.method?.toUpperCase() || 'UNKNOWN';
-      const url = `${originalRequest.baseURL || ''}${originalRequest.url || ''}`;
-      const status = error.response?.status || 'NO_RESPONSE';
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🔴 [API Error] ${method} ${url} - ${status}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Status:', status);
-      console.log('Error Message:', error.message);
-      if (error.response) {
-        console.log('Response Data:', error.response.data);
-        console.log('Response Headers:', error.response.headers);
-      } else if (error.request) {
-        console.log('Request made but no response received:', error.request);
-      }
-      console.log('Full Error:', error);
-      console.groupEnd();
+    // 요청 시작 시간 가져오기
+    const startTime = originalRequest ? (originalRequest as any).metadata?.startTime : undefined;
+    
+    // API 에러 로깅
+    if (originalRequest) {
+      logFrontendError(error, startTime);
     }
     
     // 401 에러 시 토큰 갱신 시도

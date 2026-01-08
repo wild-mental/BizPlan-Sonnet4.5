@@ -1,5 +1,5 @@
 {
-  "name": "proto-test2-claude4.5",
+  "name": "makersround-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -21,12 +21,14 @@
     "msw": "^2.12.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-ga4": "^2.1.0",
     "react-hook-form": "^7.66.1",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.6",
     "recharts": "^3.4.1",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.4.0",
+    "ulid": "^2.3.0",
     "use-debounce": "^10.0.6",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"

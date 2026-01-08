@@ -31,6 +31,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileDown, Sparkles, RefreshCw, AlertCircle, X, AlertTriangle } from 'lucide-react';
 import { TIMING } from '../constants';
+import { trackEvent } from '../utils/analytics';
 
 /**
  * BusinessPlanViewer 컴포넌트
@@ -111,6 +112,32 @@ export const BusinessPlanViewer: React.FC = () => {
    * @param {('hwp'|'pdf')} format - 내보낼 파일 형식
    */
   const handleExport = useCallback((format: 'hwp' | 'pdf') => {
+    const templateId = currentProject?.templateId || 'unknown';
+    const templateName = currentProject?.templateName || '알 수 없음';
+    
+    // GA4 이벤트: 문서 내보내기 (템플릿 네임 사용)
+    trackEvent('export_document', {
+      format: format,
+      template_name: templateName,
+      template_id: templateId,
+    });
+    
+    // 템플릿 ID 기준 분기 처리
+    let exportMessage = '';
+    switch (templateId) {
+      case 'pre-startup':
+        exportMessage = '예비창업패키지용 사업계획서';
+        break;
+      case 'early-startup':
+        exportMessage = '초기창업패키지용 사업계획서';
+        break;
+      case 'bank-loan':
+        exportMessage = '은행 대출용 사업계획서';
+        break;
+      default:
+        exportMessage = '사업계획서';
+    }
+    
     // 실제 다운로드 URL이 있으면 사용
     if (generatedData?.exportOptions?.downloadUrls) {
       const url = generatedData.exportOptions.downloadUrls[format];
@@ -120,8 +147,9 @@ export const BusinessPlanViewer: React.FC = () => {
       }
     }
     
-    window.alert(`${format.toUpperCase()} 다운로드 준비 완료!\n\n실제 환경에서는 파일이 다운로드됩니다.`);
-  }, [generatedData]);
+    // 템플릿별 맞춤 메시지 표시
+    window.alert(`${exportMessage} ${format.toUpperCase()} 다운로드 준비 완료!\n\n실제 환경에서는 파일이 다운로드됩니다.`);
+  }, [generatedData, currentProject]);
 
   // 로딩 중 표시
   if (isLoading) {
