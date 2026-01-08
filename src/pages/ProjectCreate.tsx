@@ -85,7 +85,7 @@ export const ProjectCreate: React.FC = () => {
       setError('템플릿을 선택해주세요.');
       return;
     }
-
+    
     // Create new project with empty name (will be filled when user enters item-name)
     createProject({ name: '', templateId: selectedTemplate });
     resetWizard();

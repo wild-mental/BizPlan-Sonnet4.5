@@ -31,6 +31,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileDown, Sparkles, RefreshCw, AlertCircle, X, AlertTriangle } from 'lucide-react';
 import { TIMING } from '../constants';
+import { trackEvent } from '../utils/analytics';
 
 /**
  * BusinessPlanViewer 컴포넌트
@@ -111,6 +112,12 @@ export const BusinessPlanViewer: React.FC = () => {
    * @param {('hwp'|'pdf')} format - 내보낼 파일 형식
    */
   const handleExport = useCallback((format: 'hwp' | 'pdf') => {
+    // GA4 이벤트: 문서 내보내기
+    trackEvent('export_document', {
+      format: format,
+      template_type: currentProject?.templateType || 'unknown',
+    });
+    
     // 실제 다운로드 URL이 있으면 사용
     if (generatedData?.exportOptions?.downloadUrls) {
       const url = generatedData.exportOptions.downloadUrls[format];
@@ -121,7 +128,7 @@ export const BusinessPlanViewer: React.FC = () => {
     }
     
     window.alert(`${format.toUpperCase()} 다운로드 준비 완료!\n\n실제 환경에서는 파일이 다운로드됩니다.`);
-  }, [generatedData]);
+  }, [generatedData, currentProject]);
 
   // 로딩 중 표시
   if (isLoading) {

@@ -4,6 +4,8 @@
  */
 
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { logFrontendRequest, logFrontendResponse, logFrontendError } from '../utils/apiLogger';
+import { getSessionRequestId } from '../utils/requestId';
 
 // API Base URL 설정 (환경 변수 우선, 없으면 기본값)
 // 주의: 각 API 호출 경로에 /api/v1을 포함해야 함
@@ -80,31 +82,27 @@ const apiClient = axios.create({
 // 요청 인터셉터
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 개발 환경: 백엔드 API 호출 로깅
-    if (import.meta.env.DEV) {
-      const method = config.method?.toUpperCase() || 'UNKNOWN';
-      const url = `${config.baseURL || ''}${config.url || ''}`;
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🔵 [PreRegistration API Request] ${method} ${url}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Method:', method);
-      console.log('URL:', url);
-      console.log('Headers:', config.headers);
-      if (config.params) {
-        console.log('Query Params:', config.params);
-      }
-      if (config.data) {
-        console.log('Request Data:', config.data);
-      }
-      console.groupEnd();
+    // 세션 단위 Request ID(ULID)를 생성하여 모든 요청에 공통으로 포함
+    // ULID는 시간 정보를 포함하므로 정렬에 유리함
+    if (config.headers) {
+      const sessionRequestId = getSessionRequestId();
+      (config.headers as any)['X-Request-ID'] = sessionRequestId;
     }
+
+    // 요청 시작 시간 저장 (응답 시 duration 계산용)
+    (config as any).metadata = {
+      startTime: Date.now(),
+    };
+    
+    // API 요청 로깅
+    logFrontendRequest(config);
+    
     return config;
   },
   (error: AxiosError) => {
-    // 개발 환경: 요청 에러 로깅
-    if (import.meta.env.DEV) {
-      console.error('❌ [PreRegistration API Request Error]', error);
+    // 요청 에러 로깅
+    if (error.config) {
+      logFrontendError(error, (error.config as any).metadata?.startTime);
     }
     return Promise.reject(error);
   }
@@ -113,46 +111,23 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    // 개발 환경: 백엔드 API 응답 로깅
-    if (import.meta.env.DEV) {
-      const method = response.config.method?.toUpperCase() || 'UNKNOWN';
-      const url = `${response.config.baseURL || ''}${response.config.url || ''}`;
-      const status = response.status;
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🟢 [PreRegistration API Response] ${method} ${url} - ${status}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Status:', status);
-      console.log('Status Text:', response.statusText);
-      console.log('Response Data:', response.data);
-      if (response.headers) {
-        console.log('Response Headers:', response.headers);
-      }
-      console.groupEnd();
-    }
+    // 요청 시작 시간 가져오기
+    const startTime = (response.config as any).metadata?.startTime;
+    
+    // API 응답 로깅
+    logFrontendResponse(response, startTime);
+    
     return response;
   },
   (error: AxiosError) => {
-    // 개발 환경: 백엔드 API 에러 로깅
-    if (import.meta.env.DEV) {
-      const method = error.config?.method?.toUpperCase() || 'UNKNOWN';
-      const url = error.config ? `${error.config.baseURL || ''}${error.config.url || ''}` : 'UNKNOWN';
-      const status = error.response?.status || 'NO_RESPONSE';
-      const timestamp = new Date().toISOString();
-      
-      console.group(`🔴 [PreRegistration API Error] ${method} ${url} - ${status}`);
-      console.log('Timestamp:', timestamp);
-      console.log('Status:', status);
-      console.log('Error Message:', error.message);
-      if (error.response) {
-        console.log('Response Data:', error.response.data);
-        console.log('Response Headers:', error.response.headers);
-      } else if (error.request) {
-        console.log('Request made but no response received:', error.request);
-      }
-      console.log('Full Error:', error);
-      console.groupEnd();
+    // 요청 시작 시간 가져오기
+    const startTime = error.config ? (error.config as any).metadata?.startTime : undefined;
+    
+    // API 에러 로깅
+    if (error.config) {
+      logFrontendError(error, startTime);
     }
+    
     return Promise.reject(error);
   }
 );

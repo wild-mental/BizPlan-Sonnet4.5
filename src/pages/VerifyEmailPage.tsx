@@ -18,19 +18,31 @@ export const VerifyEmailPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
+  const emailParam = searchParams.get('email');
+  const isPending = searchParams.get('pending') === 'true';
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'no-token'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'no-token' | 'pending'>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>(emailParam || '');
+  const [resendSuccess, setResendSuccess] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!token) {
-      setStatus('no-token');
+    // URL에서 이메일 파라미터가 있고 pending 상태인 경우
+    if (emailParam && isPending) {
+      setStatus('pending');
+      setEmail(emailParam);
       return;
     }
 
-    verifyEmail(token);
-  }, [token]);
+    // 토큰이 있는 경우 인증 처리
+    if (token) {
+      verifyEmail(token);
+      return;
+    }
+
+    // 토큰도 없고 이메일도 없는 경우
+    setStatus('no-token');
+  }, [token, emailParam, isPending]);
 
   const verifyEmail = async (verificationToken: string) => {
     try {
@@ -52,12 +64,57 @@ export const VerifyEmailPage: React.FC = () => {
 
     try {
       await authApi.resendVerificationEmail(email);
-      alert('인증 이메일이 재발송되었습니다. 이메일을 확인해주세요.');
+      setResendSuccess(true);
+      setTimeout(() => setResendSuccess(false), 5000);
     } catch (error: any) {
       alert(error.response?.data?.error?.message || '이메일 재발송에 실패했습니다.');
     }
   };
 
+  // 이메일 인증 대기 상태 (회원가입 직후)
+  if (status === 'pending') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <Mail className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">이메일 인증을 완료해주세요</h1>
+          <p className="text-gray-600 mb-2">
+            <span className="font-semibold text-indigo-600">{email}</span>로 인증 메일을 발송했습니다.
+          </p>
+          <p className="text-gray-600 mb-6 text-sm">
+            이메일을 확인하고 인증 링크를 클릭해주세요.
+          </p>
+          
+          {resendSuccess && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700">인증 이메일이 재발송되었습니다.</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div className="bg-indigo-50 rounded-lg p-4 text-left">
+              <p className="text-sm font-medium text-indigo-900 mb-2">📧 이메일을 받지 못하셨나요?</p>
+              <p className="text-xs text-indigo-700 mb-3">
+                스팸 폴더를 확인하시거나, 아래 버튼을 클릭하여 인증 메일을 재발송해주세요.
+              </p>
+              <Button onClick={handleResend} variant="outline" className="w-full">
+                <Mail className="w-4 h-4 mr-2" />
+                인증 이메일 재발송
+              </Button>
+            </div>
+            
+            <div className="pt-4 border-t border-gray-200">
+              <Button onClick={() => navigate('/login')} variant="outline" className="w-full">
+                로그인하러 가기
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 토큰 없음 상태 (일반적인 경우)
   if (status === 'no-token') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">

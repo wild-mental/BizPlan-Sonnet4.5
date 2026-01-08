@@ -2,16 +2,18 @@
  * 평가 결과 섹션
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, RefreshCw, Lock, TrendingUp, AlertTriangle, Lightbulb, Award, Sparkles } from 'lucide-react';
 import { EVALUATION_AREAS } from '../../types/evaluation';
 import { useEvaluationStore } from '../../stores/useEvaluationStore';
 import ScoreRadarChart from '../../components/evaluation/ScoreRadarChart';
 import PaidPlanSelector from '../../components/PaidPlanSelector';
+import { trackEvent } from '../../utils/analytics';
 
 export const ResultSection: React.FC = () => {
   const { evaluationResult, resetEvaluation } = useEvaluationStore();
   const [showPricing, setShowPricing] = useState(false);
+  const hasTrackedResultView = useRef(false);
 
   // showPricing이 변경될 때 스크롤을 최상단으로 이동
   // 모든 Hooks는 early return 전에 호출되어야 함
@@ -20,6 +22,28 @@ export const ResultSection: React.FC = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [showPricing]);
+
+  // GA4 이벤트: 평가 결과 조회 (한 번만 추적)
+  useEffect(() => {
+    if (evaluationResult && !hasTrackedResultView.current) {
+      hasTrackedResultView.current = true;
+      
+      // 등급 계산
+      const getGradeLabel = (score: number): string => {
+        if (score >= 90) return 'S';
+        if (score >= 80) return 'A';
+        if (score >= 70) return 'B';
+        if (score >= 60) return 'C';
+        return 'D';
+      };
+      
+      trackEvent('evaluation_result_view', {
+        total_score: evaluationResult.totalScore,
+        grade: getGradeLabel(evaluationResult.totalScore),
+        pass_rate: evaluationResult.passRate,
+      });
+    }
+  }, [evaluationResult]);
 
   if (!evaluationResult) {
     return (

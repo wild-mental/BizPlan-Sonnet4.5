@@ -109,6 +109,17 @@ export const LoginPage: React.FC = () => {
     try {
       // 소셜 로그인 토큰 (실제 구현에서는 소셜 제공자로부터 받아야 함)
       const mockAccessToken = `mock-${provider}-token-${Date.now()}`;
+      
+      // 모킹 호출 로깅
+      const { logMockedCall } = await import('../utils/apiLogger');
+      logMockedCall('POST', `/api/v1/auth/social/${provider}`, {
+        accessToken: mockAccessToken,
+        plan: '기본',
+        termsAgreed: true,
+        privacyAgreed: true,
+        marketingConsent: false,
+      }, undefined, 'DIRECT');
+      
       // 로그인 페이지에서는 기본 요금제로, 약관 동의는 기본값 사용 (기존 사용자도 로그인 가능하도록)
       await socialLogin(provider, mockAccessToken, '기본', true, true, false);
       navigate(redirectPath, { replace: true });

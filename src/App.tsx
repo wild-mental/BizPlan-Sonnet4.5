@@ -23,7 +23,8 @@
  * - Layout 컴포넌트는 공통 레이아웃(헤더, 사이드바 등)을 제공
  */
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LandingPage } from './pages/LandingPage';
@@ -38,6 +39,25 @@ import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { AdminPage } from './pages/AdminPage';
+import { AnalyticsDashboard } from './pages/AnalyticsDashboard';
+import { trackPageView } from './utils/analytics';
+
+/**
+ * RouteTracker 컴포넌트
+ * 
+ * 역할:
+ * - 라우트 변경 시 GA4 페이지뷰 이벤트 전송
+ * - BrowserRouter 내부에서만 사용 가능 (useLocation 훅 사용)
+ */
+function RouteTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+}
 
 /**
  * App 컴포넌트
@@ -53,6 +73,8 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        {/* GA4 페이지뷰 자동 추적 */}
+        <RouteTracker />
         <Routes>
           {/* 랜딩페이지: 고객 유입 Hook */}
           <Route path="/" element={<LandingPage />} />
@@ -81,6 +103,9 @@ function App() {
 
           {/* 어드민 페이지 */}
           <Route path="/admin" element={<AdminPage />} />
+
+          {/* 분석 대시보드 (공개) */}
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
 
           {/* Layout으로 감싸진 페이지들 (공통 레이아웃 적용) */}
           <Route element={<Layout />}>
