@@ -12,7 +12,7 @@
 
 import { ulid } from 'ulid';
 
-const SESSION_REQUEST_ID_KEY = 'bizplan:sessionRequestId';
+const SESSION_REQUEST_ID_KEY = 'makersround:sessionRequestId';
 
 /**
  * 현재 브라우저 세션에 대한 공통 Request ID(ULID)를 반환합니다.

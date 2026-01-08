@@ -574,7 +574,7 @@ export const AnalyticsDashboard: React.FC = () => {
       <footer className="bg-white/60 border-t border-gray-200 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-center text-sm text-gray-500">
-            BizPlan 서비스 분석 대시보드 • 5분마다 자동 새로고침
+            MakersRound 서비스 분석 대시보드 • 5분마다 자동 새로고침
           </p>
         </div>
       </footer>

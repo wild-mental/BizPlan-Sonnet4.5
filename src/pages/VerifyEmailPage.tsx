@@ -169,7 +169,7 @@ export const VerifyEmailPage: React.FC = () => {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-4">이메일 인증 완료!</h1>
           <p className="text-gray-600 mb-6">
-            이메일 인증이 완료되었습니다. 이제 BizPlan의 모든 기능을 사용하실 수 있습니다.
+            이메일 인증이 완료되었습니다. 이제 MakersRound의 모든 기능을 사용하실 수 있습니다.
           </p>
           <Button onClick={() => navigate('/login')} className="w-full">
             로그인하러 가기

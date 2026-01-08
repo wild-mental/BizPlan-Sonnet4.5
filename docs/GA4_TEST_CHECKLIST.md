@@ -4,7 +4,7 @@
 
 ### 1. 환경변수 설정
 ```bash
-# BizPlan-Sonnet4.5/.env 파일에 GA4 Measurement ID 설정
+# MakersRound-Sonnet4.5/.env 파일에 GA4 Measurement ID 설정
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # 실제 GA4 측정 ID로 교체
 VITE_GA_DEBUG_MODE=true
 ```
