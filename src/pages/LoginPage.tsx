@@ -107,18 +107,12 @@ export const LoginPage: React.FC = () => {
   // 소셜 로그인 처리
   const handleSocialLogin = async (provider: 'google' | 'kakao' | 'naver') => {
     try {
-      // 소셜 로그인 토큰 (실제 구현에서는 소셜 제공자로부터 받아야 함)
-      const mockAccessToken = `mock-${provider}-token-${Date.now()}`;
+      // NOTE: 실제 프로덕션 환경에서는 OAuth2 Provider의 인증 페이지로 리다이렉트 해야 합니다.
+      // 현재 개발 환경에서는 유효한 Client ID/Secret이 없으므로,
+      // 백엔드에서 모의 토큰("mock-...")을 받아 처리하도록 구성되어 있습니다.
+      // 백엔드 SocialOAuthService는 "mock-" 접두사가 있는 토큰을 감지하여 테스트 유저로 로그인시킵니다.
       
-      // 모킹 호출 로깅
-      const { logMockedCall } = await import('../utils/apiLogger');
-      logMockedCall('POST', `/api/v1/auth/social/${provider}`, {
-        accessToken: mockAccessToken,
-        plan: '기본',
-        termsAgreed: true,
-        privacyAgreed: true,
-        marketingConsent: false,
-      }, undefined, 'DIRECT');
+      const mockAccessToken = `mock-${provider}-token-${Date.now()}`;
       
       // 로그인 페이지에서는 기본 요금제로, 약관 동의는 기본값 사용 (기존 사용자도 로그인 가능하도록)
       await socialLogin(provider, mockAccessToken, '기본', true, true, false);
