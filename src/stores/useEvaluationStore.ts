@@ -39,7 +39,7 @@ interface EvaluationState {
   setInput: (area: keyof BusinessPlanInput, field: string, value: string) => void;
   setFullInput: (input: BusinessPlanInput) => void;
   setStep: (step: EvaluationStep) => void;
-  startEvaluation: () => Promise<void>;
+  startEvaluation: (projectId?: string) => Promise<void>;
   startApiEvaluation: (projectId: string, evaluationType?: 'demo' | 'basic' | 'full') => Promise<string>;
   pollStatus: (evaluationId: string) => Promise<EvaluationStatus>;
   fetchResult: (evaluationId: string) => Promise<ApiEvaluationResult>;
@@ -87,7 +87,7 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
   },
   
   // 평가 시작
-  startEvaluation: async () => {
+  startEvaluation: async (projectId: string = 'demo') => {
     const { businessPlanInput } = get();
     
     set({ 
@@ -97,31 +97,65 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       currentJuror: null,
     });
     
-    // M.A.K.E.R.S 순서대로 분석 애니메이션
-    const jurors: EvaluationArea[] = ['M', 'A', 'K', 'E', 'R', 'S'];
-    
-    for (let i = 0; i < jurors.length; i++) {
-      set({ 
-        currentJuror: jurors[i],
-        analyzingProgress: Math.round(((i + 1) / jurors.length) * 100),
-      });
+    // API 평가 시작
+    try {
+      // API 호출 (백그라운드에서 시작)
+      const evaluationId = await get().startApiEvaluation(projectId, 'demo');
       
-      // 각 심사위원 분석 시간 (1초)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // M.A.K.E.R.S 순서대로 분석 애니메이션 (API 처리와 병렬로 진행)
+      const jurors: EvaluationArea[] = ['M', 'A', 'K', 'E', 'R', 'S'];
+      
+      for (let i = 0; i < jurors.length; i++) {
+        set({ 
+          currentJuror: jurors[i],
+          analyzingProgress: Math.round(((i + 1) / jurors.length) * 100),
+        });
+        
+        // 각 심사위원 분석 시간 (1초) - 시각적 효과
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // 폴링으로 결과 대기
+      let status = await get().pollStatus(evaluationId);
+      while (status.status !== 'completed' && status.status !== 'failed') {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        status = await get().pollStatus(evaluationId);
+      }
+      
+      if (status.status === 'failed') {
+        throw new Error('평가에 실패했습니다.');
+      }
+      
+      // 결과 조회
+      const result = await get().fetchResult(evaluationId);
+      
+      // 잠시 대기 후 결과 화면으로 이동
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      set({
+        isEvaluating: false,
+        evaluationResult: {
+           totalScore: result.summary.totalScore,
+           grade: result.summary.grade,
+           passRate: result.summary.passRate,
+           scores: result.scores,
+           feedback: {
+             strengths: result.strengths,
+             weaknesses: result.weaknesses,
+             recommendations: result.recommendations
+           }
+        },
+        currentStep: 'result',
+        currentJuror: null,
+      });
+    } catch (error) {
+      console.error(error);
+      set({ 
+        isEvaluating: false, 
+        currentStep: 'input',
+        error: '평가 중 오류가 발생했습니다.' 
+      });
     }
-    
-    // 최종 평가 결과 생성
-    const result = await simulateEvaluation(businessPlanInput);
-    
-    // 잠시 대기 후 결과 화면으로 이동
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    set({
-      isEvaluating: false,
-      evaluationResult: result,
-      currentStep: 'result',
-      currentJuror: null,
-    });
   },
   
   // API 평가 시작
