@@ -47,7 +47,8 @@ const queryClient = new QueryClient({
 
 // Mock API 활성화 (개발 환경)
 async function enableMocking() {
-  if (import.meta.env.VITE_ENABLE_MOCK_API !== 'true') {
+  // 프로덕션 환경이거나 MOCK_API가 명시적으로 켜져있지 않으면 비활성화
+  if (import.meta.env.PROD || import.meta.env.VITE_ENABLE_MOCK_API !== 'true') {
     return
   }
 

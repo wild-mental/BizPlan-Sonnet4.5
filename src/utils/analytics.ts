@@ -48,14 +48,55 @@ export const initializeGA = () => {
 export const trackPageView = (path: string, title?: string) => {
   if (!GA_MEASUREMENT_ID) return;
 
-  ReactGA.send({
-    hitType: 'pageview',
-    page: path,
-    title: title || document.title,
-  });
+  const pageTitle = title || document.title;
 
-  if (DEBUG_MODE) {
-    console.log('[GA4] Page view:', { path, title: title || document.title });
+  try {
+    // gtag를 직접 사용하여 event_callback으로 성공 여부 확인
+    if (typeof window !== 'undefined' && typeof window.gtag !== 'undefined') {
+      const startTime = Date.now();
+      let callbackCalled = false;
+
+      window.gtag('event', 'page_view', {
+        page_path: path,
+        page_title: pageTitle,
+        event_callback: () => {
+          callbackCalled = true;
+          const duration = Date.now() - startTime;
+          if (DEBUG_MODE) {
+            console.log('[GA4] ✅ Page view sent successfully:', { 
+              path, 
+              title: pageTitle,
+              duration: `${duration}ms`
+            });
+          }
+        },
+        event_timeout: 2000, // 2초 후 타임아웃
+      });
+
+      // 타임아웃 처리: 2초 후에도 콜백이 호출되지 않으면 실패로 간주
+      setTimeout(() => {
+        if (!callbackCalled && DEBUG_MODE) {
+          console.warn('[GA4] ⚠️ Page view timeout (no callback received):', { 
+            path, 
+            title: pageTitle 
+          });
+        }
+      }, 2000);
+    } else {
+      // fallback: ReactGA 사용 (성공 여부 확인 불가)
+      ReactGA.send({
+        hitType: 'pageview',
+        page: path,
+        title: pageTitle,
+      });
+      if (DEBUG_MODE) {
+        console.log('[GA4] Page view (fallback - no gtag):', { path, title: pageTitle });
+      }
+    }
+  } catch (error) {
+    if (DEBUG_MODE) {
+      console.error('[GA4] ❌ Page view error:', error, { path, title: pageTitle });
+    }
   }
 };
 
@@ -82,10 +123,50 @@ export const trackEvent = (
       )
     : undefined;
 
-  ReactGA.event(eventName, cleanParams);
+  try {
+    // gtag를 직접 사용하여 event_callback으로 성공 여부 확인
+    if (typeof window !== 'undefined' && typeof window.gtag !== 'undefined') {
+      const startTime = Date.now();
+      let callbackCalled = false;
 
-  if (DEBUG_MODE) {
-    console.log('[GA4] Event:', { eventName, params: cleanParams });
+      const eventParams = {
+        ...cleanParams,
+        event_callback: () => {
+          callbackCalled = true;
+          const duration = Date.now() - startTime;
+          if (DEBUG_MODE) {
+            console.log('[GA4] ✅ Event sent successfully:', { 
+              eventName, 
+              params: cleanParams,
+              duration: `${duration}ms`
+            });
+          }
+        },
+        event_timeout: 2000, // 2초 후 타임아웃
+      };
+
+      window.gtag('event', eventName, eventParams);
+
+      // 타임아웃 처리: 2초 후에도 콜백이 호출되지 않으면 실패로 간주
+      setTimeout(() => {
+        if (!callbackCalled && DEBUG_MODE) {
+          console.warn('[GA4] ⚠️ Event timeout (no callback received):', { 
+            eventName, 
+            params: cleanParams 
+          });
+        }
+      }, 2000);
+    } else {
+      // fallback: ReactGA 사용 (성공 여부 확인 불가)
+      ReactGA.event(eventName, cleanParams);
+      if (DEBUG_MODE) {
+        console.log('[GA4] Event (fallback - no gtag):', { eventName, params: cleanParams });
+      }
+    }
+  } catch (error) {
+    if (DEBUG_MODE) {
+      console.error('[GA4] ❌ Event error:', error, { eventName, params: cleanParams });
+    }
   }
 };
 
@@ -159,9 +240,8 @@ declare global {
   interface Window {
     gtag: (
       command: string,
-      targetId: string,
-      fieldName: string,
-      callback: (value: string) => void
+      targetIdOrEventName: string,
+      configOrParams?: Record<string, any> | string
     ) => void;
   }
 }
