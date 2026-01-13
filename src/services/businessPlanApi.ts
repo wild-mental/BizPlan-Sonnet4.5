@@ -348,4 +348,15 @@ export const businessPlanApi = {
    */
   updateSection: (projectId: string, sectionId: string, content: string) =>
     apiClient.put<ApiResponse<BusinessPlanSection>>(`/api/v1/projects/${projectId}/business-plan/sections/${sectionId}`, { content }),
+
+  /**
+   * 문서 내보내기 요청
+   * POST /api/v1/projects/{projectId}/export
+   */
+  exportDocument: (projectId: string, format: 'hwp' | 'pdf' | 'docx', templateType?: string) =>
+    apiClient.post<ApiResponse<any>>(`/api/v1/projects/${projectId}/export`, {
+      format,
+      templateType,
+      options: { includeCover: true }
+    }),
 };
