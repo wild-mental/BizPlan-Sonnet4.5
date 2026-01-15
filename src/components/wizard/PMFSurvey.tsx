@@ -40,7 +40,8 @@
 
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import { usePMFStore } from '../../stores/usePMFStore';
-import { pmfQuestions } from '../../types/mockData';
+import { PMF_QUESTIONS_FALLBACK } from '../../types/data/pmfQuestions';
+import { templateApi } from '../../services/templateApi';
 import { Button, Badge, Card, CardHeader, CardTitle, CardContent } from '../ui';
 import { Progress } from '../ui';
 import { CheckCircle2, AlertCircle, TrendingUp, Target } from 'lucide-react';
@@ -70,6 +71,25 @@ import { PMF_SURVEY, UI_CONSTANTS } from '../../constants';
 export const PMFSurvey: React.FC = memo(() => {
   const { answers, report, updateAnswer, generateReport } = usePMFStore();
   const [showReport, setShowReport] = useState(false);
+  const [questions, setQuestions] = useState(PMF_QUESTIONS_FALLBACK);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+  React.useEffect(() => {
+    const load = async () => {
+      setIsLoadingQuestions(true);
+      try {
+        const remote = await templateApi.getPmfQuestions();
+        if (remote.length > 0) {
+          setQuestions(remote);
+        }
+      } catch (e) {
+        console.warn('PMF 질문 API 호출 실패. 로컬 fallback 사용', e);
+      } finally {
+        setIsLoadingQuestions(false);
+      }
+    };
+    load();
+  }, []);
 
   /**
    * 답변 선택 핸들러
@@ -229,7 +249,10 @@ export const PMFSurvey: React.FC = memo(() => {
       </div>
 
       <div className="space-y-6">
-        {pmfQuestions.map((question, index) => {
+        {isLoadingQuestions && (
+          <div className="text-sm text-gray-500">질문을 불러오는 중입니다...</div>
+        )}
+        {questions.map((question, index) => {
           const answer = answers.find((a) => a.questionId === question.id);
 
           return (
@@ -276,7 +299,7 @@ export const PMFSurvey: React.FC = memo(() => {
 
       {!isAllAnswered && (
         <p className="text-sm text-gray-500 text-center">
-          모든 질문에 답변해주세요 ({answers.length}/{pmfQuestions.length})
+          모든 질문에 답변해주세요 ({answers.length}/{questions.length})
         </p>
       )}
     </div>

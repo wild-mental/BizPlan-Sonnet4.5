@@ -236,9 +236,7 @@ usePMFStore
   │       ├─> updateAnswer()
   │       └─> generateReport()
   │
-  └─> 의존성: mockData
-      ├─> mockRisks
-      └─> mockRecommendations
+  └─> 의존성: 없음 (서버 데이터 + fallback)
 ```
 
 ---
