@@ -24,14 +24,13 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '../components/ui';
-import { mockBusinessPlan } from '../types/mockData';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
 import { useProjectStore } from '../stores/useProjectStore';
+import { businessPlanApi } from '../services/businessPlanApi';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileDown, Sparkles, RefreshCw, AlertCircle, X, AlertTriangle } from 'lucide-react';
 import { TIMING } from '../constants';
-import { trackEvent } from '../utils/analytics';
 
 /**
  * BusinessPlanViewer 컴포넌트

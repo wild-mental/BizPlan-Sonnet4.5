@@ -241,7 +241,8 @@ declare global {
     gtag: (
       command: string,
       targetIdOrEventName: string,
-      configOrParams?: Record<string, any> | string
+      configOrParams?: Record<string, any> | string,
+      callbackOrOptions?: any
     ) => void;
   }
 }

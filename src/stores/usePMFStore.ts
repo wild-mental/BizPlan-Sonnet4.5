@@ -28,8 +28,61 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { PMFAnswer, PMFReport } from '../types';
-import { mockRisks, mockRecommendations } from '../types/mockData';
+import { PMFAnswer, PMFReport, Risk, Recommendation } from '../types';
+
+const DEFAULT_RISKS: Risk[] = [
+  {
+    id: 'risk-market-validation',
+    title: '시장 검증 부족',
+    description: '실제 고객 인터뷰와 유료 전환 의향 조사가 충분하지 않아 수요 불확실성이 존재합니다.',
+    severity: 'high',
+  },
+  {
+    id: 'risk-competition',
+    title: '경쟁 대비 차별성 부족',
+    description: '핵심 경쟁사 대비 기술/가격/유통 측면의 명확한 우위 포인트가 부족합니다.',
+    severity: 'medium',
+  },
+  {
+    id: 'risk-unit-economics',
+    title: 'Unit Economics 불확실',
+    description: 'CAC·LTV 가설이 경험적 데이터로 검증되지 않아 손익분기 달성 시점이 늦어질 수 있습니다.',
+    severity: 'medium',
+  },
+  {
+    id: 'risk-team-capacity',
+    title: '팀 역량/리소스 제약',
+    description: '핵심 역할(마케팅, 세일즈, 데이터)이 공석이거나 인력 계획이 지연되고 있습니다.',
+    severity: 'low',
+  },
+];
+
+const DEFAULT_RECOMMENDATIONS: Recommendation[] = [
+  {
+    id: 'rec-landing-tests',
+    title: '소규모 유료 랜딩 테스트',
+    description: '타겟 고객 세그먼트별로 다른 가치제안/가격을 A/B 테스트하여 초기 유료 의향 데이터를 확보하세요.',
+    priority: 'high',
+  },
+  {
+    id: 'rec-problem-interviews',
+    title: '문제·해결 인터뷰 10~15건 추가',
+    description: '핵심 페르소나와 문제-해결 적합도를 검증하고, 결제 전환을 가로막는 Top3 장애요인을 파악하세요.',
+    priority: 'high',
+  },
+  {
+    id: 'rec-uni-eco',
+    title: 'CAC/LTV 가설 정교화',
+    description: '획득 채널별 CAC, 예상 ARPU, 리텐션을 데이터로 검증하고 LTV/CAC 목표(>3) 시나리오를 갱신하세요.',
+    priority: 'medium',
+  },
+  {
+    id: 'rec-roadmap',
+    title: '90일 로드맵 재정의',
+    description: '주요 마일스톤(신규 고객, 전환율, 재구매/리텐션)을 월 단위로 정의하고 리소스(인력/예산)를 재배분하세요.',
+    priority: 'medium',
+  },
+];
 
 interface PMFState {
   /** 설문 답변 목록 */
@@ -119,8 +172,8 @@ export const usePMFStore = create<PMFState>()(
         else level = 'low';
 
         // 점수 기반 리스크 및 개선 제언 필터링
-        const risks = score < 70 ? mockRisks : mockRisks.slice(0, 2);
-        const recommendations = mockRecommendations;
+        const risks = score < 70 ? DEFAULT_RISKS : DEFAULT_RISKS.slice(0, 2);
+        const recommendations = DEFAULT_RECOMMENDATIONS;
 
         const report: PMFReport = {
           score,

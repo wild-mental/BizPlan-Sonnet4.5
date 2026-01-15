@@ -132,18 +132,35 @@ export const useEvaluationStore = create<EvaluationState>((set, get) => ({
       // 잠시 대기 후 결과 화면으로 이동
       await new Promise(resolve => setTimeout(resolve, 500));
       
+      // API 점수 객체 → Record<EvaluationArea, number> 변환
+      const numericScores = Object.entries(result.scores).reduce<Record<EvaluationArea, number>>(
+        (acc, [key, value]) => {
+          if (['M', 'A', 'K', 'E', 'R', 'S'].includes(key)) {
+            acc[key as EvaluationArea] = value.score;
+          }
+          return acc;
+        },
+        { M: 0, A: 0, K: 0, E: 0, R: 0, S: 0 }
+      );
+
+      const mapFeedback = (items: Array<{ area: string; title: string; description: string; isBlurred: boolean }>) =>
+        items.map((item) => ({
+          area: (['M', 'A', 'K', 'E', 'R', 'S'].includes(item.area) ? item.area : 'M') as EvaluationArea,
+          title: item.title,
+          description: item.description,
+          isBlurred: item.isBlurred,
+        }));
+
       set({
         isEvaluating: false,
         evaluationResult: {
-           totalScore: result.summary.totalScore,
-           grade: result.summary.grade,
-           passRate: result.summary.passRate,
-           scores: result.scores,
-           feedback: {
-             strengths: result.strengths,
-             weaknesses: result.weaknesses,
-             recommendations: result.recommendations
-           }
+          totalScore: result.summary.totalScore,
+          passRate: result.summary.passRate,
+          scores: numericScores,
+          strengths: mapFeedback(result.strengths),
+          weaknesses: mapFeedback(result.weaknesses),
+          recommendations: result.recommendations.map((rec) => rec.description),
+          generatedAt: new Date(),
         },
         currentStep: 'result',
         currentJuror: null,
