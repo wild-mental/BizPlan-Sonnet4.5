@@ -63,6 +63,7 @@ import {
   generateBusinessPlan, 
   buildBusinessPlanRequest
 } from '../services/businessPlanApi';
+import { trackEvent } from '../utils/analytics';
 
 /**
  * WizardStep 컴포넌트
@@ -223,6 +224,12 @@ export const WizardStep: React.FC = () => {
         setGeneratedPlan(generatedData);
         setIsGenerating(false);
         setLoading(false);
+        
+        // GA4 이벤트: 마법사 완료
+        trackEvent('wizard_complete', {
+          template_type: templateType || 'unknown',
+          completion_rate: 100,
+        });
         
         // 결과 페이지로 이동
         navigate('/business-plan');

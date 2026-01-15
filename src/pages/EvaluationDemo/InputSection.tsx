@@ -74,12 +74,23 @@ export const InputSection: React.FC = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target?.result as string;
-      // TODO: 파일 내용 파싱 및 입력 필드에 적용
-      // 현재는 텍스트 파일만 지원 (추후 HWP/PDF 파싱 연동)
-      console.log('업로드된 파일 내용:', content);
-      alert('파일 업로드 기능은 준비 중입니다. 곧 지원될 예정입니다.');
+      
+      // 현재 선택된 첫 번째 필드에 내용 추가
+      const targetField = currentMapping.fields[0];
+      const currentVal = getCurrentValue(0);
+      
+      const confirm = window.confirm(`파일 내용(${file.name})을 현재 질문에 추가하시겠습니까?\n\n* 텍스트 파일만 지원됩니다.`);
+      
+      if (confirm) {
+        handleInputChange(0, currentVal ? currentVal + "\n\n" + content : content);
+      }
     };
     reader.readAsText(file);
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // 진행률 계산

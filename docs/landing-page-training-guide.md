@@ -96,7 +96,7 @@
 ```bash
 # 1. 프로젝트 클론 또는 생성
 git clone [repository-url]
-cd BizPlan-Sonnet4.5
+cd MakersRound-Sonnet4.5
 
 # 2. 의존성 설치
 npm install

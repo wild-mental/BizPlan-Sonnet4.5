@@ -12,6 +12,7 @@ import {
   type PromotionInfo,
   type EmailCheckResponse,
 } from '../services/preRegistrationApi';
+import { trackEvent } from '../utils/analytics';
 
 interface PreRegistrationStore {
   // UI 상태
@@ -78,6 +79,13 @@ export const usePreRegistrationStore = create<PreRegistrationStore>()(
             isSubmitting: false,
             isModalOpen: false,
           });
+          
+          // GA4 이벤트: 사전등록 완료
+          trackEvent('preregistration_complete', {
+            plan_name: data.selectedPlan,
+            discount_rate: response.discountRate,
+          });
+          
           return response;
         } catch (error: unknown) {
           const axiosError = error as { response?: { data?: { message?: string } } };

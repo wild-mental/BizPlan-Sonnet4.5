@@ -50,6 +50,7 @@ import {
 } from '../constants/promotion';
 import { formatPrice, getPlanPricing } from '../utils/pricing';
 import { formatPhoneNumber, businessCategories } from '../schemas/preRegistrationSchema';
+import { trackEvent } from '../utils/analytics';
 
 /** 요금제별 표시 정보 */
 const planDisplayInfo: Record<PricingPlanType, { color: string; badge: string; price: string; planKey?: 'plus' | 'pro' | 'premium' }> = {
@@ -270,6 +271,12 @@ export const SignupPage: React.FC = () => {
         marketingConsent: agreements.marketing,
       });
 
+      // GA4 이벤트: 회원가입 완료
+      trackEvent('signup_complete', {
+        plan_name: currentPlan,
+        method: 'email',
+      });
+
       // 유료 요금제 선택 시 사전등록도 함께 처리 (할인 코드 발급)
       if (isPaidPlan && planKey) {
         try {
@@ -288,8 +295,8 @@ export const SignupPage: React.FC = () => {
         }
       }
       
-      // 가입 완료 후 사업계획서 작성 데모로 이동
-      navigate('/writing-demo');
+      // 가입 완료 후 이메일 인증 대기 페이지로 이동
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}&pending=true`);
     } catch {
       setErrors({ submit: '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.' });
     }
@@ -307,9 +314,21 @@ export const SignupPage: React.FC = () => {
     }
 
     try {
-      // 소셜 로그인 토큰 (실제 구현에서는 소셜 제공자로부터 받아야 함)
+      // NOTE: 실제 프로덕션 환경에서는 OAuth2 Provider의 인증 페이지로 리다이렉트 해야 합니다.
+      // 현재 개발 환경에서는 유효한 Client ID/Secret이 없으므로,
+      // 백엔드에서 모의 토큰("mock-...")을 받아 처리하도록 구성되어 있습니다.
+      // 백엔드 SocialOAuthService는 "mock-" 접두사가 있는 토큰을 감지하여 테스트 유저로 로그인시킵니다.
+      
       const mockAccessToken = `mock-${provider}-token-${Date.now()}`;
+      
       await socialLogin(provider, mockAccessToken, currentPlan, agreements.terms, agreements.privacy, agreements.marketing);
+      
+      // GA4 이벤트: 소셜 로그인 회원가입 완료
+      trackEvent('signup_complete', {
+        plan_name: currentPlan,
+        method: provider,
+      });
+      
       navigate('/writing-demo');
     } catch {
       setErrors({ submit: '소셜 로그인 중 오류가 발생했습니다. 다시 시도해주세요.' });
@@ -552,7 +571,7 @@ export const SignupPage: React.FC = () => {
                 <Input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="비밀번호 (8자 이상)"
+                  placeholder="비밀번호 (8자 이상, 영문과 숫자 포함)"
                   value={formData.password}
                   onChange={handleInputChange}
                   error={errors.password}

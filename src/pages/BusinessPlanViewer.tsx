@@ -24,9 +24,9 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '../components/ui';
-import { mockBusinessPlan } from '../types/mockData';
 import { useBusinessPlanStore } from '../stores/useBusinessPlanStore';
 import { useProjectStore } from '../stores/useProjectStore';
+import { businessPlanApi } from '../services/businessPlanApi';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileDown, Sparkles, RefreshCw, AlertCircle, X, AlertTriangle } from 'lucide-react';
@@ -72,56 +72,59 @@ export const BusinessPlanViewer: React.FC = () => {
   // 프로젝트 정보 가져오기 (아이템명 표시용)
   const { currentProject } = useProjectStore();
   
-  // Store에 데이터가 없으면 mockData 사용 (fallback)
-  // 에러가 있어도 예제 문서 표시
-  const sections = storeSections.length > 0 ? storeSections : mockBusinessPlan;
+  // Store에 데이터가 없으면 빈 배열 (mockData 제거)
+  const sections = storeSections;
   
   // 에러 배너 표시 여부
   const [showErrorBanner, setShowErrorBanner] = useState(true);
   
   const [regeneratingSection, setRegeneratingSection] = useState<string | null>(null);
   
-  // 예제 문서 사용 여부 (에러가 있거나 Store에 데이터가 없을 때)
-  const isUsingMockData = error || storeSections.length === 0;
+  // 예제 문서 사용 여부 - 더 이상 사용하지 않음
+  const isUsingMockData = false;
 
   /**
    * 특정 섹션 재생성
-   * TODO: 실제 백엔드 API 연동 필요
+   * TODO: 실제 백엔드 API 연동 필요 (현재 백엔드 미지원)
    * 
    * @param {string} sectionId - 재생성할 섹션의 ID
    */
   const handleRegenerate = useCallback((sectionId: string) => {
-    setRegeneratingSection(sectionId);
-    
-    // TODO: 실제 API 호출로 교체
-    // 현재는 시뮬레이션
-    setTimeout(() => {
-      const currentSection = sections.find(s => s.id === sectionId);
-      if (currentSection) {
-        updateSection(sectionId, currentSection.content + '\n\n[AI가 새로운 내용을 생성했습니다]');
-      }
-      setRegeneratingSection(null);
-    }, TIMING.AI_GENERATION_DELAY);
-  }, [sections, updateSection]);
+    window.alert('섹션 재생성 기능은 준비 중입니다.');
+  }, []);
 
   /**
    * 사업계획서 파일 내보내기
-   * TODO: 실제 백엔드 API 연동 필요
    * 
    * @param {('hwp'|'pdf')} format - 내보낼 파일 형식
    */
-  const handleExport = useCallback((format: 'hwp' | 'pdf') => {
-    // 실제 다운로드 URL이 있으면 사용
-    if (generatedData?.exportOptions?.downloadUrls) {
-      const url = generatedData.exportOptions.downloadUrls[format];
-      if (url) {
-        window.open(url, '_blank');
-        return;
-      }
+  const handleExport = useCallback(async (format: 'hwp' | 'pdf') => {
+    if (!currentProject?.id) {
+      window.alert('프로젝트 정보를 찾을 수 없습니다.');
+      return;
     }
-    
-    window.alert(`${format.toUpperCase()} 다운로드 준비 완료!\n\n실제 환경에서는 파일이 다운로드됩니다.`);
-  }, [generatedData]);
+
+    try {
+      // API 호출
+      const response = await businessPlanApi.exportDocument(
+        currentProject.id, 
+        format, 
+        currentProject.templateId
+      );
+      
+      if (response.data.success) {
+        const { exportId, status } = response.data.data;
+        window.alert(`문서 생성 요청이 접수되었습니다.\n(ID: ${exportId}, 상태: ${status})\n\n완료되면 다운로드가 시작됩니다.`);
+        
+        // TODO: 폴링으로 상태 확인 후 다운로드 (구현 복잡도상 알림으로 대체)
+      } else {
+         window.alert('문서 내보내기 요청 실패: ' + (response.data.error?.message || '알 수 없는 오류'));
+      }
+    } catch (err) {
+      console.error('Export error:', err);
+      window.alert('문서 내보내기 중 오류가 발생했습니다.');
+    }
+  }, [currentProject]);
 
   // 로딩 중 표시
   if (isLoading) {

@@ -7,6 +7,7 @@
  * - StrictMode로 잠재적 문제를 감지
  * - React Query 설정
  * - Mock API 활성화 (개발 환경)
+ * - Google Analytics 4 초기화
  * 
  * 호출 구조:
  * main.tsx (진입점)
@@ -25,6 +26,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import './index.css'
 import App from './App.tsx'
+import { initializeGA } from './utils/analytics'
+
+// Google Analytics 4 초기화
+initializeGA()
 
 // React Query 클라이언트 설정
 const queryClient = new QueryClient({
@@ -42,7 +47,8 @@ const queryClient = new QueryClient({
 
 // Mock API 활성화 (개발 환경)
 async function enableMocking() {
-  if (import.meta.env.VITE_ENABLE_MOCK_API !== 'true') {
+  // 프로덕션 환경이거나 MOCK_API가 명시적으로 켜져있지 않으면 비활성화
+  if (import.meta.env.PROD || import.meta.env.VITE_ENABLE_MOCK_API !== 'true') {
     return
   }
 
