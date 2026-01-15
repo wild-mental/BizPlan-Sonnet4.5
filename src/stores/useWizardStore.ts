@@ -40,7 +40,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { WizardData, WizardStep, TemplateType } from '../types';
-import { wizardSteps } from '../types/mockData';
+import { WIZARD_STEPS_FALLBACK } from '../types/data/wizardSteps';
 import { 
   ExtendedWizardStep, 
   getQuestionsForTemplate 
@@ -75,6 +75,8 @@ interface WizardState {
   setCurrentStep: (step: number) => void;
   /** 템플릿 타입 설정 및 질문 로드 */
   loadTemplateQuestions: (templateType: TemplateType) => void;
+  /** 외부(API)에서 불러온 단계 정의를 덮어쓰기 */
+  setSteps: (steps: WizardStep[]) => void;
   /** 현재 활성화된 단계 목록 반환 (템플릿별 또는 기본) */
   getActiveSteps: () => WizardStep[] | ExtendedWizardStep[];
   /** 단계별 질문 답변 업데이트 */
@@ -123,7 +125,7 @@ export const useWizardStore = create<WizardState>()(
   persist(
     (set, get) => ({
       currentStep: 1,
-      steps: wizardSteps,
+      steps: WIZARD_STEPS_FALLBACK,
       extendedSteps: null,
       templateType: null,
       wizardData: {},
@@ -141,6 +143,14 @@ export const useWizardStore = create<WizardState>()(
        */
       setCurrentStep: (step: number) => {
         set({ currentStep: step });
+      },
+
+      /**
+       * 외부에서 단계 정의를 교체 (API 응답 기반)
+       */
+      setSteps: (steps: WizardStep[]) => {
+        if (!steps || steps.length === 0) return;
+        set({ steps });
       },
 
       /**

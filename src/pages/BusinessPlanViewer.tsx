@@ -72,7 +72,6 @@ export const BusinessPlanViewer: React.FC = () => {
   // 프로젝트 정보 가져오기 (아이템명 표시용)
   const { currentProject } = useProjectStore();
   
-  // Store에 데이터가 없으면 빈 배열 (mockData 제거)
   const sections = storeSections;
   
   // 에러 배너 표시 여부
