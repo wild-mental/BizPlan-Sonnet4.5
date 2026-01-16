@@ -246,3 +246,49 @@ declare global {
     ) => void;
   }
 }
+
+export const trackABTestExposure = (
+  experimentName: string,
+  variantName: string,
+  experimentId?: string,
+  variantId?: string
+) => {
+  trackEvent('ab_test_exposure', {
+    experiment_name: experimentName,
+    variant_name: variantName,
+    experiment_id: experimentId,
+    variant_id: variantId,
+  });
+};
+
+export const trackABTestConversion = (
+  experimentName: string,
+  variantName: string,
+  conversionType: string,
+  conversionValue?: string,
+  experimentId?: string,
+  variantId?: string
+) => {
+  trackEvent('ab_test_conversion', {
+    experiment_name: experimentName,
+    variant_name: variantName,
+    conversion_type: conversionType,
+    conversion_value: conversionValue,
+    experiment_id: experimentId,
+    variant_id: variantId,
+  });
+};
+
+export const trackABTestClick = (
+  experimentName: string,
+  variantName: string,
+  elementId: string,
+  elementType?: string
+) => {
+  trackEvent('ab_test_click', {
+    experiment_name: experimentName,
+    variant_name: variantName,
+    element_id: elementId,
+    element_type: elementType,
+  });
+};
