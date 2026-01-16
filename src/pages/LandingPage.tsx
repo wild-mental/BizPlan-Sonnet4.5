@@ -9,6 +9,7 @@ import { Button, PromotionBanner } from '../components/ui';
 import PreRegistrationSuccess from '../components/PreRegistrationSuccess';
 import { LandingHeader } from './LandingPage/sections/LandingHeader';
 import { HeroSection } from './LandingPage/sections/HeroSection';
+import { useABTest, useHeroCtaTest, useMakersSectionTest, usePricingTest } from '../hooks/useABTest';
 import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
@@ -304,6 +305,11 @@ export const LandingPage: React.FC = memo(() => {
   const [hoveredMaker, setHoveredMaker] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
+
+  useABTest({ page: 'landing' });
+  const heroCtaTest = useHeroCtaTest();
+  const makersSectionTest = useMakersSectionTest();
+  const pricingTest = usePricingTest();
 
   // 사전 등록 스토어 (성공 정보 표시용)
   const { lastRegistration } = usePreRegistrationStore();

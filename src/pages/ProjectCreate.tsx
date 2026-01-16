@@ -28,8 +28,9 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectStore } from '../stores/useProjectStore';
 import { useWizardStore } from '../stores/useWizardStore';
-import { templates } from '../types/mockData';
 import { TemplateType } from '../types';
+import { templateApi } from '../services/templateApi';
+import { TEMPLATES_FALLBACK } from '../types/data/templates';
 import { Button } from '../components/ui';
 import { DemoHeader } from '../components/DemoHeader';
 import { Sparkles, FileText, BarChart3 } from 'lucide-react';
@@ -53,10 +54,36 @@ import { TEMPLATE_THEMES } from '../constants/templateThemes';
 export const ProjectCreate: React.FC = () => {
   const navigate = useNavigate();
   const { createProject } = useProjectStore();
-  const { resetWizard, loadTemplateQuestions } = useWizardStore();
+  const { resetWizard, loadTemplateQuestions, setSteps } = useWizardStore();
   // Local state
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
   const [error, setError] = useState('');
+  const [templates, setTemplates] = useState(TEMPLATES_FALLBACK);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+
+  // 템플릿 및 마법사 단계 로드 (API 실패 시 fallback 사용)
+  React.useEffect(() => {
+    const load = async () => {
+      setIsLoadingTemplates(true);
+      try {
+        const [remoteTemplates, wizardSteps] = await Promise.all([
+          templateApi.getTemplates(),
+          templateApi.getWizardSteps(),
+        ]);
+        if (remoteTemplates.length > 0) {
+          setTemplates(remoteTemplates);
+        }
+        if (wizardSteps.length > 0) {
+          setSteps(wizardSteps);
+        }
+      } catch (e) {
+        console.warn('템플릿/단계 API 호출 실패. 로컬 fallback 사용', e);
+      } finally {
+        setIsLoadingTemplates(false);
+      }
+    };
+    load();
+  }, [setSteps]);
 
   /**
    * 템플릿 선택 핸들러
@@ -141,6 +168,9 @@ export const ProjectCreate: React.FC = () => {
                 지원사업 템플릿 선택
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {isLoadingTemplates && (
+                  <div className="col-span-3 text-white/70 text-sm">템플릿을 불러오는 중입니다...</div>
+                )}
                 {templates.map((template) => {
                   const isDisabled = template.id === 'bank-loan';
                   const theme = TEMPLATE_THEMES[template.id];
