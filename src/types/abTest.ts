@@ -32,6 +32,7 @@ export interface AssignedExperiment {
   variantId: string;
   variantName: string;
   variantConfig?: Record<string, unknown>;
+  content?: Record<string, unknown>;
 }
 
 export interface ActiveExperimentsResponse {
