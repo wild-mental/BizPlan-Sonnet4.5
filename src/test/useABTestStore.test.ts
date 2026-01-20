@@ -89,10 +89,10 @@ describe('useABTestStore', () => {
       });
 
       await act(async () => {
-        await result.current.fetchExperiments('landing');
+        await result.current.fetchExperiments('/');
       });
 
-      expect(abTestApi.getActiveExperiments).toHaveBeenCalledWith('landing', 'test-visitor-id');
+      expect(abTestApi.getActiveExperiments).toHaveBeenCalledWith('/', 'test-visitor-id');
       expect(result.current.experiments['test-experiment']).toEqual({
         experimentId: 'exp-1',
         experimentName: 'test-experiment',
@@ -112,7 +112,7 @@ describe('useABTestStore', () => {
       });
 
       await act(async () => {
-        await result.current.fetchExperiments('landing');
+        await result.current.fetchExperiments('/');
       });
 
       expect(result.current.error).toBe('Network error');

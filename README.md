@@ -348,6 +348,151 @@ npm run lint
 
 ---
 
+## 🔧 환경 변수 설정
+
+프로젝트 루트에 `.env.development` (개발 환경) 또는 `.env.production` (프로덕션 환경) 파일을 생성하여 환경 변수를 설정할 수 있습니다.
+
+### 필수 환경 변수
+
+| 변수명 | 설명 | 개발 환경 예시 | 프로덕션 환경 예시 |
+|--------|------|---------------|------------------|
+| `VITE_API_URL` | 백엔드 API 기본 URL | `http://localhost:8080` | `https://api.makersround.com` |
+| `VITE_API_BASE_URL` | 백엔드 API 기본 URL (대체) | `http://localhost:8080` | `https://api.makersround.com` |
+
+**참고**: `VITE_API_URL`과 `VITE_API_BASE_URL` 중 하나만 설정하면 됩니다. `VITE_API_URL`이 우선순위가 높습니다.
+
+### 선택적 환경 변수
+
+#### AB테스트 디버그 로깅
+
+| 변수명 | 설명 | 기본값 | 개발 환경 | 프로덕션 환경 |
+|--------|------|--------|----------|-------------|
+| `VITE_AB_TEST_DEBUG_LOGGING` | AB테스트 디버그 로깅 활성화 | `false` | `true` (선택) | `false` (권장) |
+| `VITE_AB_TEST_DEBUG_SESSION_ID` | 디버그 세션 ID | `debug-session` | `dev-session-001` (선택) | 설정 불필요 |
+| `VITE_AB_TEST_DEBUG_RUN_ID` | 디버그 실행 ID | `run1` | `run-dev-001` (선택) | 설정 불필요 |
+
+**참고**: 디버그 로깅은 개발 환경에서만 브라우저 콘솔에 출력됩니다. 프로덕션에서는 자동으로 비활성화됩니다.
+
+#### Google Analytics
+
+| 변수명 | 설명 | 기본값 | 개발 환경 | 프로덕션 환경 |
+|--------|------|--------|----------|-------------|
+| `VITE_GA_MEASUREMENT_ID` | GA4 Measurement ID | `undefined` | 설정 불필요 | `G-XXXXXXXXXX` (필수) |
+| `VITE_GA_DEBUG_MODE` | GA4 디버그 모드 | `false` | `true` (선택) | `false` (권장) |
+
+#### API 로깅
+
+| 변수명 | 설명 | 기본값 | 개발 환경 | 프로덕션 환경 |
+|--------|------|--------|----------|-------------|
+| `VITE_API_LOGGING_ENABLED` | API 로깅 활성화 | `true` | `true` | `false` (권장) |
+| `VITE_API_LOGGING_TO_CONSOLE` | 콘솔 로깅 활성화 | `true` | `true` | `false` (권장) |
+| `VITE_API_LOGGING_REQUEST` | 요청 로깅 활성화 | `true` | `true` | `false` (권장) |
+| `VITE_API_LOGGING_RESPONSE` | 응답 로깅 활성화 | `true` | `true` | `false` (권장) |
+| `VITE_API_LOGGING_ERROR` | 에러 로깅 활성화 | `true` | `true` | `true` (권장) |
+
+#### 모킹 (Mock API)
+
+| 변수명 | 설명 | 기본값 | 개발 환경 | 프로덕션 환경 |
+|--------|------|--------|----------|-------------|
+| `VITE_ENABLE_MOCK_API` | MSW 모킹 활성화 | `false` | `true` (선택) | `false` (필수) |
+
+### 환경별 설정 파일 예시
+
+#### `.env.development` (개발 환경)
+
+```env
+# 백엔드 API URL
+VITE_API_URL=http://localhost:8080
+
+# AB테스트 디버그 로깅 (개발 중 디버깅용)
+VITE_AB_TEST_DEBUG_LOGGING=true
+VITE_AB_TEST_DEBUG_SESSION_ID=dev-session-001
+VITE_AB_TEST_DEBUG_RUN_ID=run-dev-001
+
+# Google Analytics (개발 환경에서는 선택적)
+# VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+VITE_GA_DEBUG_MODE=true
+
+# API 로깅 (개발 중 디버깅용)
+VITE_API_LOGGING_ENABLED=true
+VITE_API_LOGGING_TO_CONSOLE=true
+VITE_API_LOGGING_REQUEST=true
+VITE_API_LOGGING_RESPONSE=true
+VITE_API_LOGGING_ERROR=true
+
+# MSW 모킹 (백엔드 없이 개발 시)
+VITE_ENABLE_MOCK_API=true
+```
+
+#### `.env.production` (프로덕션 환경)
+
+```env
+# 백엔드 API URL
+VITE_API_URL=https://api.makersround.com
+
+# AB테스트 디버그 로깅 (프로덕션에서는 비활성화)
+VITE_AB_TEST_DEBUG_LOGGING=false
+
+# Google Analytics (프로덕션에서는 필수)
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+VITE_GA_DEBUG_MODE=false
+
+# API 로깅 (프로덕션에서는 비활성화 권장)
+VITE_API_LOGGING_ENABLED=false
+VITE_API_LOGGING_TO_CONSOLE=false
+VITE_API_LOGGING_REQUEST=false
+VITE_API_LOGGING_RESPONSE=false
+VITE_API_LOGGING_ERROR=true
+
+# MSW 모킹 (프로덕션에서는 반드시 비활성화)
+VITE_ENABLE_MOCK_API=false
+```
+
+### 환경 변수 사용 방법
+
+1. **환경 파일 생성**
+   ```bash
+   # 개발 환경
+   cp .env.example .env.development
+   
+   # 프로덕션 환경
+   cp .env.example .env.production
+   ```
+
+2. **환경 변수 설정**
+   - `.env.development`: 로컬 개발 시 사용
+   - `.env.production`: 프로덕션 빌드 시 사용
+
+3. **환경 변수 접근**
+   ```typescript
+   // 코드에서 환경 변수 사용
+   const apiUrl = import.meta.env.VITE_API_URL;
+   const isDebugMode = import.meta.env.VITE_AB_TEST_DEBUG_LOGGING === 'true';
+   ```
+
+4. **주의사항**
+   - 모든 환경 변수는 `VITE_` 접두사로 시작해야 합니다
+   - 환경 변수는 빌드 타임에 주입되므로, 변경 후 재빌드가 필요합니다
+   - `.env` 파일은 Git에 커밋하지 마세요 (`.gitignore`에 포함되어 있음)
+   - 민감한 정보(API 키 등)는 환경 변수로 관리하되, 공개 저장소에 커밋하지 않도록 주의하세요
+
+### 환경별 빌드
+
+```bash
+# 개발 환경 빌드
+npm run dev
+
+# 프로덕션 빌드
+npm run build
+
+# 프로덕션 빌드 프리뷰
+npm run preview
+```
+
+**참고**: Vite는 자동으로 `.env.development` (개발 모드) 또는 `.env.production` (프로덕션 빌드) 파일을 로드합니다.
+
+---
+
 ## 📄 라이선스
 
 MIT License

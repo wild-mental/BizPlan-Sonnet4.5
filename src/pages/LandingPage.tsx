@@ -11,6 +11,13 @@ import { LandingHeader } from './LandingPage/sections/LandingHeader';
 import { HeroSection } from './LandingPage/sections/HeroSection';
 import { useABTest, useHeroCtaTest, useMakersSectionTest, usePricingTest } from '../hooks/useABTest';
 import {
+  logSectionOrderMemo,
+  logSectionOrderCalculation,
+  logComponentRender,
+  logSectionRenderDecision,
+  logVariantOrderRender,
+} from '../utils/abTestDebugLogger';
+import {
   Rocket, FileText, Sparkles, Clock, CheckCircle2, ArrowRight, Users, Award, Zap,
   Target, AlertTriangle, Brain, LineChart, Shield, GraduationCap, Building2,
   Briefcase, User, Coffee, ChevronRight, Check, Star, MessageSquare,
@@ -306,7 +313,7 @@ export const LandingPage: React.FC = memo(() => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
 
-  useABTest({ page: 'landing' });
+  useABTest({ page: '/' });
   const heroCtaTest = useHeroCtaTest();
   const makersSectionTest = useMakersSectionTest();
   const pricingTest = usePricingTest();
@@ -316,7 +323,17 @@ export const LandingPage: React.FC = memo(() => {
 
   // AI 심사위원단 갤러리 상태
   const [makersGalleryIndex, setMakersGalleryIndex] = useState(0);
-  const [isMakersDetailOpen, setIsMakersDetailOpen] = useState(false);
+  // A/B 테스트에서 초기값 가져오기 (실험 데이터가 로드되면 업데이트)
+  const [isMakersDetailOpen, setIsMakersDetailOpen] = useState(
+    makersSectionTest.isMakersDetailOpenDefault ?? false
+  );
+  
+  // 실험 데이터가 로드되면 초기값 업데이트
+  useEffect(() => {
+    if (makersSectionTest.isMakersDetailOpenDefault !== undefined && !makersSectionTest.isLoading) {
+      setIsMakersDetailOpen(makersSectionTest.isMakersDetailOpenDefault);
+    }
+  }, [makersSectionTest.isMakersDetailOpenDefault, makersSectionTest.isLoading]);
 
   // 히어로 섹션 텍스트 플리핑 상태
   const [heroFlipIndex, setHeroFlipIndex] = useState(0);
@@ -472,49 +489,97 @@ export const LandingPage: React.FC = memo(() => {
     scrollToElement(elementId);
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
-      {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
-      <PromotionBanner 
-        onRegisterClick={() => navigate('/signup?plan=프로')} 
-        onVisibilityChange={setIsBannerVisible}
-      />
-      
-      {/* ===== FIXED HEADER NAVIGATION ===== */}
-      <LandingHeader
-        isScrolled={isScrolled}
-        isBannerVisible={isBannerVisible}
-        scrollToSection={scrollToSection}
-        onCTAClick={handleCTAClick}
-        navLinks={navLinks}
-      />
+  // A/B 테스트 섹션 순서 파싱
+  // isLoading이 true일 때도 이전에 받은 실제 데이터를 유지하도록 수정
+  const sectionOrder = React.useMemo(() => {
+    // 실제 데이터가 있으면 항상 사용 (isLoading 중에도 유지)
+    if (makersSectionTest.sectionOrder) {
+      logSectionOrderMemo(
+        'LandingPage.tsx:490',
+        makersSectionTest.isLoading,
+        makersSectionTest.sectionOrder,
+        makersSectionTest.sectionOrder,
+        false,
+        'G'
+      );
+      return makersSectionTest.sectionOrder;
+    }
+    
+    // 데이터가 없을 때만 기본값 사용
+    const defaultOrder = 'hero,testimonials,makers,business_category,pricing,steps,makers_world';
+    logSectionOrderMemo(
+      'LandingPage.tsx:497',
+      makersSectionTest.isLoading,
+      makersSectionTest.sectionOrder,
+      defaultOrder,
+      true,
+      'G'
+    );
+    return defaultOrder;
+  }, [makersSectionTest.sectionOrder]); // isLoading 의존성 제거 - 실제 데이터가 있으면 항상 사용
+  
+  const isMakersBeforeTestimonials = React.useMemo(() => {
+    const sectionOrderArray = sectionOrder.split(',').map(s => s.trim());
+    const testimonialsIndex = sectionOrderArray.indexOf('testimonials');
+    const makersIndex = sectionOrderArray.indexOf('makers');
+    const result = makersIndex < testimonialsIndex && makersIndex !== -1 && testimonialsIndex !== -1;
+    
+    logSectionOrderCalculation(
+      'LandingPage.tsx:504',
+      sectionOrder,
+      testimonialsIndex,
+      makersIndex,
+      result,
+      'F'
+    );
+    
+    return result;
+  }, [sectionOrder]);
 
-      {/* ===== PRIMARY HERO SECTION ===== */}
-      <HeroSection
-        heroFlipIndex={heroFlipIndex}
-        isFlipping={isFlipping}
-        onCTAClick={handleCTAClick}
-        scrollToElement={scrollToElement}
-      />
+  // 섹션 렌더링 순서 결정 로깅
+  React.useEffect(() => {
+    logSectionRenderDecision(
+      'LandingPage.tsx:522',
+      isMakersBeforeTestimonials,
+      sectionOrder,
+      makersSectionTest.variant,
+      isMakersDetailOpen,
+      'E'
+    );
+  }, [isMakersBeforeTestimonials, sectionOrder, makersSectionTest.variant, isMakersDetailOpen]);
 
-      {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
-      <section id="problem-section" className="py-24 relative scroll-mt-[100px] overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-emerald-950/10 to-slate-950" />
+  // Variant/Control 순서 렌더링 로깅
+  React.useEffect(() => {
+    if (isMakersBeforeTestimonials) {
+      logVariantOrderRender('LandingPage.tsx:533', isMakersBeforeTestimonials, sectionOrder, 'Makers first', 'E');
+    } else {
+      logVariantOrderRender('LandingPage.tsx:536', isMakersBeforeTestimonials, sectionOrder, 'Testimonials first', 'E');
+    }
+  }, [isMakersBeforeTestimonials, sectionOrder]);
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
-              <MessageSquare className="w-4 h-4" /> 고객 시나리오
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="text-gradient">Makers Round</span><br/>고객 상황별 성과 도출 예시
-            </h2>
-            <p className="text-white/20 text-sm">*Makers Round의 AI 솔루션을 통해 경험할 수 있는 기대 효과입니다. <br/>귀하의 상황과 가장 유사한 사례를 찾아 솔루션을 미리 확인해보세요.</p>
-          </div>
+  // Testimonials Section 컴포넌트
+  const TestimonialsSectionContent = React.memo(() => {
+    React.useEffect(() => {
+      logComponentRender('LandingPage.tsx:543', 'TestimonialsSectionContent', undefined, 'G');
+    }, []);
+    return (
+    <section id="problem-section" className="py-24 relative scroll-mt-[100px] overflow-hidden">
+            {/* Background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-emerald-950/10 to-slate-950" />
 
-          {/* Testimonial Groups */}
-          {[
+            <div className="container mx-auto px-4 relative z-10">
+              <div className="text-center mb-12">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-6">
+                  <MessageSquare className="w-4 h-4" /> 고객 시나리오
+                </span>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="text-gradient">Makers Round</span><br/>고객 상황별 성과 도출 예시
+                </h2>
+                <p className="text-white/20 text-sm">*Makers Round의 AI 솔루션을 통해 경험할 수 있는 기대 효과입니다. <br/>귀하의 상황과 가장 유사한 사례를 찾아 솔루션을 미리 확인해보세요.</p>
+              </div>
+
+              {/* Testimonial Groups */}
+              {[
             {
               group: 'Group 1',
               title: '예비창업패키지 & 정부지원사업 지원자',
@@ -585,13 +650,25 @@ export const LandingPage: React.FC = memo(() => {
                 direction={groupIndex % 2 === 0 ? 'left' : 'right'}
               />
             </div>
-          ))}
+              ))}
 
-        </div>
-      </section>
+            </div>
+    </section>
+    );
+  }, []);
 
-      {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 (Flip 기능) ===== */}
-      <section id="makers-section" className="py-24 relative overflow-hidden scroll-mt-[100px]">
+  // Makers Section 컴포넌트
+  const MakersSectionContent = React.memo(() => {
+    React.useEffect(() => {
+      logComponentRender(
+        'LandingPage.tsx:640',
+        'MakersSectionContent',
+        { isMakersDetailOpen, makersGalleryIndex, hoveredMaker },
+        'G'
+      );
+    }, [isMakersDetailOpen, makersGalleryIndex, hoveredMaker]);
+    return (
+    <section id="makers-section" className="py-24 relative overflow-hidden scroll-mt-[100px]">
         {/* Background Effects */}
         <div className="absolute inset-0 gradient-mesh" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -870,9 +947,55 @@ export const LandingPage: React.FC = memo(() => {
               </div>
               </div>
             </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+    </section>
+    );
+  });
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+      {/* ===== PROMOTION BANNER (사전 등록 프로모션) ===== */}
+      <PromotionBanner 
+        onRegisterClick={() => navigate('/signup?plan=프로')} 
+        onVisibilityChange={setIsBannerVisible}
+      />
+      
+      {/* ===== FIXED HEADER NAVIGATION ===== */}
+      <LandingHeader
+        isScrolled={isScrolled}
+        isBannerVisible={isBannerVisible}
+        scrollToSection={scrollToSection}
+        onCTAClick={handleCTAClick}
+        navLinks={navLinks}
+      />
+
+      {/* ===== PRIMARY HERO SECTION ===== */}
+      <HeroSection
+        heroFlipIndex={heroFlipIndex}
+        isFlipping={isFlipping}
+        onCTAClick={handleCTAClick}
+        scrollToElement={scrollToElement}
+      />
+
+      {/* ===== A/B 테스트에 따른 섹션 순서 동적 렌더링 ===== */}
+      {isMakersBeforeTestimonials ? (
+        <>
+          {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 (Variant: 상위 배치) ===== */}
+          <MakersSectionContent />
+          
+          {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
+          <TestimonialsSectionContent />
+        </>
+      ) : (
+        <>
+          {/* ===== REAL TESTIMONIALS SECTION (문제 해결) ===== */}
+          <TestimonialsSectionContent />
+          
+          {/* ===== AI 심사위원단 + M.A.K.E.R.S 통합 섹션 (Control: 기존 순서) ===== */}
+          <MakersSectionContent />
+        </>
+      )}
 
       {/* ===== BUSINESS CATEGORY SUPPORT SECTION ===== */}
       <section id="business-category" className="py-24 relative overflow-hidden scroll-mt-[100px]" >

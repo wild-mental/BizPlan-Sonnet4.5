@@ -101,7 +101,7 @@ export interface ConversionRequest {
   metadata?: Record<string, unknown>;
 }
 
-export type ExperimentPage = 'landing' | 'signup' | 'evaluation-demo' | 'writing-demo';
+export type ExperimentPage = '/' | 'signup' | 'evaluation-demo' | 'writing-demo';
 
 export const EXPERIMENT_KEYS = {
   MAKERS_SECTION: 'makers-section-layout',

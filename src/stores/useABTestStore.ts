@@ -15,6 +15,7 @@ import {
   getDeviceInfo,
 } from '../utils/abTestVisitor';
 import { trackABTestExposure, trackABTestConversion } from '../utils/analytics';
+import { logFetchExperiments, logApiResponse, logProcessingExperiment } from '../utils/abTestDebugLogger';
 
 interface ABTestState {
   visitorId: string | null;
@@ -80,18 +81,22 @@ export const useABTestStore = create<ABTestStore>()(
         set({ isLoading: true, error: null });
 
         try {
+          logFetchExperiments('useABTestStore.ts:83', page, visitorId, 'A');
           const response = await abTestApi.getActiveExperiments(page, visitorId);
+
+          logApiResponse('useABTestStore.ts:86', response, 'A');
 
           if (response.success && response.data) {
             const newExperiments: Record<string, ABAssignment> = {};
 
             for (const exp of response.data.experiments) {
+              logProcessingExperiment('useABTestStore.ts:92', exp, 'A');
               newExperiments[exp.experimentName] = {
                 experimentId: exp.experimentId,
                 experimentName: exp.experimentName,
                 variantId: exp.variantId,
                 variantName: exp.variantName,
-                config: exp.variantConfig,
+                config: exp.variantConfig || exp.content,
               };
             }
 

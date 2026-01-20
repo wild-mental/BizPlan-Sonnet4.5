@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useABTestStore } from '../stores/useABTestStore';
 import { ExperimentPage, EXPERIMENT_KEYS, ABAssignment } from '../types/abTest';
+import { logExperimentAssignment, logVariantConfigCheck, logExtractedValues } from '../utils/abTestDebugLogger';
 
 interface UseABTestOptions {
   page: ExperimentPage;
@@ -83,6 +84,16 @@ export const useExperiment = <T extends string = string>(
   const { isLoading, getVariant, trackExposure, trackConversion } = useABTestStore();
 
   const assignment = getVariant(experimentName);
+  
+  useEffect(() => {
+    logExperimentAssignment(
+      'useABTest.ts:86',
+      experimentName,
+      assignment,
+      isLoading,
+      'D'
+    );
+  }, [assignment, experimentName, isLoading]);
 
   useEffect(() => {
     if (assignment && autoTrackExposure) {
@@ -105,11 +116,41 @@ export const useExperiment = <T extends string = string>(
   };
 };
 
-export const useMakersSectionTest = () =>
-  useExperiment<'control' | 'gallery' | 'carousel'>({
+export const useMakersSectionTest = () => {
+  const result = useExperiment<'control' | 'variant'>({
     experimentName: EXPERIMENT_KEYS.MAKERS_SECTION,
     context: { pageSection: 'makers-section' },
   });
+  
+  // variantConfig에서 sectionOrder와 isMakersDetailOpen 추출
+  const sectionOrder = result.variantConfig?.sectionOrder as string | undefined;
+  const isMakersDetailOpenDefault = result.variantConfig?.isMakersDetailOpen as boolean | undefined;
+  
+  useEffect(() => {
+    logVariantConfigCheck(
+      'useABTest.ts:125',
+      result.variantConfig,
+      result.variant,
+      result.isLoading,
+      'B'
+    );
+  }, [result.variantConfig, result.variant, result.isLoading]);
+  
+  useEffect(() => {
+    logExtractedValues(
+      'useABTest.ts:137',
+      sectionOrder,
+      isMakersDetailOpenDefault,
+      'B'
+    );
+  }, [sectionOrder, isMakersDetailOpenDefault]);
+  
+  return {
+    ...result,
+    sectionOrder: sectionOrder || 'hero,testimonials,makers,business_category,pricing,steps,makers_world',
+    isMakersDetailOpenDefault: isMakersDetailOpenDefault ?? false,
+  };
+};
 
 export const useHeroCtaTest = () =>
   useExperiment<'control' | 'action' | 'benefit'>({
