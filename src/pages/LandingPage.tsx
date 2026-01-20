@@ -655,7 +655,7 @@ export const LandingPage: React.FC = memo(() => {
             </div>
     </section>
     );
-  }, []);
+  });
 
   // Makers Section 컴포넌트
   const MakersSectionContent = React.memo(() => {
